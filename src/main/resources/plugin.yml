@@ -1,0 +1,55 @@
+name: QuestPlugin
+version: ${project.version}
+main: me.ics.questplugin.QuestPlugin
+api-version: 1.13
+authors: [Fayuk_Konstantin, Kostyuchuk_Alexey, Kiselev_Daniil]
+description: QuestPlugin
+commands:
+  setbutton:
+    description: set your button
+    usage: §c/setbutton <name> <x> <y> <z>
+    aliases: [sbut]
+  delbutton:
+    description: del your button
+    usage: §c/delbutton <name>
+    aliases: [dbut]
+  buttons:
+    description: list of buttons
+    aliases: [butlist]
+  settpwarp:
+    description: set warp with tp
+    usage: §c/settpwarp <name> <x> <y> <z>
+    aliases: [stpw]
+  deltpwarp:
+    description: del your tp warp
+    usage: §c/deltpwarp <name>
+    aliases: [dtpw]
+  tpwarps:
+    description: list of tp warps
+    aliases: [tplist]
+  settxtwarp:
+    description: set text warp
+    usage: §c/settxtwarp <name> <r> <text>
+    aliases: [stxtw]
+  deltxtwarp:
+    description: del txt warpa
+    usage: §c/deltxtwarp <name>
+    aliases: [dtxtw]
+  txtwarps:
+    description: list
+    aliases: [txtlist]
+  vrhelmet:
+    description: set the button. If clicked by person with 0 score - destroys,
+      gives helmet
+    aliases: [vrh]
+  vrpos:
+    usage: §c/vrpos x y z
+    aliases: [vrp]
+  answer:
+    description: answer the question
+    usage: §c/answer <args>
+  quest:
+    description: start quest
+  setcheckpoint:
+    description: set checkpoint for admin's purpose
+    usage: §c/checkpoint <num>
