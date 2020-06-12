@@ -14,6 +14,7 @@ import org.bukkit.plugin.Plugin;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class QuestOperator implements CommandExecutor {
     private FileJsonEditor<ListQuestWorldData> editor;
@@ -135,8 +136,7 @@ public class QuestOperator implements CommandExecutor {
                 }
                 for (QuestWorldData questWorldData : listQuestWorlds.allQuestWorlds) {
                     if (questWorldData.isBusy) {
-                        player.sendMessage(ChatColor.RED + questWorldData.questWorldName +
-                                ChatColor.RED + " - занят игроком " + questWorldData.playerName + ".");
+                        player.sendMessage(ChatColor.DARK_GREEN + questWorldData.questWorldName + " - занят игроком " + questWorldData.playerName );
                     } else
                         player.sendMessage(ChatColor.GREEN + questWorldData.questWorldName +
                                 ChatColor.GREEN + " - свободен.");
@@ -179,7 +179,12 @@ public class QuestOperator implements CommandExecutor {
         }
         // удаление записи
         if(args.length == 2 && args[0].equalsIgnoreCase("remove")){
-            String playerName = player.getName();
+            String playerName = args[1];
+            List<String> questPlayers = listQuestWorlds.allQuestWorlds.stream().map(obj->obj.playerName).collect(Collectors.toList());
+            if(!questPlayers.contains(playerName)){
+                player.sendMessage(ChatColor.RED + "Записи не существует!");
+                return true;
+            }
             for(QuestWorldData qwi : listQuestWorlds.allQuestWorlds){
                 if(qwi.isBusy && qwi.playerName.equalsIgnoreCase(playerName)){
                     //удаление и перезапись
@@ -190,7 +195,7 @@ public class QuestOperator implements CommandExecutor {
                     return true;
                 }
             }
-            player.sendMessage(ChatColor.RED + "Игрок не проходил квест!");
+            player.sendMessage(ChatColor.RED + "Ошиб0чка! :(");
             return true;
         }
         return false;
