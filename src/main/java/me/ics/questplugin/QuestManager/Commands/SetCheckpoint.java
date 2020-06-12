@@ -41,7 +41,7 @@ public class SetCheckpoint implements CommandExecutor {
                     }
                     return true;
                 } else
-                    Bukkit.getLogger().info("Что-то пошло не так при установке чекпоинта :(");
+                    player.sendMessage(ChatColor.RED + "Что-то пошло не так при установке чекпоинта :(");
             }
             return true;
         }
