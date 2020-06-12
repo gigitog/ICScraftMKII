@@ -8,8 +8,11 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Arrow;
+import org.bukkit.entity.Boat;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
 
 import java.util.ArrayList;
@@ -50,6 +53,13 @@ public class QuestOperator implements CommandExecutor {
                         Arrow a = (Arrow) quest.spawnEntity(loc_spawn, EntityType.ARROW);
                         quest.setTime(12500);
                         player.teleport(loc_spawn);
+                        ItemStack feather = new ItemStack(Material.FEATHER);
+                        feather.setAmount(1);
+                        ItemMeta itemMeta = feather.getItemMeta();
+                        itemMeta.setDisplayName(ChatColor.GREEN + "Информация о квесте");
+                        player.sendMessage(itemMeta.getDisplayName());
+                        feather.setItemMeta(itemMeta);
+                        player.getInventory().setItem(8, feather);
                         loc_spawn.setX(0);
                         loc_spawn.setY(1);
                         loc_spawn.setZ(0);
@@ -76,15 +86,11 @@ public class QuestOperator implements CommandExecutor {
                     player.sendMessage(ChatColor.GREEN + "Квестовый мир - " + questWorldData.questWorldName);
                     player.sendMessage(ChatColor.GREEN + "Игрок - " + questWorldData.playerName);
                     player.sendMessage(ChatColor.GREEN + "Чекпоинт - " + questWorldData.checkpoint);
-                    if(Bukkit.getOnlinePlayers().contains(Bukkit.getPlayer(questWorldData.playerName))){
-                        if(questWorldData.ticksPlayedFinal==0){
-                            player.sendMessage(ChatColor.GREEN + "Проведено времени в квесте - " + (questWorldData.ticksSavedBeforeLeaving + (Bukkit.getPlayer(name).getTicksLived() - questWorldData.ticksLivedWhenStart))/1200 + " мин, " + ((questWorldData.ticksSavedBeforeLeaving + (Bukkit.getPlayer(name).getTicksLived() - questWorldData.ticksLivedWhenStart))-((questWorldData.ticksSavedBeforeLeaving + (Bukkit.getPlayer(name).getTicksLived() - questWorldData.ticksLivedWhenStart))/1200)*1200)/20 + " сек.");
-                        }else player.sendMessage(ChatColor.GREEN + "Квест пройден за - " + questWorldData.ticksPlayedFinal /1200 + " мин., " + questWorldData.ticksPlayedFinal%1200/20 + " сек.");
-                    }else{
-                        if(questWorldData.ticksPlayedFinal == 0){
-                            player.sendMessage(ChatColor.GREEN + "Проведено времени в квесте - " + questWorldData.ticksSavedBeforeLeaving/1200 + " мин, " + (questWorldData.ticksSavedBeforeLeaving%1200)/20 + " сек.");
-                        }else player.sendMessage(ChatColor.GREEN + "Квест пройден за - " + questWorldData.ticksPlayedFinal /1200 + " мин., " + questWorldData.ticksPlayedFinal%1200/20 + " сек.");
-                    }
+                    if(questWorldData.ticksPlayedFinal!=0){
+                        player.sendMessage(ChatColor.GREEN + "Квест пройден за - " + questWorldData.ticksPlayedFinal /1200 + " мин., " + questWorldData.ticksPlayedFinal%1200/20 + " сек.");
+                    }else if(Bukkit.getOnlinePlayers().contains(Bukkit.getPlayer(questWorldData.playerName))){
+                        player.sendMessage(ChatColor.GREEN + "Проведено времени в квесте - " + (questWorldData.ticksSavedBeforeLeaving + (Bukkit.getPlayer(name).getTicksLived() - questWorldData.ticksLivedWhenStart))/1200 + " мин, " + (questWorldData.ticksSavedBeforeLeaving + Bukkit.getPlayer(name).getTicksLived() - questWorldData.ticksLivedWhenStart)%1200/20 + " сек.");
+                    }else player.sendMessage(ChatColor.GREEN + "Проведено времени в квесте - " + questWorldData.ticksSavedBeforeLeaving/1200 + " мин, " + (questWorldData.ticksSavedBeforeLeaving%1200)/20 + " сек.");
                     return true;
                 }
             }

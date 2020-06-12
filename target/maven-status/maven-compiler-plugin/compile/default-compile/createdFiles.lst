@@ -3,6 +3,7 @@ me\ics\questplugin\TpWarp\SetTpWarp.class
 me\ics\questplugin\CustomClasses\ClassesTxt\TxtWarpData.class
 me\ics\questplugin\QuestManager\Commands\QuestOperator.class
 me\ics\questplugin\QuestManager\Listeners\PlayerClick.class
+me\ics\questplugin\QuestManager\Listeners\PlayerCommand.class
 me\ics\questplugin\CustomClasses\ClassesQuestWorld\QuestWorldData.class
 me\ics\questplugin\QuestManager\Commands\Answer.class
 me\ics\questplugin\QuestManager\Listeners\PlayerMove.class
