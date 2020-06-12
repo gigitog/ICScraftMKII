@@ -53,6 +53,7 @@ public class SetTpWarp implements CommandExecutor {
             }
             if(replace){
                 tempData.allData.remove(index);
+                
             }
             tempData.allData.add(tpWarp);
             //write in file the coords + tp coords
