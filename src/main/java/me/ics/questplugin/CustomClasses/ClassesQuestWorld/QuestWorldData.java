@@ -11,6 +11,7 @@ public class QuestWorldData {
     public int ticksPlayedFinal;
     public int checkpoint;
     public int shownMessages;
+//    public SideQuestOne sideQuestOne;
     public double[] spawn;
 
     public QuestWorldData(World questWorld) {
@@ -23,6 +24,6 @@ public class QuestWorldData {
         this.checkpoint = 0;
         this.shownMessages = 0;
 //        this.sideQuestOne = new SideQuestOne(0);
-        this.spawn = new double[]{201.5, 78, 417.5};
+        this.spawn = new double[]{193.5, 78, 428.5};
     }
 }

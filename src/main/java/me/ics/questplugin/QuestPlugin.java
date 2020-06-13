@@ -7,7 +7,9 @@ import me.ics.questplugin.Buttons.SetButton;
 import me.ics.questplugin.QuestManager.Commands.Answer;
 import me.ics.questplugin.QuestManager.Commands.QuestOperator;
 import me.ics.questplugin.QuestManager.Commands.SetCheckpoint;
-import me.ics.questplugin.QuestManager.Listeners.*;
+import me.ics.questplugin.QuestManager.Listeners.PlayerClick;
+import me.ics.questplugin.QuestManager.Listeners.PlayerMove;
+import me.ics.questplugin.QuestManager.Listeners.PlayerOut;
 import me.ics.questplugin.TpWarp.DelTpWarp;
 import me.ics.questplugin.TpWarp.SetTpWarp;
 import me.ics.questplugin.TpWarp.ListenerTp;
@@ -49,12 +51,15 @@ public final class QuestPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new PlayerOut(this, "/quest_worlds_data"), this);
         getServer().getPluginManager().registerEvents(new PlayerClick(this, "/quest_worlds_data"), this);
         getServer().getPluginManager().registerEvents(new PlayerMove(this, "/quest_worlds_data"), this);
+<<<<<<< HEAD
         getServer().getPluginManager().registerEvents(new PlayerLogin(this, "/quest_worlds_data"), this);
         getServer().getPluginManager().registerEvents(new PlayerLogin(this, "/quest_worlds_data"), this);
         getServer().getPluginManager().registerEvents(new PlayerThrow(this ), this);
         getServer().getPluginManager().registerEvents(new PlayerPlace(this ), this);
         getServer().getPluginManager().registerEvents(new PlayerMoveItems(this),this);
         getServer().getPluginManager().registerEvents(new PlayerTeleport(this, "/quest_worlds_data"),this);
+=======
+>>>>>>> 137eea44d356776001d8634419a8937ee766dec7
         getServer().getConsoleSender().sendMessage(ChatColor.GREEN +  "|| QUEST MANAGER ||");
     }
 

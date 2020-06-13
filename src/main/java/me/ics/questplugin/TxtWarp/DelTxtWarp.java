@@ -11,10 +11,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 public class DelTxtWarp implements CommandExecutor {
-    private Plugin plugin;
+    private FileJsonEditor<ListTxtWarpData> editor;
 
-    public DelTxtWarp(Plugin plugin) {
-        this.plugin = plugin;
+    public DelTxtWarp(Plugin plugin, String fileName) {
+        editor = new FileJsonEditor<>(fileName, new ListTxtWarpData(), plugin);
     }
 
     @Override
@@ -31,9 +31,6 @@ public class DelTxtWarp implements CommandExecutor {
         if(args.length != 1)
             return false;
         String txtWarpName = args[0].toLowerCase();
-        //editor
-        FileJsonEditor<ListTxtWarpData> editor = new FileJsonEditor<>(
-                "/txt_warps_data.json", new ListTxtWarpData(), plugin);
         // list
         ListTxtWarpData listWarps = editor.getData();
         // Search
