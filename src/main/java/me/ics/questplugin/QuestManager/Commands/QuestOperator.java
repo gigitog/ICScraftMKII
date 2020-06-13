@@ -36,7 +36,12 @@ public class QuestOperator implements CommandExecutor {
             if (listQuestWorlds.allQuestWorlds.size() != 0) {
                 for (QuestWorldData questWorldData : listQuestWorlds.allQuestWorlds) {
                     if (questWorldData.isBusy && questWorldData.playerName.equalsIgnoreCase(player.getName())) {
-                        player.sendMessage(ChatColor.RED + "Вы уже проходили квест! Попробуйте удалить старую запись прохождения!");
+                        if (questWorldData.ticksPlayedFinal != 0) {
+                            player.sendMessage(ChatColor.RED + "Вы уже проходили квест! Попробуйте удалить старую запись прохождения!");
+                        } else {
+                            Location location = new Location(Bukkit.getWorld(questWorldData.questWorldName), questWorldData.spawn[0], questWorldData.spawn[1], questWorldData.spawn[2]);
+                            player.teleport(location);
+                        }
                         return true;
                     }
                 }
@@ -85,9 +90,12 @@ public class QuestOperator implements CommandExecutor {
                     player.sendMessage(ChatColor.GREEN + "Чекпоинт - " + questWorldData.checkpoint);
                     if(questWorldData.ticksPlayedFinal!=0){
                         player.sendMessage(ChatColor.GREEN + "Квест пройден за - " + questWorldData.ticksPlayedFinal /1200 + " мин., " + questWorldData.ticksPlayedFinal%1200/20 + " сек.");
-                    }else if(Bukkit.getOnlinePlayers().contains(Bukkit.getPlayer(questWorldData.playerName))){
+                        return true;
+                    }else if(Bukkit.getOnlinePlayers().contains(Bukkit.getPlayer(questWorldData.playerName)) && player.getWorld().getName().equalsIgnoreCase(questWorldData.questWorldName)){
                         player.sendMessage(ChatColor.GREEN + "Проведено времени в квесте - " + (questWorldData.ticksSavedBeforeLeaving + (Bukkit.getPlayer(name).getTicksLived() - questWorldData.ticksLivedWhenStart))/1200 + " мин, " + (questWorldData.ticksSavedBeforeLeaving + Bukkit.getPlayer(name).getTicksLived() - questWorldData.ticksLivedWhenStart)%1200/20 + " сек.");
-                    }else player.sendMessage(ChatColor.GREEN + "Проведено времени в квесте - " + questWorldData.ticksSavedBeforeLeaving/1200 + " мин, " + (questWorldData.ticksSavedBeforeLeaving%1200)/20 + " сек.");
+                        return true;
+                    }
+                    player.sendMessage(ChatColor.GREEN + "Проведено времени в квесте - " + questWorldData.ticksSavedBeforeLeaving/1200 + " мин, " + (questWorldData.ticksSavedBeforeLeaving%1200)/20 + " сек.");
                     return true;
                 }
             }

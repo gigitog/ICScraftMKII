@@ -51,8 +51,10 @@ public final class QuestPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new PlayerMove(this, "/quest_worlds_data"), this);
         getServer().getPluginManager().registerEvents(new PlayerLogin(this, "/quest_worlds_data"), this);
         getServer().getPluginManager().registerEvents(new PlayerLogin(this, "/quest_worlds_data"), this);
-        getServer().getPluginManager().registerEvents(new PlayerThrow(this, "/quest_worlds_data"), this);
-        getServer().getPluginManager().registerEvents(new PlayerPlace(this, "/quest_worlds_data"), this);
+        getServer().getPluginManager().registerEvents(new PlayerThrow(this ), this);
+        getServer().getPluginManager().registerEvents(new PlayerPlace(this ), this);
+        getServer().getPluginManager().registerEvents(new PlayerMoveItems(this),this);
+        getServer().getPluginManager().registerEvents(new PlayerTeleport(this, "/quest_worlds_data"),this);
         getServer().getConsoleSender().sendMessage(ChatColor.GREEN +  "|| QUEST MANAGER ||");
     }
 

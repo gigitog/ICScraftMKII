@@ -17,10 +17,9 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
 
 public class PlayerPlace implements Listener {
-    private FileJsonEditor<ListQuestWorldData> editor;
 
-    public PlayerPlace(Plugin plugin, String fileName) {
-        editor = new FileJsonEditor<>(fileName, new ListQuestWorldData(), plugin);
+    public PlayerPlace(Plugin plugin) {
+
     }
 
     @EventHandler
@@ -28,11 +27,7 @@ public class PlayerPlace implements Listener {
         ItemStack item = event.getItemInHand();
         ItemMeta itemMeta = item.getItemMeta();
         if(itemMeta.getDisplayName().equalsIgnoreCase("§9Вернуться в лобби §7(ПКМ)")){
-            Block b = event.getBlockPlaced();
-            b.setType(Material.AIR,false);
-            Location l = b.getLocation();
-            l.setX(l.getX()-1);
-            l.getBlock().setType(Material.AIR,false);
+            event.setCancelled(true);
         }
     }
 }

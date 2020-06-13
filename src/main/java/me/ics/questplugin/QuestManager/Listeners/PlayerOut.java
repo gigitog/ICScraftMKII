@@ -4,7 +4,6 @@ import me.ics.questplugin.CustomClasses.ClassesQuestWorld.ListQuestWorldData;
 import me.ics.questplugin.CustomClasses.ClassesQuestWorld.QuestWorldData;
 import me.ics.questplugin.FileEditor.FileJsonEditor;
 import me.ics.questplugin.FileEditor.RewriteDataInCycle;
-import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -20,11 +19,11 @@ public class PlayerOut implements Listener {
     @EventHandler
     public void onPlayerExit(PlayerQuitEvent e){
         ListQuestWorldData list = editor.getData();
-        for(QuestWorldData qwi : list.allQuestWorlds){
-            if(qwi.isBusy && qwi.playerName.equalsIgnoreCase(e.getPlayer().getName())){
-                qwi.ticksSavedBeforeLeaving += e.getPlayer().getTicksLived() - qwi.ticksLivedWhenStart;
-                qwi.ticksLivedWhenStart = 0;
-                new RewriteDataInCycle().rewrite(list.allQuestWorlds.indexOf(qwi), qwi, editor, true);
+        for(QuestWorldData questWorldData : list.allQuestWorlds){
+            if(questWorldData.isBusy && questWorldData.playerName.equalsIgnoreCase(e.getPlayer().getName()) && e.getPlayer().getWorld().getName().equalsIgnoreCase(questWorldData.questWorldName)){
+                questWorldData.ticksSavedBeforeLeaving += e.getPlayer().getTicksLived() - questWorldData.ticksLivedWhenStart;
+                questWorldData.ticksLivedWhenStart = 0;
+                new RewriteDataInCycle().rewrite(list.allQuestWorlds.indexOf(questWorldData), questWorldData, editor, true);
             }
         }
 

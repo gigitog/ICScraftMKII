@@ -30,7 +30,6 @@ public class PlayerClick implements Listener {
         ItemStack item = event.getItem();
         // making a "list class" of quest worlds from file
         ListQuestWorldData listQuestWorldData = editor.getData();
-        int index = 0;
         if(event.getAction().equals(Action.RIGHT_CLICK_AIR) || event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
             if (item.getItemMeta().getDisplayName().equalsIgnoreCase("§9Вернуться в лобби §7(ПКМ)")){
                 player.performCommand("spawn");
@@ -48,10 +47,14 @@ public class PlayerClick implements Listener {
                         player.sendMessage(ChatColor.RED + "Квест №3 - не пройден.");
                         player.sendMessage(ChatColor.RED + "Квест №4 - не пройден.");
                         player.sendMessage(ChatColor.RED + "Квест №5 - не пройден.");
-                        if (questWorldData.ticksPlayedFinal != 0) {
-                            player.sendMessage(ChatColor.GREEN + "Время в квесте - " + questWorldData.ticksPlayedFinal / 1200 + " мин, " + questWorldData.ticksPlayedFinal % 1200 / 20 + " сек.");
-                        } else
-                            player.sendMessage(ChatColor.GREEN + "Время в квесте - " + (questWorldData.ticksSavedBeforeLeaving + player.getTicksLived() - questWorldData.ticksLivedWhenStart) / 1200 + " мин, " + (questWorldData.ticksSavedBeforeLeaving + player.getTicksLived() - questWorldData.ticksLivedWhenStart) % 1200 / 20 + " сек.");
+                        if(questWorldData.ticksPlayedFinal!=0){
+                            player.sendMessage(ChatColor.GREEN + "Квест пройден за - " + questWorldData.ticksPlayedFinal /1200 + " мин., " + questWorldData.ticksPlayedFinal%1200/20 + " сек.");
+                            return;
+                        }else if(player.getWorld().getName().equalsIgnoreCase(questWorldData.questWorldName)){
+                            player.sendMessage(ChatColor.GREEN + "Проведено времени в квесте - " + (questWorldData.ticksSavedBeforeLeaving + (player.getTicksLived() - questWorldData.ticksLivedWhenStart))/1200 + " мин, " + (questWorldData.ticksSavedBeforeLeaving + player.getTicksLived() - questWorldData.ticksLivedWhenStart)%1200/20 + " сек.");
+                            return;
+                        }
+                        player.sendMessage(ChatColor.GREEN + "Проведено времени в квесте - " + questWorldData.ticksSavedBeforeLeaving/1200 + " мин, " + (questWorldData.ticksSavedBeforeLeaving%1200)/20 + " сек.");
                         return;
                     }
                 }
@@ -59,20 +62,7 @@ public class PlayerClick implements Listener {
                 return;
             }
         }
-        for (QuestWorldData questWorldData : listQuestWorldData.allQuestWorlds){
-            if(item.getItemMeta().getDisplayName().equalsIgnoreCase("§aИнформация о квесте §7(ПКМ)") && player.getName().equalsIgnoreCase(questWorldData.playerName)){
-                player.sendMessage(ChatColor.RED + "Квест №1 - не пройден.");
-                player.sendMessage(ChatColor.RED + "Квест №2 - не пройден.");
-                player.sendMessage(ChatColor.RED + "Квест №3 - не пройден.");
-                player.sendMessage(ChatColor.RED + "Квест №4 - не пройден.");
-                player.sendMessage(ChatColor.RED + "Квест №5 - не пройден.");
-                if(questWorldData.ticksPlayedFinal!=0){
-                    player.sendMessage(ChatColor.GREEN + "Время в квесте - " + questWorldData.ticksPlayedFinal/1200 + " мин, " + questWorldData.ticksPlayedFinal%1200/20 + " сек.");
-                }else
-                    player.sendMessage(ChatColor.GREEN + "Время в квесте - " + (questWorldData.ticksSavedBeforeLeaving + player.getTicksLived() - questWorldData.ticksLivedWhenStart)/1200 + " мин, " + (questWorldData.ticksSavedBeforeLeaving + player.getTicksLived() - questWorldData.ticksLivedWhenStart)%1200/20 + " сек.");
-                return;
-            }
-        }
+        int index = 0;
         for(QuestWorldData questWorldData : listQuestWorldData.allQuestWorlds){
             // если мир зянят, игрок есть игрок, который прохожит
             // то проверяем чекпоинты

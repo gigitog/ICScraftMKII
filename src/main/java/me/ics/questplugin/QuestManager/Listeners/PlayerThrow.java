@@ -11,10 +11,9 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
 
 public class PlayerThrow implements Listener {
-    private FileJsonEditor<ListQuestWorldData> editor;
 
-    public PlayerThrow(Plugin plugin, String fileName) {
-        editor = new FileJsonEditor<>(fileName, new ListQuestWorldData(), plugin);
+    public PlayerThrow(Plugin plugin) {
+
     }
 
     @EventHandler

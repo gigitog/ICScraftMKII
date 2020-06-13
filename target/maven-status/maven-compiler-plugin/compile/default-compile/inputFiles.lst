@@ -31,5 +31,6 @@ D:\users\IdeaProjects\ICScraft\src\main\java\me\ics\questplugin\TxtWarp\Listener
 D:\users\IdeaProjects\ICScraft\src\main\java\me\ics\questplugin\Buttons\Buttons.java
 D:\users\IdeaProjects\ICScraft\src\main\java\me\ics\questplugin\QuestManager\Listeners\PlayerTeleport.java
 D:\users\IdeaProjects\ICScraft\src\main\java\me\ics\questplugin\QuestManager\Listeners\PlayerClick.java
+D:\users\IdeaProjects\ICScraft\src\main\java\me\ics\questplugin\QuestManager\Listeners\PlayerMoveItems.java
 D:\users\IdeaProjects\ICScraft\src\main\java\me\ics\questplugin\TxtWarp\TxtWarps.java
 D:\users\IdeaProjects\ICScraft\src\main\java\me\ics\questplugin\CustomClasses\ClassesTp\ListTeleportsData.java

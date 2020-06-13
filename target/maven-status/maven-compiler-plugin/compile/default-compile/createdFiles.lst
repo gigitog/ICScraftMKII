@@ -10,6 +10,7 @@ me\ics\questplugin\QuestManager\Listeners\PlayerMove.class
 me\ics\questplugin\TpWarp\TpWarps.class
 me\ics\questplugin\TxtWarp\DelTxtWarp.class
 me\ics\questplugin\QuestManager\Listeners\PlayerLogin.class
+me\ics\questplugin\QuestManager\Listeners\PlayerMoveItems.class
 me\ics\questplugin\CustomClasses\ClassesTp\ListTeleportsData.class
 me\ics\questplugin\TxtWarp\ListenerTxt.class
 me\ics\questplugin\TxtWarp\SetTxtWarp.class
