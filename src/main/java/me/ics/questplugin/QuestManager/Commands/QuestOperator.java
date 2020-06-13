@@ -49,17 +49,10 @@ public class QuestOperator implements CommandExecutor {
                         questWorldData.playerName = player.getName();
                         questWorldData.ticksLivedWhenStart = player.getTicksLived();
                         questWorldData.ticksSavedBeforeLeaving = 0;
-                        Location loc_spawn = new Location(quest, 193.5, 78, 428.5);
+                        Location loc_spawn = new Location(quest, questWorldData.spawn[0], questWorldData.spawn[1], questWorldData.spawn[2]);
                         Arrow a = (Arrow) quest.spawnEntity(loc_spawn, EntityType.ARROW);
                         quest.setTime(12500);
                         player.teleport(loc_spawn);
-                        ItemStack feather = new ItemStack(Material.FEATHER);
-                        feather.setAmount(1);
-                        ItemMeta itemMeta = feather.getItemMeta();
-                        itemMeta.setDisplayName(ChatColor.GREEN + "Информация о квесте");
-                        player.sendMessage(itemMeta.getDisplayName());
-                        feather.setItemMeta(itemMeta);
-                        player.getInventory().setItem(8, feather);
                         loc_spawn.setX(0);
                         loc_spawn.setY(1);
                         loc_spawn.setZ(0);
@@ -75,6 +68,10 @@ public class QuestOperator implements CommandExecutor {
                 return true;
             }
             player.sendMessage(ChatColor.RED + "Свободные миры для квеста закончились!");
+            return true;
+        }
+        if(!player.isOp()){
+            player.sendMessage(ChatColor.RED+"У вас нет прав на использование этой комманды!");
             return true;
         }
         if(args.length == 2 && args[0].equalsIgnoreCase("status")){

@@ -30,18 +30,50 @@ public class PlayerClick implements Listener {
         // making a "list class" of quest worlds from file
         ListQuestWorldData listQuestWorldData = editor.getData();
         int index = 0;
-        for(QuestWorldData questWorldData : listQuestWorldData.allQuestWorlds){
-            // если мир зянят, игрок есть игрок, который прохожит
-            // то проверяем чекпоинты
-            if(questWorldData.isBusy && questWorldData.playerName.equalsIgnoreCase(player.getName())) {
-                if(item.getItemMeta().getDisplayName().equalsIgnoreCase("§aИнформация о квесте")){
+        if(item.getItemMeta().getDisplayName().equalsIgnoreCase("§9Вернуться в лобби §7(ПКМ)")){
+            player.performCommand("spawn");
+            return;
+        }
+        if(item.getItemMeta().getDisplayName().equalsIgnoreCase("§aНачать квест §7(ПКМ)")){
+            player.performCommand("quest");
+            return;
+        }
+        if(item.getItemMeta().getDisplayName().equalsIgnoreCase("§aИнформация о квесте §7(ПКМ)")){
+            for(QuestWorldData questWorldData : listQuestWorldData.allQuestWorlds){
+                if(questWorldData.playerName.equalsIgnoreCase(player.getName())){
                     player.sendMessage(ChatColor.RED + "Квест №1 - не пройден.");
                     player.sendMessage(ChatColor.RED + "Квест №2 - не пройден.");
                     player.sendMessage(ChatColor.RED + "Квест №3 - не пройден.");
                     player.sendMessage(ChatColor.RED + "Квест №4 - не пройден.");
                     player.sendMessage(ChatColor.RED + "Квест №5 - не пройден.");
-                    player.sendMessage(ChatColor.GREEN + "Время в квесте - " + (questWorldData.ticksSavedBeforeLeaving + player.getTicksLived() - questWorldData.ticksLivedWhenStart)/1200 + " мин, " + (questWorldData.ticksSavedBeforeLeaving + player.getTicksLived() - questWorldData.ticksLivedWhenStart)%1200/20 + " сек.");
+                    if(questWorldData.ticksPlayedFinal!=0){
+                        player.sendMessage(ChatColor.GREEN + "Время в квесте - " + questWorldData.ticksPlayedFinal/1200 + " мин, " + questWorldData.ticksPlayedFinal%1200/20 + " сек.");
+                    }else
+                        player.sendMessage(ChatColor.GREEN + "Время в квесте - " + (questWorldData.ticksSavedBeforeLeaving + player.getTicksLived() - questWorldData.ticksLivedWhenStart)/1200 + " мин, " + (questWorldData.ticksSavedBeforeLeaving + player.getTicksLived() - questWorldData.ticksLivedWhenStart)%1200/20 + " сек.");
+                    return;
                 }
+            }
+            player.sendMessage(ChatColor.RED+"Вы не начинали квест!");
+            return;
+        }
+        for (QuestWorldData questWorldData : listQuestWorldData.allQuestWorlds){
+            if(item.getItemMeta().getDisplayName().equalsIgnoreCase("§aИнформация о квесте §7(ПКМ)") && player.getName().equalsIgnoreCase(questWorldData.playerName)){
+                player.sendMessage(ChatColor.RED + "Квест №1 - не пройден.");
+                player.sendMessage(ChatColor.RED + "Квест №2 - не пройден.");
+                player.sendMessage(ChatColor.RED + "Квест №3 - не пройден.");
+                player.sendMessage(ChatColor.RED + "Квест №4 - не пройден.");
+                player.sendMessage(ChatColor.RED + "Квест №5 - не пройден.");
+                if(questWorldData.ticksPlayedFinal!=0){
+                    player.sendMessage(ChatColor.GREEN + "Время в квесте - " + questWorldData.ticksPlayedFinal/1200 + " мин, " + questWorldData.ticksPlayedFinal%1200/20 + " сек.");
+                }else
+                    player.sendMessage(ChatColor.GREEN + "Время в квесте - " + (questWorldData.ticksSavedBeforeLeaving + player.getTicksLived() - questWorldData.ticksLivedWhenStart)/1200 + " мин, " + (questWorldData.ticksSavedBeforeLeaving + player.getTicksLived() - questWorldData.ticksLivedWhenStart)%1200/20 + " сек.");
+                return;
+            }
+        }
+        for(QuestWorldData questWorldData : listQuestWorldData.allQuestWorlds){
+            // если мир зянят, игрок есть игрок, который прохожит
+            // то проверяем чекпоинты
+            if(questWorldData.isBusy && questWorldData.playerName.equalsIgnoreCase(player.getName())) {
                 int checkpoint = questWorldData.checkpoint;
                 java.util.List<Integer> validValues = Arrays.asList(67,68,69);
                 if(checkpoint == 0 && b.getX()==227 && (b.getZ()==415 || b.getZ()==416) && (validValues.contains(b.getY()))){
