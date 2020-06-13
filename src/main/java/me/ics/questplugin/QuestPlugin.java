@@ -4,9 +4,6 @@ import me.ics.questplugin.Buttons.Buttons;
 import me.ics.questplugin.Buttons.DelButton;
 import me.ics.questplugin.Buttons.ListenerButton;
 import me.ics.questplugin.Buttons.SetButton;
-import me.ics.questplugin.CustomClasses.ClassesTxt.ListTxtWarpData;
-import me.ics.questplugin.CustomClasses.ClassesTxt.TxtWarpData;
-import me.ics.questplugin.FileEditor.FileJsonEditor;
 import me.ics.questplugin.QuestManager.Commands.Answer;
 import me.ics.questplugin.QuestManager.Commands.QuestOperator;
 import me.ics.questplugin.QuestManager.Commands.SetCheckpoint;
@@ -47,15 +44,13 @@ public final class QuestPlugin extends JavaPlugin {
     }
 
     private void onEnableQuestManager(){
-        String fileName = "/quest_worlds_data";
-        getCommand("setcheckpoint").setExecutor(new SetCheckpoint(this, fileName));
+        getCommand("setcheckpoint").setExecutor(new SetCheckpoint(this, "/quest_worlds_data"));
         getCommand("answer").setExecutor(new Answer());
-        getCommand("quest").setExecutor(new QuestOperator(this, fileName));
+        getCommand("quest").setExecutor(new QuestOperator(this, "/quest_worlds_data"));
 
-        getServer().getPluginManager().registerEvents(new PlayerOut(this, fileName), this);
-        getServer().getPluginManager().registerEvents(new PlayerClick(this, fileName), this);
-        getServer().getPluginManager().registerEvents(new PlayerMove(this,
-                fileName, "/checkpoint_data.json"), this);
+        getServer().getPluginManager().registerEvents(new PlayerOut(this, "/quest_worlds_data"), this);
+        getServer().getPluginManager().registerEvents(new PlayerClick(this, "/quest_worlds_data"), this);
+        getServer().getPluginManager().registerEvents(new PlayerMove(this, "/quest_worlds_data"), this);
         getServer().getConsoleSender().sendMessage(ChatColor.GREEN +  "|| QUEST MANAGER ||");
     }
 
@@ -67,11 +62,10 @@ public final class QuestPlugin extends JavaPlugin {
     }
 
     private void onEnableTxt(){
-        String fileName = "/txt_warps_data.json";
-        getCommand("settxtwarp").setExecutor(new SetTxtWarp(this, fileName));
-        getCommand("deltxtwarp").setExecutor(new DelTxtWarp(this, fileName));
-        getCommand("txtwarps").setExecutor(new TxtWarps(this, fileName));
-        getServer().getPluginManager().registerEvents(new ListenerTxt(this, fileName), this);
+        getCommand("settxtwarp").setExecutor(new SetTxtWarp(this));
+        getCommand("deltxtwarp").setExecutor(new DelTxtWarp(this));
+        getCommand("txtwarps").setExecutor(new TxtWarps(this));
+        getServer().getPluginManager().registerEvents(new ListenerTxt(this), this);
         getServer().getConsoleSender().sendMessage(ChatColor.GREEN +  "|| WARP TXT  ||");
     }
 

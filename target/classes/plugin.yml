@@ -50,6 +50,10 @@ commands:
     usage: §c/answer <args>
   quest:
     description: start quest
+    usage: §a/quest - starts quest
+           /quest list - quest world list
+           /quest reload - deletes removed worlds
+           /quest status <player> - quest player status&r
   setcheckpoint:
     description: set checkpoint for admin's purpose
     usage: §c/checkpoint <num>

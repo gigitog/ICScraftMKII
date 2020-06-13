@@ -41,12 +41,12 @@ public class PlayerMove implements Listener {
                 if(loc.getBlockY() == 66){
                     // переход дороги. Если наступает на дорогу, то он нарушитель
                     if(loc.getBlockX() <= 283 && loc.getBlockX() >= 278){
-                        loc.setX(277);
+                        loc.setX(277.8);
                         quest_player.teleport(loc);
                         quest_player.sendMessage(ChatColor.RED + "Нарушитель!");
                     }
                     if(loc.getBlockX() <= 296 && loc.getBlockX() >= 291){
-                        loc.setX(297);
+                        loc.setX(297.2);
                         quest_player.teleport(loc);
                         quest_player.sendMessage(ChatColor.RED + "Нарушитель!");
                     }

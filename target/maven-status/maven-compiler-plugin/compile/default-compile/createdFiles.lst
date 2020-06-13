@@ -5,9 +5,11 @@ me\ics\questplugin\QuestManager\Commands\QuestOperator.class
 me\ics\questplugin\QuestManager\Listeners\PlayerClick.class
 me\ics\questplugin\CustomClasses\ClassesQuestWorld\QuestWorldData.class
 me\ics\questplugin\QuestManager\Commands\Answer.class
+me\ics\questplugin\QuestManager\Listeners\PlayerThrow.class
 me\ics\questplugin\QuestManager\Listeners\PlayerMove.class
 me\ics\questplugin\TpWarp\TpWarps.class
 me\ics\questplugin\TxtWarp\DelTxtWarp.class
+me\ics\questplugin\QuestManager\Listeners\PlayerLogin.class
 me\ics\questplugin\CustomClasses\ClassesTp\ListTeleportsData.class
 me\ics\questplugin\TxtWarp\ListenerTxt.class
 me\ics\questplugin\TxtWarp\SetTxtWarp.class
@@ -25,7 +27,9 @@ me\ics\questplugin\CustomClasses\ClassesTxt\ListTxtWarpData.class
 me\ics\questplugin\VrHelmet\SetVrHelmetButton.class
 me\ics\questplugin\VrHelmet\SetVrPos.class
 me\ics\questplugin\CustomClasses\ClassesQuestWorld\SideQuestOne.class
+me\ics\questplugin\QuestManager\Listeners\PlayerTeleport.class
 me\ics\questplugin\Buttons\DelButton.class
 me\ics\questplugin\TpWarp\ListenerTp.class
+me\ics\questplugin\QuestManager\Listeners\PlayerPlace.class
 me\ics\questplugin\TpWarp\DelTpWarp.class
 me\ics\questplugin\Buttons\Buttons.class
