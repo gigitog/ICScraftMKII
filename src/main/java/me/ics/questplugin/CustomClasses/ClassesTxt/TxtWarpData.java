@@ -7,7 +7,7 @@ public class TxtWarpData {
     public Integer z;
     public Integer radius;
     public String text;
-    public int checkpoint;
+    public int index;
 
     public TxtWarpData() {
         this.name = "";
@@ -16,11 +16,12 @@ public class TxtWarpData {
         this.z = 0;
         this.radius = 0;
         this.text = "";
-        this.checkpoint = 0;
+        this.index = 0;
     }
 
-    public TxtWarpData(String name, Integer x, Integer y, Integer z, Integer radius, Integer checkpoint, String text) {
-        this.checkpoint = checkpoint;
+    public TxtWarpData(String name, Integer x, Integer y, Integer z, Integer radius, Integer is_quest, String text) {
+        // index = -1 -> не квестовая текстовая точка
+        this.index = is_quest;
         this.name = name;
         this.x = x;
         this.y = y;

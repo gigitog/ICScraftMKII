@@ -12,10 +12,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 public class SetTxtWarp implements CommandExecutor {
-    private Plugin plugin;
+    private FileJsonEditor<ListTxtWarpData> editor;
+    private  Plugin plugin;
 
-    public SetTxtWarp(Plugin plugin) {
+    public SetTxtWarp(Plugin plugin, String fileName) {
         this.plugin = plugin;
+        editor = new FileJsonEditor<>(fileName, new ListTxtWarpData(), plugin);
     }
 
     @Override
@@ -38,9 +40,6 @@ public class SetTxtWarp implements CommandExecutor {
             String text = String.join(" ", args).substring(index);
 
             //write in json file the coords + r + str
-            //make editor
-            FileJsonEditor<ListTxtWarpData> editor = new FileJsonEditor<>(
-                    "/txt_warps_data.json", new ListTxtWarpData(), plugin);
             // get data previous
             ListTxtWarpData tempData = editor.getData();
             // make element of txt warp (current)
@@ -49,6 +48,7 @@ public class SetTxtWarp implements CommandExecutor {
                     Integer.valueOf(args[2]), text);
             // add to List element
             tempData.allData.add(textWarp);
+
             // write in file
             editor.setData(tempData);
 

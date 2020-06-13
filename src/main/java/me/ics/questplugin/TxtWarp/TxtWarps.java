@@ -10,10 +10,10 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.Plugin;
 
 public class TxtWarps implements CommandExecutor {
-    private Plugin plugin;
+    private FileJsonEditor<ListTxtWarpData> editor;
 
-    public TxtWarps(Plugin plugin) {
-        this.plugin = plugin;
+    public TxtWarps(Plugin plugin, String fileName) {
+        editor = new FileJsonEditor<>(fileName, new ListTxtWarpData(), plugin);
     }
 
     @Override
@@ -23,9 +23,6 @@ public class TxtWarps implements CommandExecutor {
             return true;
         }
         sender.sendMessage(color("&9&oTxt Warps: "));
-        //editor
-        FileJsonEditor<ListTxtWarpData> editor = new FileJsonEditor<>(
-                "/txt_warps_data.json", new ListTxtWarpData(), plugin);
         // list
         ListTxtWarpData txtWarps = editor.getData();
         // show warps

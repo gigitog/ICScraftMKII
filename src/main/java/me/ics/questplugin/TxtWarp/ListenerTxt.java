@@ -16,11 +16,12 @@ import java.util.Map;
 
 public class ListenerTxt implements Listener {
     private Map<String, Boolean> places = new HashMap<>();
-    private Plugin plugin;
+    private FileJsonEditor<ListTxtWarpData> editor;
 
-    public ListenerTxt(Plugin plugin) {
-        this.plugin = plugin;
+    public ListenerTxt(Plugin plugin, String fileName) {
+        editor = new FileJsonEditor<>(fileName, new ListTxtWarpData(), plugin);
     }
+
 
     private boolean placesContain(String name_place){
         if(places.get(name_place) == null)
@@ -39,9 +40,8 @@ public class ListenerTxt implements Listener {
     public void onTxtWarp(PlayerMoveEvent event){
         Player player = event.getPlayer();
         Location loc = event.getTo();
-        FileJsonEditor<ListTxtWarpData> reader = new FileJsonEditor<>(
-                "/txt_warps_data.json", new ListTxtWarpData(), plugin);
-        ListTxtWarpData tempData = reader.getData();
+
+        ListTxtWarpData tempData = editor.getData();
         for(TxtWarpData txtWarp : tempData.allData){
             assert loc != null;
             boolean x = Math.abs(loc.getBlockX() - txtWarp.x) <= txtWarp.radius;
