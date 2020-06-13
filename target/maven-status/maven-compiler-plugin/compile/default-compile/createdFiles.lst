@@ -30,5 +30,6 @@ me\ics\questplugin\CustomClasses\ClassesQuestWorld\SideQuestOne.class
 me\ics\questplugin\QuestManager\Listeners\PlayerTeleport.class
 me\ics\questplugin\Buttons\DelButton.class
 me\ics\questplugin\TpWarp\ListenerTp.class
+me\ics\questplugin\QuestManager\Listeners\PlayerPlace.class
 me\ics\questplugin\TpWarp\DelTpWarp.class
 me\ics\questplugin\Buttons\Buttons.class
