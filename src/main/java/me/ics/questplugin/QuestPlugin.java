@@ -7,7 +7,6 @@ import me.ics.questplugin.Buttons.SetButton;
 import me.ics.questplugin.QuestManager.Commands.Answer;
 import me.ics.questplugin.QuestManager.Commands.QuestOperator;
 import me.ics.questplugin.QuestManager.Commands.SetCheckpoint;
-import me.ics.questplugin.QuestManager.Listeners.PlayerClick;
 import me.ics.questplugin.QuestManager.Listeners.PlayerMove;
 import me.ics.questplugin.QuestManager.Listeners.PlayerOut;
 import me.ics.questplugin.TpWarp.DelTpWarp;
@@ -44,13 +43,15 @@ public final class QuestPlugin extends JavaPlugin {
     }
 
     private void onEnableQuestManager(){
-        getCommand("setcheckpoint").setExecutor(new SetCheckpoint(this, "/quest_worlds_data"));
+        String fileName = "/quest_worlds_data";
+        getCommand("setcheckpoint").setExecutor(new SetCheckpoint(this, fileName));
         getCommand("answer").setExecutor(new Answer());
-        getCommand("quest").setExecutor(new QuestOperator(this, "/quest_worlds_data"));
+        getCommand("quest").setExecutor(new QuestOperator(this, fileName));
 
-        getServer().getPluginManager().registerEvents(new PlayerOut(this, "/quest_worlds_data"), this);
-        getServer().getPluginManager().registerEvents(new PlayerClick(this, "/quest_worlds_data"), this);
-        getServer().getPluginManager().registerEvents(new PlayerMove(this, "/quest_worlds_data"), this);
+        getServer().getPluginManager().registerEvents(new PlayerOut(this, fileName), this);
+//        getServer().getPluginManager().registerEvents(new PlayerClick(this, fileName), this);
+        getServer().getPluginManager().registerEvents(new PlayerMove(this,
+                fileName, "/checkpoint_data.json"), this);
         getServer().getConsoleSender().sendMessage(ChatColor.GREEN +  "|| QUEST MANAGER ||");
     }
 
@@ -62,10 +63,11 @@ public final class QuestPlugin extends JavaPlugin {
     }
 
     private void onEnableTxt(){
-        getCommand("settxtwarp").setExecutor(new SetTxtWarp(this));
-        getCommand("deltxtwarp").setExecutor(new DelTxtWarp(this));
-        getCommand("txtwarps").setExecutor(new TxtWarps(this));
-        getServer().getPluginManager().registerEvents(new ListenerTxt(this), this);
+        String fileName = "/txt_warps_data.json";
+        getCommand("settxtwarp").setExecutor(new SetTxtWarp(this, fileName));
+        getCommand("deltxtwarp").setExecutor(new DelTxtWarp(this, fileName));
+        getCommand("txtwarps").setExecutor(new TxtWarps(this, fileName));
+        getServer().getPluginManager().registerEvents(new ListenerTxt(this, fileName), this);
         getServer().getConsoleSender().sendMessage(ChatColor.GREEN +  "|| WARP TXT  ||");
     }
 

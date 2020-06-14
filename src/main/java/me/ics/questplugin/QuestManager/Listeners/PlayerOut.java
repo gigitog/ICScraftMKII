@@ -23,6 +23,7 @@ public class PlayerOut implements Listener {
         for(QuestWorldData qwi : list.allQuestWorlds){
             if(qwi.isBusy && qwi.playerName.equalsIgnoreCase(e.getPlayer().getName())){
                 qwi.ticksSavedBeforeLeaving += e.getPlayer().getTicksLived() - qwi.ticksLivedWhenStart;
+                Bukkit.getLogger().info(String.valueOf(qwi.ticksSavedBeforeLeaving));
                 qwi.ticksLivedWhenStart = 0;
                 new RewriteDataInCycle().rewrite(list.allQuestWorlds.indexOf(qwi), qwi, editor, true);
             }

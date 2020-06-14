@@ -33,15 +33,15 @@ public class SetCheckpoint implements CommandExecutor {
                 // человек находится в квестовом мире и вводит команду (админ)
                 if (qwi.isBusy && qwi.playerName.equalsIgnoreCase(player.getName())) {
                     try {
-                        qwi.checkpoint = Integer.parseInt(args[0]);
-                        player.sendMessage(ChatColor.AQUA + "Ваш чекпоинт - " + qwi.checkpoint);
+                        qwi.num_quests_complete.add(Integer.parseInt(args[0]));
+                        player.sendMessage(ChatColor.AQUA + "добавлен квест - " + Integer.parseInt(args[0]));
                         new RewriteDataInCycle().rewrite(listQuest.allQuestWorlds.indexOf(qwi), qwi, editor, true);
                     } catch (NumberFormatException e) {
                         player.sendMessage(ChatColor.RED + "Неправильное значение чекпоинта!");
                     }
                     return true;
                 } else
-                    player.sendMessage(ChatColor.RED + "Что-то пошло не так при установке чекпоинта :(");
+                    Bukkit.getLogger().info("Что-то пошло не так при установке чекпоинта :(");
             }
             return true;
         }
