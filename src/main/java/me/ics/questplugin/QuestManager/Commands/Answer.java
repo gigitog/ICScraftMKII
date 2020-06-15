@@ -4,6 +4,7 @@ import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Cat;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
@@ -23,6 +24,12 @@ public class Answer implements CommandExecutor {
                 Yura.setCustomName("Yura");
                 Yura.setBaby();
                 Yura.setTarget(player);
+                return true;
+            }
+            if (args[0].equalsIgnoreCase("cat")) {
+                Cat cat = (Cat)player.getWorld().spawnEntity(player.getLocation(),EntityType.CAT);
+                cat.setCatType(Cat.Type.ALL_BLACK);
+                cat.setAI(false);
                 return true;
             }
         }player.sendMessage("Неправильный ответ!");

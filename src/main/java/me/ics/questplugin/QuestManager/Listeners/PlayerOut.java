@@ -28,6 +28,5 @@ public class PlayerOut implements Listener {
                 new RewriteDataInCycle().rewrite(list.allQuestWorlds.indexOf(qwi), qwi, editor, true);
             }
         }
-
     }
 }
