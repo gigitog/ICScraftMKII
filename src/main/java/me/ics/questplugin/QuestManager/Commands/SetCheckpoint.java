@@ -19,7 +19,6 @@ public class SetCheckpoint implements CommandExecutor {
         editor = new FileJsonEditor<>(fileName, new ListQuestWorldData(), plugin);
     }
 
-
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if(!sender.isOp()){
@@ -33,7 +32,7 @@ public class SetCheckpoint implements CommandExecutor {
                 // человек находится в квестовом мире и вводит команду (админ)
                 if (qwi.isBusy && qwi.playerName.equalsIgnoreCase(player.getName())) {
                     try {
-                        qwi.num_quests_complete.add(Integer.parseInt(args[0]));
+                        qwi.checkpoint = Integer.parseInt(args[0]);
                         player.sendMessage(ChatColor.AQUA + "добавлен квест - " + Integer.parseInt(args[0]));
                         new RewriteDataInCycle().rewrite(listQuest.allQuestWorlds.indexOf(qwi), qwi, editor, true);
                     } catch (NumberFormatException e) {

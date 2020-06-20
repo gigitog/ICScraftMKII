@@ -19,9 +19,9 @@ public class TxtWarpData {
         this.index = 0;
     }
 
-    public TxtWarpData(String name, Integer x, Integer y, Integer z, Integer radius, Integer is_quest, String text) {
+    public TxtWarpData(String name, Integer x, Integer y, Integer z, Integer radius, Integer checkpoint, String text) {
         // index = -1 -> не квестовая текстовая точка
-        this.index = is_quest;
+        this.index = checkpoint;
         this.name = name;
         this.x = x;
         this.y = y;

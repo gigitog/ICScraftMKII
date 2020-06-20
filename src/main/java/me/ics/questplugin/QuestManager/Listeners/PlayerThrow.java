@@ -1,20 +1,13 @@
 package me.ics.questplugin.QuestManager.Listeners;
 
-import me.ics.questplugin.CustomClasses.ClassesQuestWorld.ListQuestWorldData;
-import me.ics.questplugin.FileEditor.FileJsonEditor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.plugin.Plugin;
 
 public class PlayerThrow implements Listener {
-
-    public PlayerThrow(Plugin plugin) {
-
-    }
 
     @EventHandler
     public void onPlayerThrow(PlayerDropItemEvent event){

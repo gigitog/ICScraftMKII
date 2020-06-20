@@ -28,7 +28,8 @@ public class TxtWarps implements CommandExecutor {
         // show warps
         for(TxtWarpData txtWarp : txtWarps.allData){
             sender.sendMessage(color("&6" + txtWarp.name +
-                    ":&9 " + txtWarp.x + " " + txtWarp.y + " " + txtWarp.z));
+                    ":&9 " + txtWarp.x + " " + txtWarp.y + " " + txtWarp.z +
+                    " &b| checkpoint: " + txtWarp.index));
         }
         return true;
     }

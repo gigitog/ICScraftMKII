@@ -20,12 +20,12 @@ public class PlayerOut implements Listener {
     @EventHandler
     public void onPlayerExit(PlayerQuitEvent e){
         ListQuestWorldData list = editor.getData();
-        for(QuestWorldData qwi : list.allQuestWorlds){
-            if(qwi.isBusy && qwi.playerName.equalsIgnoreCase(e.getPlayer().getName())){
-                qwi.ticksSavedBeforeLeaving += e.getPlayer().getTicksLived() - qwi.ticksLivedWhenStart;
-                Bukkit.getLogger().info(String.valueOf(qwi.ticksSavedBeforeLeaving));
-                qwi.ticksLivedWhenStart = 0;
-                new RewriteDataInCycle().rewrite(list.allQuestWorlds.indexOf(qwi), qwi, editor, true);
+        for(QuestWorldData questWorldData : list.allQuestWorlds){
+            if(questWorldData.isBusy && questWorldData.playerName.equalsIgnoreCase(e.getPlayer().getName())
+                    && e.getPlayer().getWorld().getName().equals(questWorldData.questWorldName)){
+                questWorldData.ticksSavedBeforeLeaving += e.getPlayer().getTicksLived() - questWorldData.ticksLivedWhenStart;
+                questWorldData.ticksLivedWhenStart = 0;
+                new RewriteDataInCycle().rewrite(list.allQuestWorlds.indexOf(questWorldData), questWorldData, editor, true);
             }
         }
     }

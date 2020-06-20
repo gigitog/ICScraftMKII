@@ -29,7 +29,7 @@ commands:
     aliases: [tplist]
   settxtwarp:
     description: set text warp
-    usage: §c/settxtwarp <name> <r> <text>
+    usage: §c/settxtwarp <name> <r> <checkpoint> <text>
     aliases: [stxtw]
   deltxtwarp:
     description: del txt warpa
@@ -50,10 +50,15 @@ commands:
     usage: §c/answer <args>
   quest:
     description: start quest
-    usage: §a/quest - starts quest
-           /quest list - quest world list
-           /quest reload - deletes removed worlds
-           /quest status <player> - quest player status&r
+    usage: >
+      §a/quest - starts quest
+      §a/quest list - quest world list
+      §a/quest reload - deletes removed worlds
+      §a/quest status <player> - quest player status&r
   setcheckpoint:
     description: set checkpoint for admin's purpose
-    usage: §c/checkpoint <num>
+    usage: §c/setcheckpoint <num>
+    aliases: [schp]
+  addanswer:
+    description: add answer
+    usage: §c/addanswer <checkpoint> <answer>

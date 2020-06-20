@@ -4,11 +4,11 @@ import me.ics.questplugin.Buttons.Buttons;
 import me.ics.questplugin.Buttons.DelButton;
 import me.ics.questplugin.Buttons.ListenerButton;
 import me.ics.questplugin.Buttons.SetButton;
+import me.ics.questplugin.QuestManager.Commands.AddAnswer;
 import me.ics.questplugin.QuestManager.Commands.Answer;
 import me.ics.questplugin.QuestManager.Commands.QuestOperator;
 import me.ics.questplugin.QuestManager.Commands.SetCheckpoint;
-import me.ics.questplugin.QuestManager.Listeners.PlayerMove;
-import me.ics.questplugin.QuestManager.Listeners.PlayerOut;
+import me.ics.questplugin.QuestManager.Listeners.*;
 import me.ics.questplugin.TpWarp.DelTpWarp;
 import me.ics.questplugin.TpWarp.SetTpWarp;
 import me.ics.questplugin.TpWarp.ListenerTp;
@@ -43,15 +43,24 @@ public final class QuestPlugin extends JavaPlugin {
     }
 
     private void onEnableQuestManager() {
-        String fileName = "/quest_worlds_data";
-        getCommand("setcheckpoint").setExecutor(new SetCheckpoint(this, fileName));
-        getCommand("answer").setExecutor(new Answer());
-        getCommand("quest").setExecutor(new QuestOperator(this, fileName));
+        String fileQuest = "/quest_worlds_data";
+        String fileAnswers = "/answers.json";
 
-        getServer().getPluginManager().registerEvents(new PlayerOut(this, fileName), this);
-//        getServer().getPluginManager().registerEvents(new PlayerClick(this, fileName), this);
+        getCommand("setcheckpoint").setExecutor(new SetCheckpoint(this, fileQuest));
+        getCommand("answer").setExecutor(new Answer(this, fileQuest, fileAnswers));
+        getCommand("quest").setExecutor(new QuestOperator(this, fileQuest));
+        getCommand("addanswer").setExecutor(new AddAnswer(this, fileAnswers));
+
+        getServer().getPluginManager().registerEvents(new PlayerTeleport(this, fileQuest), this);
+        getServer().getPluginManager().registerEvents(new PlayerThrow(), this);
+        getServer().getPluginManager().registerEvents(new PlayerPlace(this), this);
+        getServer().getPluginManager().registerEvents(new PlayerOut(this, fileQuest), this);
+        getServer().getPluginManager().registerEvents(new PlayerClick(this, fileQuest), this);
+        getServer().getPluginManager().registerEvents(new PlayerLogin(), this);
+        getServer().getPluginManager().registerEvents(new PlayerBreak(), this);
+        getServer().getPluginManager().registerEvents(new PlayerInventoryInteract(),this);
         getServer().getPluginManager().registerEvents(new PlayerMove(this,
-                fileName, "/checkpoint_data.json"), this);
+                fileQuest, "/txt_warps_data.json"), this);
         getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "|| QUEST MANAGER ||");
     }
 

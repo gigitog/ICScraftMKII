@@ -36,7 +36,7 @@ public class SetTxtWarp implements CommandExecutor {
             Location loc  = p.getLocation();
             String txtName = args[0].toLowerCase();
             // make shown text as args[2:]
-            int index =  txtName.length() + args[1].length() + 2;
+            int index =  txtName.length() + args[1].length() + args[2].length() + 3;
             String text = String.join(" ", args).substring(index);
 
             //write in json file the coords + r + str

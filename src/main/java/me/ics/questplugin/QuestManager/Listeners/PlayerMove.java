@@ -8,6 +8,7 @@ import me.ics.questplugin.FileEditor.FileJsonEditor;
 import me.ics.questplugin.FileEditor.RewriteDataInCycle;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -57,14 +58,13 @@ public class PlayerMove implements Listener {
                     boolean x = Math.abs(loc.getBlockX() - txtWarp.x) <= txtWarp.radius;
                     boolean y = Math.abs(loc.getBlockY() - txtWarp.y) <= 1;
                     boolean z = Math.abs(loc.getBlockZ() - txtWarp.z) <= txtWarp.radius;
-                    boolean is = x && y && z && !questWorldData.num_quests_complete.contains(txtWarp.index);
+                    boolean is = questWorldData.checkpoint>=txtWarp.index;
                     
-                    if(is){
+                    if(x&&y&&z&&!is){
                         // нужно проиграть звук
-
+                        quest_player.playSound(loc, Sound.ENTITY_PLAYER_LEVELUP, 100,100);
                         // установка чекпоинта
-                        questWorldData.num_quests_complete.add(txtWarp.index);
-                        Collections.sort(questWorldData.num_quests_complete);
+                        questWorldData.checkpoint=txtWarp.index;
                         // перезапись в файле
                         check = true;
                         indexOfQuestWorld = listQuestWorldData.allQuestWorlds.indexOf(questWorldData);
@@ -78,15 +78,14 @@ public class PlayerMove implements Listener {
 //                    quest_player.sendMessage("Баянист : Помоги...");
 //                    questWorldData.checkpoint = 3;
 //                }
-//                if(checkpoint == 10){
-//                    check = true;
-//                    indexOfQuestWorld = listQuestWorldData.allQuestWorlds.indexOf(questWorldData);
-//                    tempQuestData = questWorldData;
-//                    quest_player.sendMessage(ChatColor.DARK_AQUA + "Вы прошли квест за " + (quest_player.getTicksLived() + questWorldData.ticksSavedBeforeLeaving - questWorldData.ticksLivedWhenStart)/20 + ChatColor.DARK_AQUA + " секунд! ");
-//                    questWorldData.ticksPlayedFinal = (quest_player.getTicksLived() + questWorldData.ticksSavedBeforeLeaving - questWorldData.ticksLivedWhenStart);
-//                    quest_player.performCommand("spawn");
-//                    questWorldData.checkpoint = 11;
-//                }
+                if(questWorldData.checkpoint==10){
+                    check = true;
+                    indexOfQuestWorld = listQuestWorldData.allQuestWorlds.indexOf(questWorldData);
+                    tempQuestData = questWorldData;
+                    quest_player.sendMessage(ChatColor.DARK_AQUA + "Вы прошли квест за " + (quest_player.getTicksLived() + questWorldData.ticksSavedBeforeLeaving - questWorldData.ticksLivedWhenStart)/20 + ChatColor.DARK_AQUA + " секунд! ");
+                    questWorldData.ticksPlayedFinal = (quest_player.getTicksLived() + questWorldData.ticksSavedBeforeLeaving - questWorldData.ticksLivedWhenStart);
+                    quest_player.performCommand("spawn");
+                }
 
                 // перезапись
                 new RewriteDataInCycle().rewrite(indexOfQuestWorld, tempQuestData, editorQuest, check);

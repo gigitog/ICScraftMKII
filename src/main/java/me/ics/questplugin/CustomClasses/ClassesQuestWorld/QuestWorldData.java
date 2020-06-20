@@ -3,7 +3,6 @@ package me.ics.questplugin.CustomClasses.ClassesQuestWorld;
 import org.bukkit.World;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class QuestWorldData {
     public String questWorldName;
@@ -14,7 +13,8 @@ public class QuestWorldData {
     public int ticksPlayedFinal;
     public int shownMessages;
     public double[] spawn;
-    public List<Integer> num_quests_complete;
+    public int checkpoint;
+    public ArrayList<Integer> num_quests_complete;
 
     public QuestWorldData(World questWorld) {
         this.questWorldName = questWorld.getName();
@@ -24,7 +24,8 @@ public class QuestWorldData {
         this.ticksSavedBeforeLeaving = 0;
         this.ticksPlayedFinal = 0;
         this.shownMessages = 0;
+        this.checkpoint = 0;
         this.num_quests_complete = new ArrayList<>();
-        this.spawn = new double[]{193.5, 78, 428.5};
+        this.spawn = new double[]{536.5, 13, 450.5};
     }
 }

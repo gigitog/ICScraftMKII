@@ -7,12 +7,11 @@ import org.bukkit.*;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Arrow;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class QuestOperator implements CommandExecutor {
@@ -31,8 +30,19 @@ public class QuestOperator implements CommandExecutor {
         if(args.length == 0) {
             if (listQuestWorlds.allQuestWorlds.size() != 0) {
                 for (QuestWorldData questWorldData : listQuestWorlds.allQuestWorlds) {
-                    if (questWorldData.isBusy && questWorldData.playerName.equalsIgnoreCase(player.getName())) {
-                        player.sendMessage(ChatColor.RED + "Вы уже проходили квест! Попробуйте удалить старую запись прохождения!");
+                    if (questWorldData.isBusy && questWorldData.playerName.equalsIgnoreCase(player.getName()) && questWorldData.ticksPlayedFinal==0) {
+                        World world;
+                        Location saved = new Location(Bukkit.getWorld(questWorldData.questWorldName), questWorldData.spawn[0],questWorldData.spawn[1] ,questWorldData.spawn[2] );
+                        player.sendMessage(ChatColor.GREEN + "Телепортация на сохраненную локацию.");
+                        player.teleport(saved);
+                        return true;
+                    }
+                    if(questWorldData.ticksPlayedFinal!=0){
+                        int i = (int) Math.random() * 10;
+                        switch (i){
+                            case 1: break;
+                        }
+                        player.sendMessage("Вы уже прошли квест");
                         return true;
                     }
                 }
@@ -45,8 +55,7 @@ public class QuestOperator implements CommandExecutor {
                         questWorldData.playerName = player.getName();
                         questWorldData.ticksLivedWhenStart = player.getTicksLived();
                         questWorldData.ticksSavedBeforeLeaving = 0;
-                        Location loc_spawn = new Location(quest, 193.5, 78, 428.5);
-                        Arrow a = (Arrow) quest.spawnEntity(loc_spawn, EntityType.ARROW);
+                        Location loc_spawn = new Location(quest, questWorldData.spawn[0], questWorldData.spawn[1], questWorldData.spawn[2]);
                         quest.setTime(12500);
                         player.teleport(loc_spawn);
                         loc_spawn.setX(0);
@@ -54,7 +63,7 @@ public class QuestOperator implements CommandExecutor {
                         loc_spawn.setZ(0);
                         loc_spawn.getBlock().setType(Material.REDSTONE_BLOCK);
                         player.setGameMode(GameMode.ADVENTURE);
-                        a.addPassenger(player);
+                        player.getInventory().setItem(4,null);
                         break;
                     }
                 }
@@ -69,17 +78,20 @@ public class QuestOperator implements CommandExecutor {
         if(args.length == 2 && args[0].equalsIgnoreCase("status")){
             String name = args[1];
             for(QuestWorldData questWorldData : listQuestWorlds.allQuestWorlds){
-                //имя хранится как $4namer у админов
                 // информация о мире и игроке
                 if(questWorldData.isBusy && questWorldData.playerName.equalsIgnoreCase(name)){
                     player.sendMessage(ChatColor.GREEN + "Квестовый мир - " + questWorldData.questWorldName);
                     player.sendMessage(ChatColor.GREEN + "Игрок - " + questWorldData.playerName);
-                    player.sendMessage(ChatColor.GREEN + "Квесты - " + questWorldData.num_quests_complete.toString());
-                    if(questWorldData.ticksPlayedFinal == 0) player.sendMessage(ChatColor.GREEN + "Проведено времени в квесте - " + (questWorldData.ticksSavedBeforeLeaving + (Bukkit.getPlayer(name).getTicksLived() - questWorldData.ticksLivedWhenStart))/1200 + " мин, " + ((questWorldData.ticksSavedBeforeLeaving + (Bukkit.getPlayer(name).getTicksLived() - questWorldData.ticksLivedWhenStart))-((questWorldData.ticksSavedBeforeLeaving + (Bukkit.getPlayer(name).getTicksLived() - questWorldData.ticksLivedWhenStart))/1200)*1200)/20 + " сек.");
-                    else player.sendMessage(ChatColor.GREEN + "Квест пройден за - " + questWorldData.ticksPlayedFinal /1200 + " мин., " + questWorldData.ticksPlayedFinal%1200/20 + " сек.");
-//                    if( questWorldData.sideQuestOne !=null){
-//                        player.sendMessage(ChatColor.DARK_GREEN + "Побочный квест - пройден за " +  questWorldData.sideQuestOne.ticks/1200 + ChatColor.DARK_GREEN +  " мин., " +  questWorldData.sideQuestOne.ticks%1200/20 + ChatColor.DARK_GREEN + " сек." );
-//                    }else player.sendMessage(ChatColor.DARK_GREEN + "Побочный квест №1 не начат");
+                    player.sendMessage(ChatColor.GREEN + "Текущий квест - " + questWorldData.checkpoint);
+                    player.sendMessage(ChatColor.GREEN + "Пройденные квесты - " + questWorldData.num_quests_complete.toString());
+                    if(questWorldData.ticksPlayedFinal!=0){
+                        player.sendMessage(ChatColor.GREEN + "Квест пройден за - " + questWorldData.ticksPlayedFinal /1200 + " мин., " + questWorldData.ticksPlayedFinal%1200/20 + " сек.");
+                        return true;
+                    }else if(player.getWorld().getName().equalsIgnoreCase(questWorldData.questWorldName)){
+                        player.sendMessage(ChatColor.GREEN + "Проведено времени в квесте - " + (questWorldData.ticksSavedBeforeLeaving + (player.getTicksLived() - questWorldData.ticksLivedWhenStart))/1200 + " мин, " + (questWorldData.ticksSavedBeforeLeaving + player.getTicksLived() - questWorldData.ticksLivedWhenStart)%1200/20 + " сек.");
+                        return true;
+                    }
+                    player.sendMessage(ChatColor.GREEN + "Проведено времени в квесте - " + questWorldData.ticksSavedBeforeLeaving/1200 + " мин, " + (questWorldData.ticksSavedBeforeLeaving%1200)/20 + " сек.");
                     return true;
                 }
             }
@@ -108,7 +120,7 @@ public class QuestOperator implements CommandExecutor {
                         if(!was){
                             // если такого мира нет
                             player.performCommand("mv clone worldquest " + name);
-                            Thread.sleep(500);
+                            Thread.sleep(250);
                             QuestWorldData questWorldData = new QuestWorldData(Bukkit.getWorld(name));
                             listQuestWorlds.allQuestWorlds.add(questWorldData);
                             // запись в файл
