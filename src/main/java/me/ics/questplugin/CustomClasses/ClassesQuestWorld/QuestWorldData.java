@@ -15,6 +15,7 @@ public class QuestWorldData {
     public double[] spawn;
     public int checkpoint;
     public ArrayList<Integer> num_quests_complete;
+    public int[] votes = new int[6];
 
     public QuestWorldData(World questWorld) {
         this.questWorldName = questWorld.getName();
@@ -26,6 +27,6 @@ public class QuestWorldData {
         this.shownMessages = 0;
         this.checkpoint = 0;
         this.num_quests_complete = new ArrayList<>();
-        this.spawn = new double[]{536.5, 13, 450.5};
+        this.spawn = new double[]{679.5, 69, 469.5};
     }
 }

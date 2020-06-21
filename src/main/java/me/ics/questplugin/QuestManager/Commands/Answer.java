@@ -5,19 +5,14 @@ import me.ics.questplugin.CustomClasses.ClassesQuestWorld.ListQuestWorldData;
 import me.ics.questplugin.CustomClasses.ClassesQuestWorld.QuestWorldData;
 import me.ics.questplugin.FileEditor.FileJsonEditor;
 import me.ics.questplugin.FileEditor.RewriteDataInCycle;
+import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Cat;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Villager;
 import org.bukkit.plugin.Plugin;
 
-import java.util.Arrays;
-
-// Test class
 public class Answer implements CommandExecutor {
     private FileJsonEditor<ListQuestWorldData> editorQuest;
     private FileJsonEditor<AnswerDataMap> editorAnswer;
@@ -33,6 +28,7 @@ public class Answer implements CommandExecutor {
         Player player = (Player) sender;
         boolean check = false;
         int indexOfQuestWorld = 0;
+        QuestWorldData tempData = null;
 
         if(args.length != 0) {
             ListQuestWorldData listQuestWorlds = editorQuest.getData();
@@ -41,17 +37,23 @@ public class Answer implements CommandExecutor {
                 String playerAnswer = String.join(" ", args);
                 int chp = questWorldData.checkpoint;
                 String trueAnswer= editorAnswer.getData().getAnswer(chp);
-
                 //checking
                 if(playerAnswer.equals(trueAnswer)){
-                    check = true;
+                    tempData = questWorldData;
+                    indexOfQuestWorld = listQuestWorlds.allQuestWorlds.indexOf(questWorldData);
+                    check = true;player.sendMessage(ChatColor.GREEN + "Правильно!");
+                    // avoid dublicates
+                    if(questWorldData.num_quests_complete.contains(chp)) break;
+
                     questWorldData.num_quests_complete.add(chp);
                     player.playSound(player.getLocation(),Sound.ENTITY_PLAYER_LEVELUP, 50,100);
                 }
 
-                new RewriteDataInCycle().rewrite(indexOfQuestWorld, questWorldData, editorQuest, check);
+                new RewriteDataInCycle().rewrite(indexOfQuestWorld, tempData, editorQuest, check);
             }
-        }player.sendMessage("Неправильный ответ!");
+        }
+        if (!check) player.sendMessage(ChatColor.RED + "Неправильный ответ!");
+
         return true;
     }
 }

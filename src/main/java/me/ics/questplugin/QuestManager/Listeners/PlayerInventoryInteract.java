@@ -10,9 +10,7 @@ import java.util.Objects;
 
 public class PlayerInventoryInteract implements Listener {
     private List<String> noInteractItems = Arrays.asList("§aНачать квест §7(ПКМ)","§aИнформация о квесте §7(ПКМ)","§9Вернуться в лобби §7(ПКМ)");
-    public PlayerInventoryInteract(){
 
-    }
     @EventHandler
     public void onPlayerInventoryInteract(InventoryClickEvent event){
         if(event.getCurrentItem()!=null && noInteractItems.contains(Objects.requireNonNull(event.getCurrentItem().getItemMeta()).getDisplayName())){

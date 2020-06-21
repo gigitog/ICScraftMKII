@@ -89,10 +89,11 @@ public final class QuestPlugin extends JavaPlugin {
     }
 
     private void onEnableButtons() {
-        getCommand("setbutton").setExecutor(new SetButton(this));
+        String file = "/buttons_data.json";
+        getCommand("setbutton").setExecutor(new SetButton(this, file));
         getCommand("delbutton").setExecutor(new DelButton(this));
         getCommand("buttons").setExecutor(new Buttons(this));
-        getServer().getPluginManager().registerEvents(new ListenerButton(this), this);
+        getServer().getPluginManager().registerEvents(new ListenerButton(this, file, "/quest_worlds_data"), this);
         getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "|| BUTTONS   ||");
     }
 

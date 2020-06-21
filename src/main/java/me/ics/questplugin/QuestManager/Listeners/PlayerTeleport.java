@@ -29,7 +29,7 @@ public class PlayerTeleport implements Listener {
         if(!from.getWorld().equals(to.getWorld()) && from.getWorld().getName().startsWith("quest")){
             int index = 0;
             for(QuestWorldData questWorldData : editor.getData().allQuestWorlds){
-                if(questWorldData.ticksPlayedFinal==0 && player.getName().equalsIgnoreCase(questWorldData.playerName)){
+                if(questWorldData.ticksPlayedFinal == 0 && player.getName().equalsIgnoreCase(questWorldData.playerName)){
                     ItemStack book = new ItemStack(Material.BOOK);
                     ItemMeta meta = book.getItemMeta();
                     meta.setDisplayName("§aНачать квест §7(ПКМ)");

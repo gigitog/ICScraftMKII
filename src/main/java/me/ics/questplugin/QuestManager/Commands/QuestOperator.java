@@ -1,6 +1,7 @@
 package me.ics.questplugin.QuestManager.Commands;
 
 import me.ics.questplugin.CustomClasses.ClassesQuestWorld.ListQuestWorldData;
+import me.ics.questplugin.CustomClasses.ClassesQuestWorld.QuestStats;
 import me.ics.questplugin.CustomClasses.ClassesQuestWorld.QuestWorldData;
 import me.ics.questplugin.FileEditor.FileJsonEditor;
 import org.bukkit.*;
@@ -30,15 +31,14 @@ public class QuestOperator implements CommandExecutor {
         if(args.length == 0) {
             if (listQuestWorlds.allQuestWorlds.size() != 0) {
                 for (QuestWorldData questWorldData : listQuestWorlds.allQuestWorlds) {
-                    if (questWorldData.isBusy && questWorldData.playerName.equalsIgnoreCase(player.getName()) && questWorldData.ticksPlayedFinal==0) {
-                        World world;
+                    if (questWorldData.isBusy && questWorldData.playerName.equalsIgnoreCase(player.getName()) && questWorldData.ticksPlayedFinal == 0) {
                         Location saved = new Location(Bukkit.getWorld(questWorldData.questWorldName), questWorldData.spawn[0],questWorldData.spawn[1] ,questWorldData.spawn[2] );
                         player.sendMessage(ChatColor.GREEN + "Телепортация на сохраненную локацию.");
                         player.teleport(saved);
                         return true;
                     }
-                    if(questWorldData.ticksPlayedFinal!=0){
-                        int i = (int) Math.random() * 10;
+                    if(questWorldData.ticksPlayedFinal != 0 && questWorldData.playerName.equalsIgnoreCase(player.getName())){
+                        int i = (int) (Math.random() * 10);
                         switch (i){
                             case 1: break;
                         }
@@ -80,11 +80,16 @@ public class QuestOperator implements CommandExecutor {
             for(QuestWorldData questWorldData : listQuestWorlds.allQuestWorlds){
                 // информация о мире и игроке
                 if(questWorldData.isBusy && questWorldData.playerName.equalsIgnoreCase(name)){
+                    QuestStats qs = new QuestStats(editor, name);
+                    player.getInventory().setItem(0, qs.makeBook());
+
                     player.sendMessage(ChatColor.GREEN + "Квестовый мир - " + questWorldData.questWorldName);
                     player.sendMessage(ChatColor.GREEN + "Игрок - " + questWorldData.playerName);
                     player.sendMessage(ChatColor.GREEN + "Текущий квест - " + questWorldData.checkpoint);
                     player.sendMessage(ChatColor.GREEN + "Пройденные квесты - " + questWorldData.num_quests_complete.toString());
-                    if(questWorldData.ticksPlayedFinal!=0){
+                    player.sendMessage(ChatColor.BLUE + "Оценки: " + Arrays.toString(questWorldData.votes));
+
+                    if(questWorldData.ticksPlayedFinal != 0){
                         player.sendMessage(ChatColor.GREEN + "Квест пройден за - " + questWorldData.ticksPlayedFinal /1200 + " мин., " + questWorldData.ticksPlayedFinal%1200/20 + " сек.");
                         return true;
                     }else if(player.getWorld().getName().equalsIgnoreCase(questWorldData.questWorldName)){
@@ -148,6 +153,7 @@ public class QuestOperator implements CommandExecutor {
                     player.sendMessage(ChatColor.GREEN + questWorldData.questWorldName +
                             ChatColor.GREEN+ " - свободен.");
             }
+
             return true;
         }
         // перезагрузка

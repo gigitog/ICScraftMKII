@@ -7,7 +7,7 @@ description: QuestPlugin
 commands:
   setbutton:
     description: set your button
-    usage: §c/setbutton <name> <x> <y> <z>
+    usage: §c/setbutton <name> <index of array> <value 0, 1, 2> <checkpoint to activate button <x> <y> <z>
     aliases: [sbut]
   delbutton:
     description: del your button
@@ -48,6 +48,7 @@ commands:
   answer:
     description: answer the question
     usage: §c/answer <args>
+    aliases: [an]
   quest:
     description: start quest
     usage: >

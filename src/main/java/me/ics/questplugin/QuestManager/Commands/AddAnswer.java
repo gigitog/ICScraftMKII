@@ -21,15 +21,19 @@ public class AddAnswer implements CommandExecutor {
             sender.sendMessage("no perms!");
             return true;
         }
-        if(args.length < 2)
+        if(args.length < 2) {
+            sender.sendMessage(" not all args");
             return false;
+        }
         try{
             int index =  args[0].length() + 1;
             String answer = String.join(" ", args).substring(index);
             AnswerDataMap answers = editor.getData();
             answers.add(Integer.parseInt(args[0]), answer);
             editor.setData(answers);
+            sender.sendMessage(ChatColor.GREEN + "Добавлен ответ | " + answer + " | для чекпоинта | " + args[0] + " |");
         } catch (NumberFormatException e){
+            sender.sendMessage("num exception!");
             return false;
         }
         return true;

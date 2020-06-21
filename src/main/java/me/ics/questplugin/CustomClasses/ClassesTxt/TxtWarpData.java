@@ -29,4 +29,6 @@ public class TxtWarpData {
         this.radius = radius;
         this.text = text;
     }
+
+
 }

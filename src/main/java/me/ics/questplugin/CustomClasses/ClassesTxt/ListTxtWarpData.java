@@ -10,6 +10,15 @@ public class ListTxtWarpData {
         this.allData = allData;
     }
 
+    public TxtWarpData getWarpByCheck(int checkpoint){
+        for(TxtWarpData txtWarp : allData){
+            if(txtWarp.index == checkpoint){
+                return txtWarp;
+            }
+        }
+        return null;
+    }
+
     public ListTxtWarpData() {
         this.allData = new ArrayList<>();
     }
