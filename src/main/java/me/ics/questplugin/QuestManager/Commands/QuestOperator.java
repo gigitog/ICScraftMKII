@@ -28,19 +28,20 @@ public class QuestOperator implements CommandExecutor {
         Player player = (Player) sender;
         int indexOfQuestWorld = 0;
         QuestWorldData tempQuestData = new QuestWorldData(player.getWorld());
-        if(args.length == 0) {
+        if (args.length == 0) {
             if (listQuestWorlds.allQuestWorlds.size() != 0) {
                 for (QuestWorldData questWorldData : listQuestWorlds.allQuestWorlds) {
                     if (questWorldData.isBusy && questWorldData.playerName.equalsIgnoreCase(player.getName()) && questWorldData.ticksPlayedFinal == 0) {
-                        Location saved = new Location(Bukkit.getWorld(questWorldData.questWorldName), questWorldData.spawn[0],questWorldData.spawn[1] ,questWorldData.spawn[2] );
+                        Location saved = new Location(Bukkit.getWorld(questWorldData.questWorldName), questWorldData.spawn[0], questWorldData.spawn[1], questWorldData.spawn[2]);
                         player.sendMessage(ChatColor.GREEN + "Телепортация на сохраненную локацию.");
                         player.teleport(saved);
                         return true;
                     }
-                    if(questWorldData.ticksPlayedFinal != 0 && questWorldData.playerName.equalsIgnoreCase(player.getName())){
+                    if (questWorldData.ticksPlayedFinal != 0 && questWorldData.playerName.equalsIgnoreCase(player.getName())) {
                         int i = (int) (Math.random() * 10);
-                        switch (i){
-                            case 1: break;
+                        switch (i) {
+                            case 1:
+                                break;
                         }
                         player.sendMessage("Вы уже прошли квест");
                         return true;
@@ -63,7 +64,7 @@ public class QuestOperator implements CommandExecutor {
                         loc_spawn.setZ(0);
                         loc_spawn.getBlock().setType(Material.REDSTONE_BLOCK);
                         player.setGameMode(GameMode.ADVENTURE);
-                        player.getInventory().setItem(4,null);
+                        player.getInventory().setItem(4, null);
                         break;
                     }
                 }
@@ -75,11 +76,11 @@ public class QuestOperator implements CommandExecutor {
             player.sendMessage(ChatColor.RED + "Свободные миры для квеста закончились!");
             return true;
         }
-        if(args.length == 2 && args[0].equalsIgnoreCase("status")){
+        if (args.length == 2 && args[0].equalsIgnoreCase("status")) {
             String name = args[1];
-            for(QuestWorldData questWorldData : listQuestWorlds.allQuestWorlds){
+            for (QuestWorldData questWorldData : listQuestWorlds.allQuestWorlds) {
                 // информация о мире и игроке
-                if(questWorldData.isBusy && questWorldData.playerName.equalsIgnoreCase(name)){
+                if (questWorldData.isBusy && questWorldData.playerName.equalsIgnoreCase(name)) {
                     QuestStats qs = new QuestStats(editor, name);
                     player.getInventory().setItem(0, qs.makeBook());
 
@@ -89,40 +90,40 @@ public class QuestOperator implements CommandExecutor {
                     player.sendMessage(ChatColor.GREEN + "Пройденные квесты - " + questWorldData.num_quests_complete.toString());
                     player.sendMessage(ChatColor.BLUE + "Оценки: " + Arrays.toString(questWorldData.votes));
 
-                    if(questWorldData.ticksPlayedFinal != 0){
-                        player.sendMessage(ChatColor.GREEN + "Квест пройден за - " + questWorldData.ticksPlayedFinal /1200 + " мин., " + questWorldData.ticksPlayedFinal%1200/20 + " сек.");
+                    if (questWorldData.ticksPlayedFinal != 0) {
+                        player.sendMessage(ChatColor.GREEN + "Квест пройден за - " + questWorldData.ticksPlayedFinal / 1200 + " мин., " + questWorldData.ticksPlayedFinal % 1200 / 20 + " сек.");
                         return true;
-                    }else if(player.getWorld().getName().equalsIgnoreCase(questWorldData.questWorldName)){
-                        player.sendMessage(ChatColor.GREEN + "Проведено времени в квесте - " + (questWorldData.ticksSavedBeforeLeaving + (player.getTicksLived() - questWorldData.ticksLivedWhenStart))/1200 + " мин, " + (questWorldData.ticksSavedBeforeLeaving + player.getTicksLived() - questWorldData.ticksLivedWhenStart)%1200/20 + " сек.");
+                    } else if (player.getWorld().getName().equalsIgnoreCase(questWorldData.questWorldName)) {
+                        player.sendMessage(ChatColor.GREEN + "Проведено времени в квесте - " + (questWorldData.ticksSavedBeforeLeaving + (player.getTicksLived() - questWorldData.ticksLivedWhenStart)) / 1200 + " мин, " + (questWorldData.ticksSavedBeforeLeaving + player.getTicksLived() - questWorldData.ticksLivedWhenStart) % 1200 / 20 + " сек.");
                         return true;
                     }
-                    player.sendMessage(ChatColor.GREEN + "Проведено времени в квесте - " + questWorldData.ticksSavedBeforeLeaving/1200 + " мин, " + (questWorldData.ticksSavedBeforeLeaving%1200)/20 + " сек.");
+                    player.sendMessage(ChatColor.GREEN + "Проведено времени в квесте - " + questWorldData.ticksSavedBeforeLeaving / 1200 + " мин, " + (questWorldData.ticksSavedBeforeLeaving % 1200) / 20 + " сек.");
                     return true;
                 }
             }
             player.sendMessage(ChatColor.RED + "Игрок не находится/находился в квесте!");
             return true;
         }
-        if(args.length == 2 && args[0].equalsIgnoreCase("create")){
-            try{
+        if (args.length == 2 && args[0].equalsIgnoreCase("create")) {
+            try {
                 Integer num = Integer.valueOf(args[1]);
-                if(num < 1 || num > 5){
+                if (num < 1 || num > 5) {
                     player.sendMessage(ChatColor.RED + "Не стоит этого делать");
                     return true;
                 }
                 // создаем миры с разными названиями
-                for(int i = 0;i < num; i++){
+                for (int i = 0; i < num; i++) {
                     String name;
-                    for(int y = 1; ; y++){
+                    for (int y = 1; ; y++) {
                         name = "quest";
                         name = name + y;
                         boolean was = false;
-                        for(World w : Bukkit.getWorlds()){
-                            if(w.getName().equals(name)){
+                        for (World w : Bukkit.getWorlds()) {
+                            if (w.getName().equals(name)) {
                                 was = true;
                             }
                         }
-                        if(!was){
+                        if (!was) {
                             // если такого мира нет
                             player.performCommand("mv clone worldquest " + name);
                             Thread.sleep(250);
@@ -134,39 +135,39 @@ public class QuestOperator implements CommandExecutor {
                         }
                     }
                 }
-            }catch (NumberFormatException | InterruptedException e){
+            } catch (NumberFormatException | InterruptedException e) {
                 player.sendMessage(ChatColor.RED + "Неправильное значение количества миров!");
             }
             return true;
         }
         // вывод всех миров
-        if(args.length == 1 && args[0].equalsIgnoreCase("list")) {
-            if(listQuestWorlds.allQuestWorlds.size() == 0){
+        if (args.length == 1 && args[0].equalsIgnoreCase("list")) {
+            if (listQuestWorlds.allQuestWorlds.size() == 0) {
                 player.sendMessage(ChatColor.DARK_PURPLE + "Список миров для квеста пуст!");
                 return true;
             }
             for (QuestWorldData questWorldData : listQuestWorlds.allQuestWorlds) {
-                if(questWorldData.isBusy){
-                    player.sendMessage(ChatColor.RED + questWorldData.questWorldName+
-                            ChatColor.RED + " - занят игроком "+ questWorldData.playerName + ".");
-                }else
+                if (questWorldData.isBusy) {
+                    player.sendMessage(ChatColor.RED + questWorldData.questWorldName +
+                            ChatColor.RED + " - занят игроком " + questWorldData.playerName + ".");
+                } else
                     player.sendMessage(ChatColor.GREEN + questWorldData.questWorldName +
-                            ChatColor.GREEN+ " - свободен.");
+                            ChatColor.GREEN + " - свободен.");
             }
 
             return true;
         }
         // перезагрузка
-        if(args.length == 1 && args[0].equalsIgnoreCase("reload")){
+        if (args.length == 1 && args[0].equalsIgnoreCase("reload")) {
             List<QuestWorldData> tempDataToDelete = new ArrayList<>();
             // удаляем лишние миры из массива
             // Находим нулевые миры в файле, записывем во временный массив
-            for(QuestWorldData questWorldData : listQuestWorlds.allQuestWorlds){
-                if(Bukkit.getWorld(questWorldData.questWorldName)==null){
+            for (QuestWorldData questWorldData : listQuestWorlds.allQuestWorlds) {
+                if (Bukkit.getWorld(questWorldData.questWorldName) == null) {
                     tempDataToDelete.add(questWorldData);
                 }
             }
-            for(QuestWorldData qwd : tempDataToDelete){
+            for (QuestWorldData qwd : tempDataToDelete) {
                 listQuestWorlds.allQuestWorlds.remove(qwd);
             }
             editor.setData(listQuestWorlds);
@@ -175,15 +176,15 @@ public class QuestOperator implements CommandExecutor {
             return true;
         }
         // удаление мира
-        if(args.length == 2 && args[0].equalsIgnoreCase("remove")){
+        if (args.length == 2 && args[0].equalsIgnoreCase("remove")) {
             String playerName = player.getName();
-            for(QuestWorldData qwi : listQuestWorlds.allQuestWorlds){
-                if(qwi.isBusy && qwi.playerName.equalsIgnoreCase(playerName)){
+            for (QuestWorldData qwi : listQuestWorlds.allQuestWorlds) {
+                if (qwi.isBusy && qwi.playerName.equalsIgnoreCase(playerName)) {
                     //удаление и перезапись
                     listQuestWorlds.allQuestWorlds.remove(qwi);
                     editor.setData(listQuestWorlds);
                     player.sendMessage(ChatColor.GREEN + "Запись о прохождении квеста игроком " +
-                            playerName + ChatColor.GREEN +" успешно удалена!");
+                            playerName + ChatColor.GREEN + " успешно удалена!");
                     return true;
                 }
             }

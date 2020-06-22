@@ -24,29 +24,30 @@ public class Answer implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if(!(sender instanceof Player)) return false;
+        if (!(sender instanceof Player)) return false;
         Player player = (Player) sender;
         boolean check = false;
         int indexOfQuestWorld = 0;
         QuestWorldData tempData = null;
 
-        if(args.length != 0) {
+        if (args.length != 0) {
             ListQuestWorldData listQuestWorlds = editorQuest.getData();
-            for(QuestWorldData questWorldData : listQuestWorlds.allQuestWorlds){
+            for (QuestWorldData questWorldData : listQuestWorlds.allQuestWorlds) {
                 // player answer, his chp, true answer
                 String playerAnswer = String.join(" ", args);
                 int chp = questWorldData.checkpoint;
-                String trueAnswer= editorAnswer.getData().getAnswer(chp);
+                String trueAnswer = editorAnswer.getData().getAnswer(chp);
                 //checking
-                if(playerAnswer.equals(trueAnswer)){
+                if (playerAnswer.equals(trueAnswer)) {
                     tempData = questWorldData;
                     indexOfQuestWorld = listQuestWorlds.allQuestWorlds.indexOf(questWorldData);
-                    check = true;player.sendMessage(ChatColor.GREEN + "Правильно!");
+                    check = true;
+                    player.sendMessage(ChatColor.GREEN + "Правильно!");
                     // avoid dublicates
-                    if(questWorldData.num_quests_complete.contains(chp)) break;
+                    if (questWorldData.num_quests_complete.contains(chp)) break;
 
                     questWorldData.num_quests_complete.add(chp);
-                    player.playSound(player.getLocation(),Sound.ENTITY_PLAYER_LEVELUP, 50,100);
+                    player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 50, 100);
                 }
 
                 new RewriteDataInCycle().rewrite(indexOfQuestWorld, tempData, editorQuest, check);

@@ -12,9 +12,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.BookMeta;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
 
 import java.util.*;
@@ -105,13 +102,13 @@ public class PlayerMove implements Listener {
                     questWorldData.ticksPlayedFinal = (quest_player.getTicksLived() + questWorldData.ticksSavedBeforeLeaving - questWorldData.ticksLivedWhenStart);
                     //телепорт
                     quest_player.performCommand("spawn");
-
-                    QuestStats questBook = new QuestStats(editorQuest, quest_player.getName());
-                    quest_player.getInventory().setItem(4, questBook.makeBook());
                     quest_player.getInventory().setItem(7, null);
                     check = true;
                     indexOfQuestWorld = listQuestWorldData.allQuestWorlds.indexOf(questWorldData);
                     tempQuestData = questWorldData;
+                    new RewriteDataInCycle().rewrite(indexOfQuestWorld, tempQuestData, editorQuest, check);
+                    QuestStats questBook = new QuestStats(editorQuest, quest_player.getName());
+                    quest_player.getInventory().setItem(4, questBook.makeBook());
                 }
                 // перезапись
                 new RewriteDataInCycle().rewrite(indexOfQuestWorld, tempQuestData, editorQuest, check);
@@ -128,6 +125,7 @@ public class PlayerMove implements Listener {
             //check if player was here
             if (questWorldData.num_quests_complete.contains(txtWarp.index)) {
                 quest_player.sendMessage(ChatColor.RED + "Упс, ты уже тут был!");
+                //обновление графа с зеленого на красный
                 for (int x = 651; x < 668; x++) {
                     for (int y = 72; y < 78; y++) {
                         for (int z = 455; z < 467; z++) {
@@ -138,6 +136,7 @@ public class PlayerMove implements Listener {
                         }
                     }
                 }
+
                 Location locTp = new Location(quest_player.getWorld(), txtWarpLevel.x, txtWarpLevel.y, txtWarpLevel.z);
                 quest_player.teleport(locTp);
                 //remove old checkpoints
@@ -145,15 +144,14 @@ public class PlayerMove implements Listener {
                     if (questWorldData.num_quests_complete.contains(2020 + i)) {
                         quest_player.sendMessage("rem " + 2020 + i);
                         questWorldData.num_quests_complete.remove(
-                                questWorldData.num_quests_complete.indexOf(2020 + i)
-                        );
+                                (Integer) 2020 + i);
                         wasDeleted = true;
                     }
                 }
             }
             if (!wasDeleted)
                 questWorldData.num_quests_complete.add(txtWarp.index);
-            //check if player completed the
+            //check if player completed the graph
             int count = 0;
             for (int i = 1; i < 9; i++)
                 if (questWorldData.num_quests_complete.contains(2020 + i))
@@ -165,7 +163,7 @@ public class PlayerMove implements Listener {
                 for (int i = 1; i < 9; i++) {
                     if (questWorldData.num_quests_complete.contains(2020 + i)) {
                         questWorldData.num_quests_complete.remove(
-                                questWorldData.num_quests_complete.indexOf(2020 + i)
+                                (Integer) 2020 + i
                         );
                     }
                 }
@@ -178,12 +176,10 @@ public class PlayerMove implements Listener {
             return false;
         return places.get(name_place);
     }
-
     // add playerName_placeName to map and make it True
     private void add(String name_place) {
         places.put(name_place, true);
     }
-
     // playerName_placeName set false
     private void remove(String name_place) {
         places.put(name_place, false);

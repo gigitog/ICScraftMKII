@@ -13,30 +13,29 @@ import org.bukkit.plugin.Plugin;
 
 public class SetTxtWarp implements CommandExecutor {
     private FileJsonEditor<ListTxtWarpData> editor;
-    private  Plugin plugin;
 
     public SetTxtWarp(Plugin plugin, String fileName) {
-        this.plugin = plugin;
         editor = new FileJsonEditor<>(fileName, new ListTxtWarpData(), plugin);
     }
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        if(args.length < 3){
+        if (args.length < 3) {
             sender.sendMessage("not all args!");
             return false;
         }
 
-        if(sender instanceof Player){
+        if (sender instanceof Player) {
             Player p = (Player) sender;
-            if(!p.isOp()) {
+            if (!p.isOp()) {
                 p.sendMessage("no perms!");
                 return true;
             }
-            Location loc  = p.getLocation();
+
+            Location loc = p.getLocation();
             String txtName = args[0].toLowerCase();
             // make shown text as args[2:]
-            int index =  txtName.length() + args[1].length() + args[2].length() + 3;
+            int index = txtName.length() + args[1].length() + args[2].length() + 3;
             String text = String.join(" ", args).substring(index);
 
             //write in json file the coords + r + str
