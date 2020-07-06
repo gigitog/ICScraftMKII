@@ -15,17 +15,19 @@ public class PlayerThrow implements Listener {
         ItemMeta meta = item.getItemMeta();
         String itemDisplayName = meta.getDisplayName();
         Player player = event.getPlayer();
+        if (player.isOp()) return;
+
         if(itemDisplayName.equalsIgnoreCase("§9Вернуться в лобби §7(ПКМ)")){
-            ItemStack temp = item;
-            player.getInventory().setItem(8,temp);
+            event.setCancelled(true);
+        }
+        if(itemDisplayName.equalsIgnoreCase("§aНачать квест §7(ПКМ)")){
+            ItemStack temp = item.clone();
+            player.getInventory().setItem(4, temp);
             item.setAmount(0);
-        }if(itemDisplayName.equalsIgnoreCase("§aНачать квест §7(ПКМ)")){
-            ItemStack temp = item;
-            player.getInventory().setItem(4,temp);
-            item.setAmount(0);
-        }if(itemDisplayName.equalsIgnoreCase("§aИнформация о квесте §7(ПКМ)")){
-            ItemStack temp = item;
-            player.getInventory().setItem(7,temp);
+        }
+        if(itemDisplayName.equalsIgnoreCase("§aИнформация о квесте §7(ПКМ)")){
+            ItemStack temp = item.clone();
+            player.getInventory().setItem(7, temp);
             item.setAmount(0);
         }
     }

@@ -2,6 +2,7 @@ package me.ics.questplugin.VrHelmet;
 
 import me.ics.questplugin.FileEditor.FileJsonEditor;
 import me.ics.questplugin.CustomClasses.ClassesTp.TeleportatData;
+import me.ics.questplugin.HelpClasses.PlayerChecker;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
@@ -19,17 +20,15 @@ public class SetVrPos implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if(!(sender instanceof Player))
-            return false;
+        if (!(new PlayerChecker().isOp(sender))) return true;
+        if (!(new PlayerChecker().isPlayer(sender))) return true;
         Player p = (Player) sender;
-        if(!sender.isOp()){
-            sender.sendMessage("no perms!");
-            return true;
-        }
+
         FileJsonEditor<TeleportatData> editor = new FileJsonEditor<>(
                 "/vr.json", new TeleportatData(), plugin);
         TeleportatData tempData = editor.getData();
-        if(args.length == 0){
+
+        if (args.length == 0) {
             Location loc = p.getLocation();
             TeleportatData tpWarp = new TeleportatData("",
                     tempData.x, tempData.y, tempData.z,
@@ -37,7 +36,7 @@ public class SetVrPos implements CommandExecutor {
             editor.setData(tpWarp);
             p.sendMessage(ChatColor.GREEN + "Location saved!");
             return true;
-        } else if (args.length == 3){
+        } else if (args.length == 3) {
             TeleportatData tpWarp = new TeleportatData("", tempData.x,
                     tempData.y, tempData.z,
                     Integer.parseInt(args[0]),

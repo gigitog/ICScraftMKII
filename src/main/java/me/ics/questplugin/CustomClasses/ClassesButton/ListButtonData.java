@@ -1,7 +1,5 @@
 package me.ics.questplugin.CustomClasses.ClassesButton;
 
-import me.ics.questplugin.CustomClasses.ClassesTp.TeleportatData;
-
 import java.util.ArrayList;
 import java.util.List;
 

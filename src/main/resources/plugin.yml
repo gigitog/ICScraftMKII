@@ -63,3 +63,8 @@ commands:
   addanswer:
     description: add answer
     usage: §c/addanswer <checkpoint> <answer>
+  spawnentity:
+    description: spawns not ai entity
+    usage: §c/spawnentity <entityName>
+  setholo:
+    description: set holo with text less thant 300 syb

@@ -1,10 +1,9 @@
 package me.ics.questplugin.TxtWarp;
 
-import me.ics.questplugin.CustomClasses.ClassesQuestWorld.QuestStats;
 import me.ics.questplugin.FileEditor.FileJsonEditor;
 import me.ics.questplugin.CustomClasses.ClassesTxt.ListTxtWarpData;
 import me.ics.questplugin.CustomClasses.ClassesTxt.TxtWarpData;
-import me.ics.questplugin.QuestPlugin;
+import me.ics.questplugin.HelpClasses.PlayerChecker;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -20,10 +19,8 @@ public class TxtWarps implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if(!sender.isOp()){
-            sender.sendMessage("no perms!");
-            return true;
-        }
+        if(!(new PlayerChecker().isOp(sender))) return true;
+
         sender.sendMessage(color("&9&oTxt Warps: "));
         // list
         ListTxtWarpData txtWarps = editor.getData();

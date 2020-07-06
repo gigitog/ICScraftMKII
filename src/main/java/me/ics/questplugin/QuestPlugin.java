@@ -1,13 +1,15 @@
 package me.ics.questplugin;
 
+import me.ics.questplugin.ArmorHolo.SetArmorHolo;
+import me.ics.questplugin.ArraySorterMine.ListenerArray;
 import me.ics.questplugin.Buttons.Buttons;
 import me.ics.questplugin.Buttons.DelButton;
 import me.ics.questplugin.Buttons.ListenerButton;
 import me.ics.questplugin.Buttons.SetButton;
-import me.ics.questplugin.QuestManager.Commands.AddAnswer;
-import me.ics.questplugin.QuestManager.Commands.Answer;
-import me.ics.questplugin.QuestManager.Commands.QuestOperator;
-import me.ics.questplugin.QuestManager.Commands.SetCheckpoint;
+import me.ics.questplugin.CustomClasses.ClassesQuestWorld.ListQuestWorldData;
+import me.ics.questplugin.FileEditor.FileJsonEditor;
+import me.ics.questplugin.FrameItemChoose.ListenerChestClick;
+import me.ics.questplugin.QuestManager.Commands.*;
 import me.ics.questplugin.QuestManager.Listeners.*;
 import me.ics.questplugin.TpWarp.DelTpWarp;
 import me.ics.questplugin.TpWarp.SetTpWarp;
@@ -24,6 +26,8 @@ import org.bukkit.*;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class QuestPlugin extends JavaPlugin {
+    private FileJsonEditor<ListQuestWorldData> editorQuest =
+            new FileJsonEditor<>("/quest_worlds_data", new ListQuestWorldData(), this);
 
     @Override
     public void onEnable() {
@@ -35,11 +39,18 @@ public final class QuestPlugin extends JavaPlugin {
         onEnableTp();
         onEnableButtons();
         onEnableQuestManager();
+        extraModules();
     }
 
     private void loadConfig() {
         getConfig().options().copyDefaults(true);
         saveConfig();
+    }
+
+    private void extraModules(){
+        getCommand("setholo").setExecutor(new SetArmorHolo());
+        getServer().getPluginManager().registerEvents(new ListenerArray(this, "/buttons_data.json", "/quest_worlds_data"), this);
+        getServer().getPluginManager().registerEvents(new ListenerChestClick(editorQuest), this);
     }
 
     private void onEnableQuestManager() {
@@ -58,7 +69,7 @@ public final class QuestPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new PlayerClick(this, fileQuest), this);
         getServer().getPluginManager().registerEvents(new PlayerLogin(), this);
         getServer().getPluginManager().registerEvents(new PlayerBreak(), this);
-        getServer().getPluginManager().registerEvents(new PlayerInventoryInteract(),this);
+        getServer().getPluginManager().registerEvents(new PlayerInventoryInteract(this,fileQuest),this);
         getServer().getPluginManager().registerEvents(new PlayerMove(this,
                 fileQuest, "/txt_warps_data.json"), this);
         getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "|| QUEST MANAGER ||");

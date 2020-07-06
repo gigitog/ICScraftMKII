@@ -28,13 +28,13 @@ public class SetCheckpoint implements CommandExecutor {
         Player player = (Player) sender;
         ListQuestWorldData listQuest = editor.getData();
         if (args.length != 0) {
-            for (QuestWorldData qwi : listQuest.allQuestWorlds) {
+            for (QuestWorldData questWorldData : listQuest.allQuestWorlds) {
                 // человек находится в квестовом мире и вводит команду (админ)
-                if (qwi.isBusy && qwi.playerName.equalsIgnoreCase(player.getName())) {
+                if (questWorldData.isBusy && questWorldData.playerName.equalsIgnoreCase(player.getName())) {
                     try {
-                        qwi.checkpoint = Integer.parseInt(args[0]);
+                        questWorldData.checkpoint = Integer.parseInt(args[0]);
                         player.sendMessage(ChatColor.AQUA + "добавлен квест - " + Integer.parseInt(args[0]));
-                        new RewriteDataInCycle().rewrite(listQuest.allQuestWorlds.indexOf(qwi), qwi, editor, true);
+                        new RewriteDataInCycle().rewrite(listQuest.allQuestWorlds.indexOf(questWorldData), questWorldData, editor, true);
                     } catch (NumberFormatException e) {
                         player.sendMessage(ChatColor.RED + "Неправильное значение чекпоинта!");
                     }

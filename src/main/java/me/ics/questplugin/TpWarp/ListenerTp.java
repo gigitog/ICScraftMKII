@@ -35,7 +35,10 @@ public class ListenerTp implements Listener {
                     loc.getBlockY() == tpWarp.y && loc.getBlockZ() == tpWarp.z;
             if(isHere){
                 // set Location, Yaw and Pitch then tp
-                locTp.add(tpWarp.xtp + 0.5, tpWarp.ytp, tpWarp.ztp + 0.5);
+                double x = loc.getX() - loc.getBlockX();
+                double y = loc.getY() - loc.getBlockY();
+                double z = loc.getZ() - loc.getBlockZ();
+                locTp.add(tpWarp.xtp + x, tpWarp.ytp + y, tpWarp.ztp + z);
                 locTp.setYaw(loc.getYaw());
                 locTp.setPitch(loc.getPitch());
                 player.teleport(locTp);

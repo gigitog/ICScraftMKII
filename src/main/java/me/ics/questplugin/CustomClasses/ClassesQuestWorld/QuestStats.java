@@ -1,5 +1,7 @@
 package me.ics.questplugin.CustomClasses.ClassesQuestWorld;
 
+import me.ics.questplugin.CustomClasses.Statistic.ArrayProcessor;
+import me.ics.questplugin.CustomClasses.Statistic.ListAllStatsData;
 import me.ics.questplugin.FileEditor.FileJsonEditor;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -10,12 +12,18 @@ import java.util.function.Function;
 
 public class QuestStats {
     private FileJsonEditor<ListQuestWorldData> editor;
+    private FileJsonEditor<ListAllStatsData> editorStats;
     private String playerName;
     private Map<Integer, String> tasks = new TreeMap<>();
+    private int[] votes;
 
-    private Function<Boolean, String> passed = x->{ if(x) return "§2Пройдено"; return "§4Не пройдено"; };
+    private Function<Boolean, String> passed = x -> { if (x) return "§2Пройдено"; return "§4Не пройдено"; };
+    private Function<Integer, String> percentColor = x -> {
+        if (x <= 55 ) return  "§4" + x + "%§r\n";
+        if (x < 75) return "§6" + x + "%§r\n";
+        return "§2" + x + "%§r\n";
+    };
     private String[] disciplines = new String[]{
-            "Дискретная математика и Алгоритмы",
             "Дискретная математика и Алгоритмы",
             "Анализ данных и математика",
             "Основы программирования",
@@ -24,13 +32,15 @@ public class QuestStats {
             "Тестировка ПО"
     };
 
-    public QuestStats(FileJsonEditor<ListQuestWorldData> editor, String playerName) {
+    public QuestStats(FileJsonEditor<ListQuestWorldData> editor, String playerName, FileJsonEditor<ListAllStatsData> editorStats, int[] votes) {
         this.editor = editor;
         this.playerName = playerName;
+        this.editorStats = editorStats;
         makeTasks();
+        this.votes = votes;
     }
 
-    public ItemStack makeBook(){
+    public ItemStack makeBook() {
         ItemStack book = new ItemStack(Material.WRITTEN_BOOK);
         BookMeta meta = (BookMeta) book.getItemMeta();
         assert meta != null;
@@ -38,71 +48,85 @@ public class QuestStats {
         meta.setLore(Arrays.asList("§dЗдесь хранится твоя статистика"));
         meta.setAuthor("§cUncle Yura");
         meta.setTitle("Статистика игрока " + playerName);
-        for(String s : makeList()) meta.addPage(s);
+        for (String s : makeList(votes)) meta.addPage(s);
         book.setItemMeta(meta);
         book.setAmount(1);
         return book;
     }
 
-    private void makeTasks(){
+    private void makeTasks() {
         String s = "Задание с";
-        tasks.put(201, s+" таблицей истинности");
-        tasks.put(202, s+" графом");
-        tasks.put(203, s+"о схемой");
-        tasks.put(301, s+" Блок Схемой");
-        tasks.put(302, s+" алгоритмом");
+        tasks.put(201, s + " таблицей истинности");
+        tasks.put(202, s + " графом");
+        tasks.put(203, s + " алгоритмом кратчайшего пути");
 
-        tasks.put(401, s+"о статистикой");
-        tasks.put(402, s+" вероятностью");
-        tasks.put(403, s+" интегралом");
+        tasks.put(301, s + "о статистикой");
+        tasks.put(302, s + " вероятностью");
+        tasks.put(303, s + " интегралом");
 
-        tasks.put(501, s+" типами данных");
-        tasks.put(502, s+" сортировкой массива");
-        tasks.put(503, s+" этапами написания программы");
-        tasks.put(504, s+" основами ООП");
+        tasks.put(401, s + " сортировкой массива");
+        tasks.put(402, s + " типами данных");
+        tasks.put(403, s + " этапами написания программы");
+        tasks.put(404, s + " основами ООП");
 
-        tasks.put(701, s+" общими сведениями");
-        tasks.put(702, s+" сервером");
+        tasks.put(501, s + " сервером");
+        tasks.put(502, s + " общими сведениями");
 
-        tasks.put(801, s+"о сбором компьтера");
-        tasks.put(802, s+" настройкой робота");
-        tasks.put(803, s+" задачами физики");
+        tasks.put(601, s + "о сбором компьтера");
+        tasks.put(602, s + " настройкой робота");
+        tasks.put(603, s + " задачами физики");
 
-        tasks.put(901, s+" паркуром");
-        tasks.put(902, s+" убийством мобов");
-        tasks.put(903, s+" передвижением блоков");
+        tasks.put(701, s + " паркуром");
+        tasks.put(702, s + " убийством мобов");
+        tasks.put(703, s + " передвижением блоков");
     }
 
-    private List<String> makeList(){
+    private List<String> makeList(int[] votes) {
         List<String> list = new ArrayList<>();
-        for(QuestWorldData qwd : editor.getData().allQuestWorlds){
-            if(qwd.playerName.equals(playerName)){
+        int[] specialities = new int[]{113, 121, 122, 123, 126, 151};
+        for (QuestWorldData qwd : editor.getData().allQuestWorlds) {
+            if (qwd.playerName.equals(playerName)) {
+                List<Integer> recommend = new ArrayProcessor(editorStats, votes, playerName).percentage();
+                String recStr = "";
+
+                int i = 0;
+                for (int percent : recommend) {
+                    recStr = recStr.concat("§9" + specialities[i] + "§r - " + percentColor.apply(percent));
+                    i++;
+                }
+
                 int headPage = 0;
                 String s = "\n§7___________________§r\n\n";
                 String string = "§oОбщая информация\n" + s + "Игровое имя: " +
-                        playerName + "\nВремя прохождения: §3" + qwd.ticksPlayedFinal / 1200 +
-                        " (мин) " +  qwd.ticksPlayedFinal % 1200 / 20 + " (сек)§r" + s +
-                        "Рекомендуемая специальность: §9122§r\n";
-
+                        playerName + "\nВремя прохождения:\n§3" + qwd.ticksPlayedFinal / 1200 +
+                        " (мин) " + qwd.ticksPlayedFinal % 1200 / 20 + " (сек)§r" + s +
+                        "Рекомендуемые специальности смотреть далее.\n";
+                list.add(string);
+                string = s +  recStr + "§r" + s;
                 list.add(string);
 
-                for(int num : tasks.keySet()){
-                    String page = "";
-                    if(num % 10 == 1){
+                String page = "";
+                boolean headAdded;
+                for (int num : tasks.keySet()) {
+                    if (num % 2 == 1 && (headPage + 2) == num / 100) {
+                        headAdded = false;
                         page = page.concat(disciplines[headPage] + s +
-                                tasks.get(num) + ": " + passed.apply(qwd.num_quests_complete.contains(num)) +
-                                s + tasks.get(num + 1) + ": " +
-                                passed.apply(qwd.num_quests_complete.contains(num + 1)) + s);
-                        headPage++;
-                        list.add(page);
-                    } else if(num % 10 == 3){
-                        page = page.concat(s + tasks.get(num) + ": " +
-                                passed.apply(qwd.num_quests_complete.contains(num)) + s);
-                        if ((num == 503)) {
-                            page = page.concat(tasks.get(num) + ": " +
-                                    passed.apply(qwd.num_quests_complete.contains(num)) + s);
+                                tasks.get(num) + ": " + passed.apply(qwd.num_quests_complete.contains(num)) + s);
+                        if (tasks.containsKey(num + 1)) {
+                            page = page.concat(tasks.get(num + 1) + ": " +
+                                    passed.apply(qwd.num_quests_complete.contains(num + 1)) + s);
+
+                        } else {
+                            headPage++;
+                            headAdded = true;
                         }
+
+                        if(!headAdded && !tasks.containsKey(num + 2)){
+                            headPage++;
+                        }
+
                         list.add(page);
+                        page = "";
                     }
                 }
             }

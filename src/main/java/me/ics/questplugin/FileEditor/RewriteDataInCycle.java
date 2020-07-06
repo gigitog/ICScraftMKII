@@ -6,7 +6,7 @@ import me.ics.questplugin.CustomClasses.ClassesQuestWorld.QuestWorldData;
 public class RewriteDataInCycle {
 
     public void rewrite(int index, QuestWorldData dataToWrite, FileJsonEditor<ListQuestWorldData> editor, boolean checkpointWas){
-        if(checkpointWas){
+        if(checkpointWas && dataToWrite!=null){
             ListQuestWorldData data = editor.getData();
             data.allQuestWorlds.remove(index);
             data.allQuestWorlds.add(index, dataToWrite);

@@ -1,5 +1,7 @@
 package me.ics.questplugin.Buttons;
 
+import me.ics.questplugin.CustomClasses.ClassesButton.ButtonData;
+import me.ics.questplugin.CustomClasses.ClassesButton.ListButtonData;
 import me.ics.questplugin.FileEditor.FileJsonEditor;
 import me.ics.questplugin.CustomClasses.ClassesTp.ListTeleportsData;
 import me.ics.questplugin.CustomClasses.ClassesTp.TeleportatData;
@@ -33,12 +35,12 @@ public class DelButton implements CommandExecutor {
         // get name of button
         String tpWarpName = args[0].toLowerCase();
         // editor
-        FileJsonEditor<ListTeleportsData> editor = new FileJsonEditor<>(
-                "/buttons_data.json", new ListTeleportsData(), plugin);
+        FileJsonEditor<ListButtonData> editor = new FileJsonEditor<>(
+                "/buttons_data.json", new ListButtonData(), plugin);
         // list
-        ListTeleportsData buttons = editor.getData();
+        ListButtonData buttons = editor.getData();
         // search
-        for(TeleportatData button : buttons.allData){
+        for(ButtonData button : buttons.allData){
             if(button.nameTpWarp.equals(tpWarpName)){
                 buttons.allData.remove(button);
                 editor.setData(buttons);

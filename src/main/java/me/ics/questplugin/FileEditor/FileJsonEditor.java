@@ -4,10 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
 import org.bukkit.plugin.Plugin;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.lang.reflect.Type;
 import java.util.Scanner;
 
@@ -39,6 +36,7 @@ public class FileJsonEditor<T> {
                 inFileJson(zeroData, new Gson());
             }
             String jsonText = "";
+
             try{
                 FileReader fileReader = new FileReader(file);
                 Scanner scanner = new Scanner(fileReader);
@@ -58,6 +56,7 @@ public class FileJsonEditor<T> {
 
     private void inFileJson(T dataToWrite, Gson g) {
         String s = g.toJson(dataToWrite, dataToWrite.getClass());
+
         try (FileWriter writer = new FileWriter(file, false)) {
             writer.write(s);
         } catch (IOException e) {

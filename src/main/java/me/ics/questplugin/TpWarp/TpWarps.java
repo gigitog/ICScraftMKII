@@ -3,10 +3,12 @@ package me.ics.questplugin.TpWarp;
 import me.ics.questplugin.FileEditor.FileJsonEditor;
 import me.ics.questplugin.CustomClasses.ClassesTp.ListTeleportsData;
 import me.ics.questplugin.CustomClasses.ClassesTp.TeleportatData;
+import me.ics.questplugin.HelpClasses.PlayerChecker;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 public class TpWarps implements CommandExecutor {
@@ -18,10 +20,7 @@ public class TpWarps implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if(!sender.isOp()){
-            sender.sendMessage("no perms!");
-            return true;
-        }
+        if(!(new PlayerChecker().isOp(sender))) return true;
 
         sender.sendMessage(color("&9&oTp Warps: "));
         //editor

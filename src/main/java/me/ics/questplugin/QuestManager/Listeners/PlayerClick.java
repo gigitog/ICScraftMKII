@@ -4,6 +4,9 @@ import me.ics.questplugin.CustomClasses.ClassesQuestWorld.ListQuestWorldData;
 import me.ics.questplugin.CustomClasses.ClassesQuestWorld.QuestWorldData;
 import me.ics.questplugin.FileEditor.FileJsonEditor;
 import org.bukkit.*;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -12,6 +15,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
+import java.util.List;
 
 
 public class PlayerClick implements Listener {
@@ -23,6 +27,7 @@ public class PlayerClick implements Listener {
 
     @EventHandler
     public void onPlayerClick(PlayerInteractEvent event){
+
         boolean is = (event.getAction().equals(Action.RIGHT_CLICK_AIR) && !event.hasBlock()) ||
                 (event.getAction().equals(Action.RIGHT_CLICK_BLOCK) && event.hasBlock());
         Player player = event.getPlayer();
@@ -42,6 +47,21 @@ public class PlayerClick implements Listener {
             }
             if (item.getItemMeta().getDisplayName().equalsIgnoreCase("§aИнформация о квесте §7(ПКМ)")) {
                 player.performCommand("quest status " + player.getName());
+            }
+        }
+        for(QuestWorldData questWorldData : listQuestWorldData.allQuestWorlds){
+            if(questWorldData.playerName.equalsIgnoreCase(player.getName()) && questWorldData.checkpoint==502){
+                sortObjects(player);
+            }
+        }
+    }
+
+    private void sortObjects(Player player){
+        Entity frame;
+        for(Entity entity : player.getNearbyEntities(10,4,10)){
+            if(entity.getType().equals(EntityType.ITEM_FRAME)){
+                frame = entity;
+                frame.addPassenger(player);
             }
         }
     }

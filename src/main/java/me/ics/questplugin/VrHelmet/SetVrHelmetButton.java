@@ -2,6 +2,7 @@ package me.ics.questplugin.VrHelmet;
 
 import me.ics.questplugin.FileEditor.FileJsonEditor;
 import me.ics.questplugin.CustomClasses.ClassesTp.TeleportatData;
+import me.ics.questplugin.HelpClasses.PlayerChecker;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -20,13 +21,10 @@ public class SetVrHelmetButton implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if(!(sender instanceof Player))
-            return false;
+        if(!(new PlayerChecker().isOp(sender))) return true;
+        if (!(new PlayerChecker().isPlayer(sender))) return true;
         Player p = (Player) sender;
-        if(!sender.isOp()){
-            sender.sendMessage("no perms!");
-            return true;
-        }
+
         Location loc = p.getLocation();
         loc.add(0, 1, 1);
         loc.getBlock().setType(Material.STONE);

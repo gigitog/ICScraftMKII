@@ -3,6 +3,7 @@ package me.ics.questplugin.TpWarp;
 import me.ics.questplugin.FileEditor.FileJsonEditor;
 import me.ics.questplugin.CustomClasses.ClassesTp.ListTeleportsData;
 import me.ics.questplugin.CustomClasses.ClassesTp.TeleportatData;
+import me.ics.questplugin.HelpClasses.PlayerChecker;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -19,17 +20,11 @@ public class DelTpWarp implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if(!(sender instanceof Player)){
-            System.out.println(color("&cYou need to be a player!"));
-            return true;
-        }
+        if(!(new PlayerChecker().isOp(sender))) return true;
+        if (!(new PlayerChecker().isPlayer(sender))) return true;
+        if (! (new PlayerChecker().isAllArgs(sender, 1, args))) return false;
         Player p = (Player) sender;
-        if(!p.isOp()){
-            p.sendMessage(color("&cYou don't have permission"));
-            return false;
-        }
-        if(args.length != 1)
-            return false;
+
         // get name of tp warp
         String tpWarpName = args[0].toLowerCase();
         // editor
