@@ -17,19 +17,19 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 public class ListenerButton implements Listener {
     private FileJsonEditor<ListButtonData> editorButton;
     private FileJsonEditor<ListQuestWorldData> editorQuest;
     private Plugin plugin;
+    private Map<String, Boolean> player_clicked = new HashMap<>();
 
     public ListenerButton(Plugin plugin, String fileButton, String fileQuest) {
         this.plugin = plugin;
         editorButton = new FileJsonEditor<>(fileButton, new ListButtonData(), plugin);
         editorQuest = new FileJsonEditor<>(fileQuest, new ListQuestWorldData(), plugin);
+
     }
     @EventHandler
     public void onButton(PlayerInteractEvent event){
@@ -66,9 +66,7 @@ public class ListenerButton implements Listener {
                             }
                         }
                     }
-                    canTp = isCanTp(player, loc, locTp, button, canTp);
-
-                    if(button.nameTpWarp.startsWith("none")) canTp = false;
+                    canTp = isCanTp(player, loc, locTp, button, true, event);
 
                     // set Location, Yaw and Pitch then tp
                     locTp.add(button.xtp + 0.5, button.ytp, button.ztp + 0.5);
@@ -81,7 +79,7 @@ public class ListenerButton implements Listener {
         }
     }
 
-    private boolean isCanTp(Player player, Location loc, Location locTp, ButtonData button, boolean canTp) {
+    private boolean isCanTp(Player player, Location loc, Location locTp, ButtonData button, boolean canTp, PlayerInteractEvent event) {
         String bName = button.nameTpWarp;
         boolean is = bName.equalsIgnoreCase("startArray") ||
                 bName.equalsIgnoreCase("lMove") ||
@@ -90,15 +88,38 @@ public class ListenerButton implements Listener {
         if (is) canTp = false;
 
         if (bName.length() == 4 && bName.contains("to")){
+            if (player_clicked.containsKey(player.getUniqueId().toString())){
+                if (player_clicked.get(player.getUniqueId().toString())){
+                    event.setCancelled(true);
+                    return false;
+                }
+            }
+
             List<String> str = Arrays.asList(bName.split(""));
             player.sendMessage("Лифт подымается. " + str.get(3) + " этаж");
             canTp = false;
-            tpElevator(player, loc, locTp, button, 60);
+            tpElevator(player, loc, locTp, button, 45);
+            // игрок нажал кнопку, ставим true
+            player_clicked.put(player.getUniqueId().toString(), true);
         }
 
         if (bName.equalsIgnoreCase("9tohell")){
+            if (player_clicked.containsKey(player.getUniqueId().toString())){
+                if (player_clicked.get(player.getUniqueId().toString())){
+                    event.setCancelled(true);
+                    return false;
+                }
+            }
+
             player.sendMessage("Лифт спускается");
             canTp = false;
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    player_clicked.put(player.getUniqueId().toString(), false);
+                }
+            }.runTaskLater(plugin, 520);
+
             for (int i = 0; i < 12; i++) {
                 int finalI = i;
                 new BukkitRunnable() {
@@ -109,10 +130,14 @@ public class ListenerButton implements Listener {
                         else
                             player.sendMessage("§a§o????§r§a этаж");
                     }
-                }.runTaskLater(plugin, (i*50 - (int) Math.pow(1.25, i)));
+                }.runTaskLater(plugin, (i*40 - (int) Math.pow(1.52, i)));
             }
-            tpElevator(player, loc, locTp, button, 700);
+            tpElevator(player, loc, locTp, button, 515);
+            player_clicked.put(player.getUniqueId().toString(), true);
         }
+
+        if(button.nameTpWarp.startsWith("none")) canTp = false;
+
         return canTp;
     }
 
@@ -126,6 +151,7 @@ public class ListenerButton implements Listener {
                 locTp.setYaw(loc.getYaw());
                 locTp.setPitch(loc.getPitch());
                 player.teleport(locTp);
+                player_clicked.put(player.getUniqueId().toString(), false);
             }
         }.runTaskLater(plugin, delay);
     }

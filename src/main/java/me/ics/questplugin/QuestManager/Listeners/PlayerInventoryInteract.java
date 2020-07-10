@@ -3,12 +3,13 @@ package me.ics.questplugin.QuestManager.Listeners;
 import me.ics.questplugin.CustomClasses.ClassesQuestWorld.ListQuestWorldData;
 import me.ics.questplugin.CustomClasses.ClassesQuestWorld.QuestWorldData;
 import me.ics.questplugin.FileEditor.FileJsonEditor;
-import me.ics.questplugin.FileEditor.RewriteDataInCycle;
+import me.ics.questplugin.FileEditor.RewriteQuestData;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
@@ -18,7 +19,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class PlayerInventoryInteract implements Listener {
-    private List<String> noInteractItems = Arrays.asList("§aНачать квест §7(ПКМ)","§aИнформация о квесте §7(ПКМ)","§9Вернуться в лобби §7(ПКМ)");
+    private List<String> noInteractItems = Arrays.asList("§aЗакончить квест §7(ПКМ)","§aНачать квест §7(ПКМ)","§aИнформация о квесте §7(ПКМ)","§9Вернуться в лобби §7(ПКМ)");
     private FileJsonEditor<ListQuestWorldData> editorQuest;
     public PlayerInventoryInteract(Plugin plugin, String fileNameQuest){
         editorQuest = new FileJsonEditor<>(fileNameQuest, new ListQuestWorldData(), plugin);
@@ -28,9 +29,10 @@ public class PlayerInventoryInteract implements Listener {
     public void onPlayerInventoryInteract(InventoryClickEvent event){
         ListQuestWorldData listQuestWorldData = editorQuest.getData();
         Player player = (Player) event.getWhoClicked();
-        for(QuestWorldData questWorldData : listQuestWorldData.allQuestWorlds){
-            if(player.getName().equalsIgnoreCase(questWorldData.playerName) && questWorldData.checkpoint == 203 && !questWorldData.num_quests_complete.contains(203)){
-                if(questWorldData.counter>=19){
+        QuestWorldData questWorldData = editorQuest.getData().getQWDbyPlayer(player.getName());
+        if(questWorldData!=null) {
+            if (player.getName().equalsIgnoreCase(questWorldData.playerName) && questWorldData.checkpoint == 203 && !questWorldData.num_quests_complete.contains(203)) {
+                if (questWorldData.counter >= 19) {
                     player.sendTitle("§cПровал!", "§cМожно было за 18 ходов", 10, 40, 10);
                     player.closeInventory();
 
@@ -50,7 +52,8 @@ public class PlayerInventoryInteract implements Listener {
                         event.setCancelled(true);
                         return;
                     }
-                } catch (NullPointerException e){}
+                } catch (NullPointerException e) {
+                }
 
                 List<Integer> list = makePossibleIndexArray(event.getSlot());
                 boolean lime = false;
@@ -66,33 +69,32 @@ public class PlayerInventoryInteract implements Listener {
                         lime = true;
                         event.setCancelled(true);
                         chest.setItem(event.getSlot(), new ItemStack(Material.LIME_WOOL));
-                        new RewriteDataInCycle().rewrite(listQuestWorldData.allQuestWorlds.indexOf(questWorldData),questWorldData,editorQuest,true);
+                        RewriteQuestData.rewrite(editorQuest,questWorldData);
                     }
                 }
 
                 if (lime && finish) {
                     player.closeInventory();
-                    if(questWorldData.counter==18)
-                    {player.sendTitle("§aМолодец", "", 10, 40, 10);
-                    questWorldData.num_quests_complete.add(203);}
-                    new RewriteDataInCycle().rewrite(listQuestWorldData.allQuestWorlds.indexOf(questWorldData),questWorldData,editorQuest,true);
+                    if (questWorldData.counter == 18) {
+                        player.sendTitle("§aМолодец", "", 10, 40, 10);
+                        questWorldData.num_quests_complete.add(203);
+                    }
+                    RewriteQuestData.rewrite(editorQuest,questWorldData);
                     return;
-                }else if (lime){
+                } else if (lime) {
                     return;
                 }
                 player.sendMessage("а сюда нельзя");
-            }else if(player.getName().equalsIgnoreCase(questWorldData.playerName) && questWorldData.checkpoint/100 == 2 && (questWorldData.num_quests_complete.contains(203) || questWorldData.counter>=0)){
+            } else if (event.getClickedInventory().getType().equals(InventoryType.CHEST) && questWorldData.checkpoint / 100 == 2 && (questWorldData.num_quests_complete.contains(203) || questWorldData.counter >= 0)) {
                 player.closeInventory();
                 return;
             }
         }
-
         if(event.getCurrentItem() == null)
             return;
         if(Objects.requireNonNull(event.getCurrentItem()).getType().equals(new ItemStack(Material.AIR).getType())) {
             return;
         }
-
         if(noInteractItems.contains(Objects.requireNonNull(event.getCurrentItem().getItemMeta()).getDisplayName())){
             event.setCancelled(true);
         }

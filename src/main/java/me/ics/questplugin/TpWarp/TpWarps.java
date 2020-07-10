@@ -20,7 +20,7 @@ public class TpWarps implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if(!(new PlayerChecker().isOp(sender))) return true;
+        if (PlayerChecker.isNotOp(sender)) return true;
 
         sender.sendMessage(color("&9&oTp Warps: "));
         //editor

@@ -16,7 +16,12 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class PlayerPlace implements Listener {
+
+    List<String> list = Arrays.asList("§aЗакончить квест §7(ПКМ)","§9Вернуться в лобби §7(ПКМ)");
 
     public PlayerPlace(Plugin plugin) {
 
@@ -26,7 +31,7 @@ public class PlayerPlace implements Listener {
     public void PlayerPlace(BlockPlaceEvent event){
         ItemStack item = event.getItemInHand();
         ItemMeta itemMeta = item.getItemMeta();
-        if(itemMeta.getDisplayName().equalsIgnoreCase("§9Вернуться в лобби §7(ПКМ)")){
+        if(list.contains(itemMeta.getDisplayName())){
             event.setCancelled(true);
         }
     }

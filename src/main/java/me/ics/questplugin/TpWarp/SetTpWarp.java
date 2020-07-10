@@ -21,9 +21,7 @@ public class SetTpWarp implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        if(!(new PlayerChecker().isOp(sender))) return true;
-        if (!(new PlayerChecker().isPlayer(sender))) return true;
-        if (! (new PlayerChecker().isAllArgs(sender, 4, args))) return false;
+        if (PlayerChecker.isNot_Op_AllArgs_Player(sender, 4, args)) return false;
         Player p = (Player) sender;
 
         Location loc  = p.getLocation();

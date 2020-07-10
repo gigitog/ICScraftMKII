@@ -20,9 +20,7 @@ public class DelTpWarp implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if(!(new PlayerChecker().isOp(sender))) return true;
-        if (!(new PlayerChecker().isPlayer(sender))) return true;
-        if (! (new PlayerChecker().isAllArgs(sender, 1, args))) return false;
+        if (PlayerChecker.isNot_Op_AllArgs_Player(sender, 1, args)) return true;
         Player p = (Player) sender;
 
         // get name of tp warp

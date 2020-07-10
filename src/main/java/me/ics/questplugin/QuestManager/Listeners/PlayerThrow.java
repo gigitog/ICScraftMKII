@@ -7,28 +7,18 @@ import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class PlayerThrow implements Listener {
+
+    List<String> itemsNotToDrop = Arrays.asList("§9Вернуться в лобби §7(ПКМ)","§aНачать квест §7(ПКМ)","§aИнформация о квесте §7(ПКМ)","§aЗакончить квест §7(ПКМ)");
 
     @EventHandler
     public void onPlayerThrow(PlayerDropItemEvent event){
-        ItemStack item = event.getItemDrop().getItemStack();
-        ItemMeta meta = item.getItemMeta();
-        String itemDisplayName = meta.getDisplayName();
-        Player player = event.getPlayer();
-        if (player.isOp()) return;
-
-        if(itemDisplayName.equalsIgnoreCase("§9Вернуться в лобби §7(ПКМ)")){
+        String itemDisplayName = event.getItemDrop().getItemStack().getItemMeta().getDisplayName();
+        if(itemsNotToDrop.contains(itemDisplayName)){
             event.setCancelled(true);
-        }
-        if(itemDisplayName.equalsIgnoreCase("§aНачать квест §7(ПКМ)")){
-            ItemStack temp = item.clone();
-            player.getInventory().setItem(4, temp);
-            item.setAmount(0);
-        }
-        if(itemDisplayName.equalsIgnoreCase("§aИнформация о квесте §7(ПКМ)")){
-            ItemStack temp = item.clone();
-            player.getInventory().setItem(7, temp);
-            item.setAmount(0);
         }
     }
 }

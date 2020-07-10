@@ -27,7 +27,7 @@ public class SetTxtWarp implements CommandExecutor {
             sender.sendMessage("not all args!");
             return false;
         }
-        if(!(new PlayerChecker().isOp(sender))) return true;
+        if (PlayerChecker.isNotOp(sender)) return true;
 
         Location loc = new Location(sender.getServer().getWorld("world"), 0, 0, 0);
         if (sender instanceof Player) {

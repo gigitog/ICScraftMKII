@@ -68,3 +68,6 @@ commands:
     usage: §c/spawnentity <entityName>
   setholo:
     description: set holo with text less thant 300 syb
+  finish:
+    description: finishes quest
+    usage: §c/finish

@@ -16,6 +16,7 @@ import org.bukkit.plugin.Plugin;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Function;
 
 public class QuestOperator implements CommandExecutor {
     private FileJsonEditor<ListQuestWorldData> editor;
@@ -185,6 +186,16 @@ public class QuestOperator implements CommandExecutor {
         return false;
     }
 
+    private Function<QuestWorldData, String> passed = x -> {
+        String name = "&a" + x.questWorldName;
+        String s =  name + " - занят игроком " + ChatColor.YELLOW + x.playerName;
+        if (x.isBusy){
+            if (x.ticksPlayedFinal == 0) return s + "&a. Статус - &eпрохождение&a.";
+            return s + "&a. Статус - &2пройден&a.";
+        } else
+            return name + ChatColor.AQUA + " - свободен ";
+    };
+
     //    /quest worldlist
     private boolean worldList(String[] args, ListQuestWorldData listQuestWorlds, Player player) {
         // вывод всех миров
@@ -193,14 +204,16 @@ public class QuestOperator implements CommandExecutor {
                 player.sendMessage(ChatColor.DARK_PURPLE + "Список миров для квеста пуст!");
                 return true;
             }
-            for (QuestWorldData questWorldData : listQuestWorlds.allQuestWorlds) {
-                if (questWorldData.isBusy) {
-                    player.sendMessage(ChatColor.RED + questWorldData.questWorldName +
-                            ChatColor.RED + " - занят игроком " + questWorldData.playerName + ".");
-                } else
-                    player.sendMessage(ChatColor.GREEN + questWorldData.questWorldName +
-                            ChatColor.GREEN + " - свободен.");
+
+            int counter = 0;
+            for(QuestWorldData questWorldData : listQuestWorlds.allQuestWorlds){
+                if(questWorldData.isBusy) counter++;
             }
+            player.sendMessage(ChatColor.GREEN + "Всего - " + listQuestWorlds.allQuestWorlds.size() +". Занято - "+ counter +".");
+
+            for (QuestWorldData questWorldData : listQuestWorlds.allQuestWorlds)
+                player.sendMessage(color(passed.apply(questWorldData)));
+
             return true;
         }
         return false;
@@ -268,5 +281,9 @@ public class QuestOperator implements CommandExecutor {
             return true;
         }
         return false;
+    }
+
+    private String color(String s){
+        return ChatColor.translateAlternateColorCodes('&', s);
     }
 }

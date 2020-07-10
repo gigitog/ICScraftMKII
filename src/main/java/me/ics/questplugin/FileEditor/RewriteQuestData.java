@@ -3,13 +3,17 @@ package me.ics.questplugin.FileEditor;
 import me.ics.questplugin.CustomClasses.ClassesQuestWorld.ListQuestWorldData;
 import me.ics.questplugin.CustomClasses.ClassesQuestWorld.QuestWorldData;
 
-public class RewriteDataInCycle {
+public class RewriteQuestData {
 
-    public void rewrite(int index, QuestWorldData dataToWrite, FileJsonEditor<ListQuestWorldData> editor, boolean checkpointWas){
-        if(checkpointWas && dataToWrite != null){
+    public static void rewrite(FileJsonEditor<ListQuestWorldData> editor, QuestWorldData dataToWrite){
+        if (dataToWrite != null){
             ListQuestWorldData data = editor.getData();
+
+            int index = data.allQuestWorlds.indexOf(data.getQWDbyPlayer(dataToWrite.playerName));
+
             data.allQuestWorlds.set(index, dataToWrite);
             editor.setData(data);
         }
     }
+
 }

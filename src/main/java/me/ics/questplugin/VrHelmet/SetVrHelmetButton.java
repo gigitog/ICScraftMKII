@@ -21,8 +21,8 @@ public class SetVrHelmetButton implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if(!(new PlayerChecker().isOp(sender))) return true;
-        if (!(new PlayerChecker().isPlayer(sender))) return true;
+        if (PlayerChecker.isNotOp(sender)) return true;
+        if (PlayerChecker.isNotPlayer(sender)) return true;
         Player p = (Player) sender;
 
         Location loc = p.getLocation();

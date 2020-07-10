@@ -36,6 +36,7 @@ public class PlayerMove implements Listener {
     @EventHandler
     public void onPlayerMove(PlayerMoveEvent event) {
         Player quest_player = event.getPlayer();
+        if(!quest_player.getWorld().getName().startsWith("quest")) return;
         mirror(quest_player);
         Location loc = quest_player.getLocation();
         ListQuestWorldData listQuestWorldData = editorQuest.getData();
@@ -44,25 +45,24 @@ public class PlayerMove implements Listener {
         int indexOfQuestWorld = 0;
         QuestWorldData tempQuestData = null;
 
-        if (loc.getBlockY() == 66) {
-            // переход дороги. Если наступает на дорогу, то он нарушитель
-            if (loc.getBlockX() <= 283 && loc.getBlockX() >= 278) {
-                loc.setX(277);
-                quest_player.teleport(loc);
-                quest_player.sendMessage(ChatColor.RED + "Нарушитель!");
-                return;
+        if (checkRoadCross(quest_player, loc)) return;
+        List<String> names = Arrays.asList("Sundau", "gigitog", "Leshachok");
+
+        //сброс счетчика после задания с поиском пути
+        for(QuestWorldData questWorldData : editorQuest.getData().allQuestWorlds){
+            if(quest_player.getName().equals(questWorldData.playerName) && questWorldData.checkpoint==301){
+                QuestWorldData tempData = questWorldData;
+                if(tempData.counter!=0){
+                    check = true;
+                    tempData.counter = 0;
+                }
+                new RewriteDataInCycle().rewrite(indexOfQuestWorld,tempData,editorQuest,check);
             }
-            if (loc.getBlockX() <= 296 && loc.getBlockX() >= 291) {
-                loc.setX(297);
-                quest_player.teleport(loc);
-                quest_player.sendMessage(ChatColor.RED + "Нарушитель!");
-                return;
-            }
+            indexOfQuestWorld++;
         }
-        List<String> names = new ArrayList<>();
-        names.add("Sundau");
-        names.add("gigitog");
-        names.add("Leshachok");
+        check = false;
+        indexOfQuestWorld = 0;
+
 //        if(!names.contains(quest_player.getName())) {
 //            if(loc.getBlockZ() < 40 || loc.getBlockZ() > 590){
 //                quest_player.performCommand("spawn");
@@ -78,85 +78,102 @@ public class PlayerMove implements Listener {
 //            }
 //        }
 
-        //find checkpoints
-        for (QuestWorldData questWorldData : listQuestWorldData.allQuestWorlds) {
-            // если мир занят игроком
-            if (questWorldData.isBusy && questWorldData.playerName.equalsIgnoreCase(quest_player.getName())){
-                if (questWorldData.checkpoint == 202) {
-                    Location loc2 = loc.add(0, -1, 0);
-                    if (loc.getBlock().getType().equals(Material.RED_WOOL)) {
-                        loc.getBlock().setType(Material.LIME_WOOL);
-                    } else if (loc2.getBlock().getType().equals(Material.RED_WOOL)) {
-                        loc.getBlock().setType(Material.LIME_WOOL);
+        //find checkpointsQ
+        QuestWorldData questWorldData = listQuestWorldData.getQWDbyPlayer(quest_player.getName());
+
+        if (questWorldData.checkpoint == 202) {
+            Location loc2 = loc.add(0, -1, 0);
+            if (loc.getBlock().getType().equals(Material.RED_WOOL)) {
+                loc.getBlock().setType(Material.LIME_WOOL);
+            } else if (loc2.getBlock().getType().equals(Material.RED_WOOL)) {
+                loc.getBlock().setType(Material.LIME_WOOL);
+            }
+        }
+        // проверка: этот квест (точка) уже была у игрока?
+        // если нет, то мы добавим ее к списку его квестов.
+        for (TxtWarpData txtWarp : listTxtWarpData.allData) {
+            boolean x = Math.abs(loc.getBlockX() - txtWarp.x) <= txtWarp.radius;
+            boolean y = Math.abs(loc.getBlockY() - txtWarp.y) <= 1;
+            boolean z = Math.abs(loc.getBlockZ() - txtWarp.z) <= txtWarp.radius;
+            boolean is = questWorldData.checkpoint < txtWarp.index;
+
+            String name_place = quest_player.getName().concat("_".concat(txtWarp.name));
+            if (x && y && z && is) {
+                if (!placesContain(name_place)) {
+                    //if it's player's first step in the region, make name_place in map true
+                    add(name_place);
+                    // нужно проиграть звук
+                    quest_player.playSound(loc, Sound.ENTITY_PLAYER_LEVELUP, 100, 100);
+                    // установка чекпоинта
+                    if (txtWarp.index < 1500)
+                        questWorldData.checkpoint = txtWarp.index;
+                    //graph checker
+                    graphChecker(quest_player, listTxtWarpData, questWorldData, txtWarp);
+
+                    if (txtWarp.name.equals("finalparkour") && !questWorldData.num_quests_complete.contains(701) ){
+                        questWorldData.num_quests_complete.add(701);
                     }
-                }
-                // проверка: этот квест (точка) уже была у игрока?
-                // если нет, то мы добавим ее к списку его квестов.
-                for (TxtWarpData txtWarp : listTxtWarpData.allData) {
-                    boolean x = Math.abs(loc.getBlockX() - txtWarp.x) <= txtWarp.radius;
-                    boolean y = Math.abs(loc.getBlockY() - txtWarp.y) <= 1;
-                    boolean z = Math.abs(loc.getBlockZ() - txtWarp.z) <= txtWarp.radius;
-                    boolean is = questWorldData.checkpoint < txtWarp.index;
 
-                    String name_place = quest_player.getName().concat("_".concat(txtWarp.name));
-                    if (x && y && z && is) {
-                        if (!placesContain(name_place)) {
-                            //if it's player's first step in the region, make name_place in map true
-                            add(name_place);
-                            // нужно проиграть звук
-                            quest_player.playSound(loc, Sound.ENTITY_PLAYER_LEVELUP, 100, 100);
-                            // установка чекпоинта
-                            if (txtWarp.index < 1500)
-                                questWorldData.checkpoint = txtWarp.index;
-                            //graph checker
-                            graphChecker(quest_player, listTxtWarpData, questWorldData, txtWarp);
-                            if (txtWarp.name.equals("finalparkour") && !questWorldData.num_quests_complete.contains(701) ){
-                                questWorldData.num_quests_complete.add(701);
-                            }
-
-                            if (txtWarp.name.equals("finalpve")  && !questWorldData.num_quests_complete.contains(702)){
-                                questWorldData.num_quests_complete.add(702);
-                            }
-
-
-                            // перезапись в файле
-                            check = true;
-                            indexOfQuestWorld = listQuestWorldData.allQuestWorlds.indexOf(questWorldData);
-                            tempQuestData = questWorldData;
-                        }
-                    } else {
-                        if (placesContain(name_place)) {
-                            //if coords are incorrect, else statement is working. So we need
-                            //to set "name"_"place" to "false" in the HashMap
-                            remove(name_place);
-                        }
+                    if (txtWarp.name.equals("finalpve")  && !questWorldData.num_quests_complete.contains(702)){
+                        questWorldData.num_quests_complete.add(702);
                     }
-                }
-                boolean finish = false;
-                //finish quest
-                if (questWorldData.checkpoint == 1000 && !questWorldData.num_quests_complete.contains(1000)) {
-                    finish = true;
-                    // чтобы не входило больше
-                    questWorldData.num_quests_complete.add(1000);
-                    quest_player.sendMessage(ChatColor.DARK_AQUA + "Вы прошли квест за " + (quest_player.getTicksLived() + questWorldData.ticksSavedBeforeLeaving - questWorldData.ticksLivedWhenStart) / 20 + ChatColor.DARK_AQUA + " секунд! ");
-                    questWorldData.ticksPlayedFinal = (quest_player.getTicksLived() + questWorldData.ticksSavedBeforeLeaving - questWorldData.ticksLivedWhenStart);
-                    //телепорт
-                    quest_player.performCommand("spawn");
-                    quest_player.getInventory().setItem(7, null);
+
+                    // перезапись в файле
                     check = true;
                     indexOfQuestWorld = listQuestWorldData.allQuestWorlds.indexOf(questWorldData);
                     tempQuestData = questWorldData;
-                    new RewriteDataInCycle().rewrite(indexOfQuestWorld, tempQuestData, editorQuest, check);
-                    new ArrayProcessor(editorStats, questWorldData.votes, quest_player.getName()).writeStats();
-                    QuestStats questBook = new QuestStats(editorQuest, quest_player.getName(), editorStats, questWorldData.votes);
-                    quest_player.getInventory().setItem(4, questBook.makeBook());
-                    Bukkit.getConsoleSender().sendRawMessage
-                            ("give " + quest_player.getName() + " written_book 1 {pages:[\"[\\\"\\\",{\\\"text\\\":\\\"Link\\\",\\\"clickEvent\\\":{\\\"action\\\":\\\"open_url\\\",\\\"value\\\":\\\"http://ac.opu.ua/\\\"},\\\"hoverEvent\\\":{\\\"action\\\":\\\"show_text\\\",\\\"value\\\":[\\\"\\\",{\\\"text\\\":\\\"Site\\\",\\\"underlined\\\":true,\\\"color\\\":\\\"gray\\\"}]}},{\\\"text\\\":\\\"\\\\n\\\"}]\"], title:\"Custom Book\", author:Player}");
                 }
-                // перезапись
-                if(!finish) new RewriteDataInCycle().rewrite(indexOfQuestWorld, tempQuestData, editorQuest, check);
+            } else {
+                if (placesContain(name_place)) {
+                    //if coords are incorrect, else statement is working. So we need
+                    //to set "name"_"place" to "false" in the HashMap
+                    remove(name_place);
+                }
             }
         }
+        boolean finish = false;
+        //finish quest
+        if (questWorldData.checkpoint == 1111 && !questWorldData.num_quests_complete.contains(1111)) {
+            finish = true;
+            // чтобы не входило больше
+            questWorldData.num_quests_complete.add(1111);
+            quest_player.sendMessage(ChatColor.DARK_AQUA + "Вы прошли квест за " + (quest_player.getTicksLived() + questWorldData.ticksSavedBeforeLeaving - questWorldData.ticksLivedWhenStart) / 20 + ChatColor.DARK_AQUA + " секунд! ");
+            questWorldData.ticksPlayedFinal = (quest_player.getTicksLived() + questWorldData.ticksSavedBeforeLeaving - questWorldData.ticksLivedWhenStart);
+            //телепорт
+            quest_player.performCommand("spawn");
+            quest_player.getInventory().setItem(7, null);
+            check = true;
+            indexOfQuestWorld = listQuestWorldData.allQuestWorlds.indexOf(questWorldData);
+            tempQuestData = questWorldData;
+            new RewriteDataInCycle().rewrite(indexOfQuestWorld, tempQuestData, editorQuest, check);
+            new ArrayProcessor(editorStats, questWorldData.votes, quest_player.getName()).writeStats();
+            QuestStats questBook = new QuestStats(editorQuest, quest_player.getName(), editorStats, questWorldData.votes);
+            quest_player.getInventory().setItem(4, questBook.makeBook());
+            String command = "give " + quest_player.getName() + " written_book 1 {pages:[\"[\\\"\\\",{\\\"text\\\":\\\"Link\\\",\\\"clickEvent\\\":{\\\"action\\\":\\\"open_url\\\",\\\"value\\\":\\\"http://ac.opu.ua/\\\"},\\\"hoverEvent\\\":{\\\"action\\\":\\\"show_text\\\",\\\"value\\\":[\\\"\\\",{\\\"text\\\":\\\"Site\\\",\\\"underlined\\\":true,\\\"color\\\":\\\"gray\\\"}]}},{\\\"text\\\":\\\"\\\\n\\\"}]\"], title:\"Custom Book\", author:Player}";
+
+            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
+        }
+        // перезапись
+        if(!finish) new RewriteDataInCycle().rewrite(indexOfQuestWorld, tempQuestData, editorQuest, check);
+    }
+
+    private boolean checkRoadCross(Player quest_player, Location loc) {
+        if (loc.getBlockY() == 66) {
+            // переход дороги. Если наступает на дорогу, то он нарушитель
+            if (loc.getBlockX() <= 283 && loc.getBlockX() >= 278) {
+                loc.setX(277);
+                quest_player.teleport(loc);
+                quest_player.sendMessage(ChatColor.RED + "Нарушитель!");
+                return true;
+            }
+            if (loc.getBlockX() <= 296 && loc.getBlockX() >= 291) {
+                loc.setX(297);
+                quest_player.teleport(loc);
+                quest_player.sendMessage(ChatColor.RED + "Нарушитель!");
+                return true;
+            }
+        }
+        return false;
     }
 
     private void graphChecker(Player quest_player, ListTxtWarpData listTxtWarpData, QuestWorldData questWorldData, TxtWarpData txtWarp) {

@@ -1,5 +1,6 @@
 package me.ics.questplugin;
 
+import OSclasses.PlayerClickOnComp;
 import me.ics.questplugin.ArmorHolo.SetArmorHolo;
 import me.ics.questplugin.ArraySorterMine.ListenerArray;
 import me.ics.questplugin.Buttons.Buttons;
@@ -61,6 +62,7 @@ public final class QuestPlugin extends JavaPlugin {
         getCommand("answer").setExecutor(new Answer(this, fileQuest, fileAnswers));
         getCommand("quest").setExecutor(new QuestOperator(this, fileQuest));
         getCommand("addanswer").setExecutor(new AddAnswer(this, fileAnswers));
+        getCommand("finish").setExecutor(new FinishCommand(this, fileQuest));
 
         getServer().getPluginManager().registerEvents(new PlayerTeleport(this, fileQuest), this);
         getServer().getPluginManager().registerEvents(new PlayerThrow(), this);
@@ -70,6 +72,7 @@ public final class QuestPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new PlayerLogin(), this);
         getServer().getPluginManager().registerEvents(new PlayerBreak(), this);
         getServer().getPluginManager().registerEvents(new PlayerInventoryInteract(this,fileQuest),this);
+        getServer().getPluginManager().registerEvents(new PlayerClickOnComp(this,fileQuest),this);
         getServer().getPluginManager().registerEvents(new PlayerMove(this,
                 fileQuest, "/txt_warps_data.json"), this);
         getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "|| QUEST MANAGER ||");

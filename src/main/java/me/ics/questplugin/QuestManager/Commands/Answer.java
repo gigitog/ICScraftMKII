@@ -5,6 +5,7 @@ import me.ics.questplugin.CustomClasses.ClassesQuestWorld.ListQuestWorldData;
 import me.ics.questplugin.CustomClasses.ClassesQuestWorld.QuestWorldData;
 import me.ics.questplugin.FileEditor.FileJsonEditor;
 import me.ics.questplugin.FileEditor.RewriteDataInCycle;
+import me.ics.questplugin.FileEditor.RewriteQuestData;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.command.Command;
@@ -32,29 +33,24 @@ public class Answer implements CommandExecutor {
 
         if (args.length != 0) {
             ListQuestWorldData listQuestWorlds = editorQuest.getData();
-            for (QuestWorldData questWorldData : listQuestWorlds.allQuestWorlds) {
-                // player answer, his chp, true answer
-                String playerAnswer = String.join(" ", args);
-                int chp = questWorldData.checkpoint;
-                String trueAnswer = editorAnswer.getData().getAnswer(chp);
-                //checking
-                if (playerAnswer.equals(trueAnswer)) {
-                    tempData = questWorldData;
-                    indexOfQuestWorld = listQuestWorlds.allQuestWorlds.indexOf(questWorldData);
-                    check = true;
-                    player.sendMessage(ChatColor.GREEN + "Правильно!");
-                    // avoid dublicates
-                    if (questWorldData.num_quests_complete.contains(chp)) break;
-
-                    questWorldData.num_quests_complete.add(chp);
-                    player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 50, 100);
+            QuestWorldData questWorldData = listQuestWorlds.getQWDbyPlayer(player.getName());
+            String playerAnswer = String.join(" ", args);
+            int chp = questWorldData.checkpoint;
+            String trueAnswer = editorAnswer.getData().getAnswer(chp);
+            //checking
+            if (playerAnswer.equals(trueAnswer)) {
+                check = true;
+                // avoid dublicates
+                if (questWorldData.num_quests_complete.contains(chp)) {
+                    player.sendMessage(ChatColor.GREEN + "Ответ уже был!");
+                    return true;
                 }
-
-                new RewriteDataInCycle().rewrite(indexOfQuestWorld, tempData, editorQuest, check);
-            }
+                questWorldData.num_quests_complete.add(chp);
+                player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 50, 100);
+                player.sendMessage(ChatColor.GREEN + "Правильный ответ!");
+            } else player.sendMessage(ChatColor.RED + "Неправильный ответ!");
+            RewriteQuestData.rewrite(editorQuest, questWorldData);
         }
-        if (!check) player.sendMessage(ChatColor.RED + "Неправильный ответ!");
-
         return true;
     }
 }
