@@ -2,6 +2,7 @@ package me.ics.questplugin.VrHelmet;
 
 import me.ics.questplugin.FileEditor.FileJsonEditor;
 import me.ics.questplugin.CustomClasses.ClassesTp.TeleportatData;
+import me.ics.questplugin.HelpClasses.PlayerChecker;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -52,6 +53,9 @@ public class ListenerVR implements Listener {
     @EventHandler
     public void vrClicked(PlayerMoveEvent event){
         Player player = event.getPlayer();
+
+        if (PlayerChecker.isNotInQuest(player)) return;
+
         boolean hasVr = Objects.equals(player.getInventory().getHelmet(), getVrHelmet());
         if(hasVr){
             System.out.println(player.getName() + " teleported to parkour!");

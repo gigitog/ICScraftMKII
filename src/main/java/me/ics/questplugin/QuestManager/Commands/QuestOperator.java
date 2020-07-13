@@ -1,5 +1,6 @@
 package me.ics.questplugin.QuestManager.Commands;
 
+import com.sun.tools.javac.jvm.Items;
 import me.ics.questplugin.CustomClasses.ClassesQuestWorld.ListQuestWorldData;
 import me.ics.questplugin.CustomClasses.ClassesQuestWorld.QuestStats;
 import me.ics.questplugin.CustomClasses.ClassesQuestWorld.QuestWorldData;
@@ -16,6 +17,7 @@ import org.bukkit.plugin.Plugin;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Function;
 
 public class QuestOperator implements CommandExecutor {
@@ -62,6 +64,9 @@ public class QuestOperator implements CommandExecutor {
                             return true;
                         }
                         Location saved = new Location(Bukkit.getWorld(questWorldData.questWorldName), questWorldData.spawn[0], questWorldData.spawn[1], questWorldData.spawn[2]);
+
+                        player.getInventory().setItem(4, new ItemStack(Material.AIR));
+
                         player.sendMessage(ChatColor.GREEN + "Телепортация на сохраненную локацию.");
                         player.teleport(saved);
                         return true;
@@ -93,7 +98,7 @@ public class QuestOperator implements CommandExecutor {
                         loc_spawn.setY(1);
                         loc_spawn.setZ(0);
                         player.setGameMode(GameMode.ADVENTURE);
-                        player.getInventory().setItem(4, null);
+                        player.getInventory().setItem(4, new ItemStack(Material.AIR));
                         break;
                     }
                 }

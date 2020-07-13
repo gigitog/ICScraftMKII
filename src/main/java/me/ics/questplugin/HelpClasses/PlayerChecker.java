@@ -1,5 +1,8 @@
 package me.ics.questplugin.HelpClasses;
 
+import me.ics.questplugin.CustomClasses.ClassesQuestWorld.ListQuestWorldData;
+import me.ics.questplugin.CustomClasses.ClassesQuestWorld.QuestWorldData;
+import me.ics.questplugin.FileEditor.FileJsonEditor;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -32,5 +35,9 @@ public class PlayerChecker {
     public static boolean isNot_Op_AllArgs_Player(CommandSender sender, int num, String[] args){
         if (isNotOp(sender)) return true;
         return isNotPlayer(sender) || isNotAllArgs(sender, num, args);
+    }
+
+    public static boolean isNotInQuest(Player player){
+        return !player.getWorld().getName().startsWith("quest");
     }
 }

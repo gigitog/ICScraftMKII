@@ -27,15 +27,18 @@ public class PlayerInventoryInteract implements Listener {
 
     @EventHandler
     public void onPlayerInventoryInteract(InventoryClickEvent event){
-        ListQuestWorldData listQuestWorldData = editorQuest.getData();
         Player player = (Player) event.getWhoClicked();
+        //проверка на мир
+
         QuestWorldData questWorldData = editorQuest.getData().getQWDbyPlayer(player.getName());
         if(questWorldData!=null) {
-            if (player.getName().equalsIgnoreCase(questWorldData.playerName) && questWorldData.checkpoint == 203 && !questWorldData.num_quests_complete.contains(203)) {
+            if(!player.getWorld().getName().startsWith("quest")) return;
+            if(event.getClickedInventory()==null || !event.getClickedInventory().getType().equals(InventoryType.CHEST)) return;
+            if (questWorldData.checkpoint == 203 && !questWorldData.num_quests_complete.contains(203)){
+
                 if (questWorldData.counter >= 19) {
                     player.sendTitle("§cПровал!", "§cМожно было за 18 ходов", 10, 40, 10);
                     player.closeInventory();
-
                     return;
                 }
                 Inventory chest = event.getClickedInventory();
@@ -92,7 +95,7 @@ public class PlayerInventoryInteract implements Listener {
         }
         if(event.getCurrentItem() == null)
             return;
-        if(Objects.requireNonNull(event.getCurrentItem()).getType().equals(new ItemStack(Material.AIR).getType())) {
+        if(event.getCurrentItem().getType().equals(Material.AIR)) {
             return;
         }
         if(noInteractItems.contains(Objects.requireNonNull(event.getCurrentItem().getItemMeta()).getDisplayName())){

@@ -8,7 +8,8 @@ import me.ics.questplugin.CustomClasses.ClassesTxt.TxtWarpData;
 import me.ics.questplugin.CustomClasses.Statistic.ArrayProcessor;
 import me.ics.questplugin.CustomClasses.Statistic.ListAllStatsData;
 import me.ics.questplugin.FileEditor.FileJsonEditor;
-import me.ics.questplugin.FileEditor.RewriteDataInCycle;
+import me.ics.questplugin.FileEditor.RewriteQuestData;
+import me.ics.questplugin.HelpClasses.PlayerChecker;
 import org.bukkit.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -36,32 +37,29 @@ public class PlayerMove implements Listener {
     @EventHandler
     public void onPlayerMove(PlayerMoveEvent event) {
         Player quest_player = event.getPlayer();
-        if(!quest_player.getWorld().getName().startsWith("quest")) return;
-        mirror(quest_player);
-        Location loc = quest_player.getLocation();
-        ListQuestWorldData listQuestWorldData = editorQuest.getData();
-        ListTxtWarpData listTxtWarpData = editorTxt.getData();
-        boolean check = false;
-        int indexOfQuestWorld = 0;
-        QuestWorldData tempQuestData = null;
 
-        if (checkRoadCross(quest_player, loc)) return;
+        Location loc = quest_player.getLocation();
+        ListTxtWarpData listTxtWarpData = editorTxt.getData();
+
+//        if (checkRoadCross(quest_player, loc)) return;
+
+        if (PlayerChecker.isNotInQuest(quest_player)) return;
+
+        mirror(quest_player);
+
         List<String> names = Arrays.asList("Sundau", "gigitog", "Leshachok");
 
+
+        QuestWorldData questWorldData = editorQuest.getData().getQWDbyPlayer(quest_player.getName());
+        if (questWorldData == null) return;
         //сброс счетчика после задания с поиском пути
-        for(QuestWorldData questWorldData : editorQuest.getData().allQuestWorlds){
-            if(quest_player.getName().equals(questWorldData.playerName) && questWorldData.checkpoint==301){
-                QuestWorldData tempData = questWorldData;
-                if(tempData.counter!=0){
-                    check = true;
-                    tempData.counter = 0;
-                }
-                new RewriteDataInCycle().rewrite(indexOfQuestWorld,tempData,editorQuest,check);
-            }
-            indexOfQuestWorld++;
+
+        if(questWorldData.counter != 0 && questWorldData.checkpoint == 301){
+            questWorldData.counter = 0;
+            RewriteQuestData.rewrite(editorQuest, questWorldData);
+            return;
         }
-        check = false;
-        indexOfQuestWorld = 0;
+
 
 //        if(!names.contains(quest_player.getName())) {
 //            if(loc.getBlockZ() < 40 || loc.getBlockZ() > 590){
@@ -79,7 +77,6 @@ public class PlayerMove implements Listener {
 //        }
 
         //find checkpointsQ
-        QuestWorldData questWorldData = listQuestWorldData.getQWDbyPlayer(quest_player.getName());
 
         if (questWorldData.checkpoint == 202) {
             Location loc2 = loc.add(0, -1, 0);
@@ -119,9 +116,7 @@ public class PlayerMove implements Listener {
                     }
 
                     // перезапись в файле
-                    check = true;
-                    indexOfQuestWorld = listQuestWorldData.allQuestWorlds.indexOf(questWorldData);
-                    tempQuestData = questWorldData;
+
                 }
             } else {
                 if (placesContain(name_place)) {
@@ -142,10 +137,9 @@ public class PlayerMove implements Listener {
             //телепорт
             quest_player.performCommand("spawn");
             quest_player.getInventory().setItem(7, null);
-            check = true;
-            indexOfQuestWorld = listQuestWorldData.allQuestWorlds.indexOf(questWorldData);
-            tempQuestData = questWorldData;
-            new RewriteDataInCycle().rewrite(indexOfQuestWorld, tempQuestData, editorQuest, check);
+
+            RewriteQuestData.rewrite(editorQuest, questWorldData);
+
             new ArrayProcessor(editorStats, questWorldData.votes, quest_player.getName()).writeStats();
             QuestStats questBook = new QuestStats(editorQuest, quest_player.getName(), editorStats, questWorldData.votes);
             quest_player.getInventory().setItem(4, questBook.makeBook());
@@ -154,7 +148,7 @@ public class PlayerMove implements Listener {
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
         }
         // перезапись
-        if(!finish) new RewriteDataInCycle().rewrite(indexOfQuestWorld, tempQuestData, editorQuest, check);
+        if(!finish) RewriteQuestData.rewrite(editorQuest, questWorldData);
     }
 
     private boolean checkRoadCross(Player quest_player, Location loc) {

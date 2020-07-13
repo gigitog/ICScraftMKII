@@ -3,6 +3,7 @@ package me.ics.questplugin.TxtWarp;
 import me.ics.questplugin.FileEditor.FileJsonEditor;
 import me.ics.questplugin.CustomClasses.ClassesTxt.ListTxtWarpData;
 import me.ics.questplugin.CustomClasses.ClassesTxt.TxtWarpData;
+import me.ics.questplugin.HelpClasses.PlayerChecker;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -19,9 +20,9 @@ public class ListenerTxt implements Listener {
     private FileJsonEditor<ListTxtWarpData> editor;
     private Plugin plugin;
 
-    public ListenerTxt(Plugin plugin, String fileName) {
+    public ListenerTxt(Plugin plugin, String fileTxt) {
         this.plugin = plugin;
-        editor = new FileJsonEditor<>(fileName, new ListTxtWarpData(), plugin);
+        editor = new FileJsonEditor<>(fileTxt, new ListTxtWarpData(), plugin);
     }
 
     private boolean placesContain(String name_place) {
@@ -44,6 +45,8 @@ public class ListenerTxt implements Listener {
     public void onTxtWarp(PlayerMoveEvent event) {
         Player player = event.getPlayer();
         Location loc = event.getTo();
+
+//        if (PlayerChecker.isNotInQuest(player)) return;
 
         ListTxtWarpData tempData = editor.getData();
         for (TxtWarpData txtWarp : tempData.allData) {

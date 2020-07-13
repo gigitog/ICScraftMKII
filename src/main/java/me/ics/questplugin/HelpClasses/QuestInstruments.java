@@ -10,7 +10,7 @@ public class QuestInstruments {
 
     }
 
-    public ItemStack makeQuestBook(){
+    public static ItemStack makeQuestBook(){
         ItemStack book = new ItemStack(Material.BOOK);
         ItemMeta meta = book.getItemMeta();
         meta.setDisplayName("§aНачать квест §7(ПКМ)");
@@ -18,7 +18,7 @@ public class QuestInstruments {
         return book;
     }
 
-    public ItemStack makeLobbyBed(){
+    public  static ItemStack makeLobbyBed(){
         ItemStack bed = new ItemStack(Material.RED_BED);
         ItemMeta meta = bed.getItemMeta();
         meta.setDisplayName("§9Вернуться в лобби §7(ПКМ)");
@@ -26,7 +26,7 @@ public class QuestInstruments {
         return bed;
     }
 
-    public ItemStack makeStatsFeather(){
+    public static ItemStack makeStatsFeather(){
         ItemStack feather = new ItemStack(Material.FEATHER);
         ItemMeta meta = feather.getItemMeta();
         meta.setDisplayName("§aИнформация о квесте §7(ПКМ)");
@@ -34,7 +34,7 @@ public class QuestInstruments {
         return feather;
     }
 
-    public ItemStack makeEndRedstone(){
+    public static ItemStack makeEndRedstone(){
         ItemStack redstone = new ItemStack(Material.REDSTONE);
         ItemMeta meta = redstone.getItemMeta();
         meta.setDisplayName("§aЗакончить квест §7(ПКМ)");

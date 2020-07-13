@@ -1,6 +1,6 @@
 package me.ics.questplugin;
 
-import OSclasses.PlayerClickOnComp;
+import me.ics.questplugin.OSclasses.PlayerClickOnComp;
 import me.ics.questplugin.ArmorHolo.SetArmorHolo;
 import me.ics.questplugin.ArraySorterMine.ListenerArray;
 import me.ics.questplugin.Buttons.Buttons;
@@ -10,6 +10,8 @@ import me.ics.questplugin.Buttons.SetButton;
 import me.ics.questplugin.CustomClasses.ClassesQuestWorld.ListQuestWorldData;
 import me.ics.questplugin.FileEditor.FileJsonEditor;
 import me.ics.questplugin.FrameItemChoose.ListenerChestClick;
+import me.ics.questplugin.OSclasses.PlayerCloseInventory;
+import me.ics.questplugin.OSclasses.PlayerComputerInteract;
 import me.ics.questplugin.QuestManager.Commands.*;
 import me.ics.questplugin.QuestManager.Listeners.*;
 import me.ics.questplugin.TpWarp.DelTpWarp;
@@ -27,6 +29,7 @@ import org.bukkit.*;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class QuestPlugin extends JavaPlugin {
+    private String fileQuest = "/quest_worlds_data";
     private FileJsonEditor<ListQuestWorldData> editorQuest =
             new FileJsonEditor<>("/quest_worlds_data", new ListQuestWorldData(), this);
 
@@ -41,6 +44,7 @@ public final class QuestPlugin extends JavaPlugin {
         onEnableButtons();
         onEnableQuestManager();
         extraModules();
+        osClasses();
     }
 
     private void loadConfig() {
@@ -52,10 +56,11 @@ public final class QuestPlugin extends JavaPlugin {
         getCommand("setholo").setExecutor(new SetArmorHolo());
         getServer().getPluginManager().registerEvents(new ListenerArray(this, "/buttons_data.json", "/quest_worlds_data"), this);
         getServer().getPluginManager().registerEvents(new ListenerChestClick(editorQuest), this);
+        getServer().getPluginManager().registerEvents(new ArmorManipulate(this, fileQuest), this);
     }
 
     private void onEnableQuestManager() {
-        String fileQuest = "/quest_worlds_data";
+
         String fileAnswers = "/answers.json";
 
         getCommand("setcheckpoint").setExecutor(new SetCheckpoint(this, fileQuest));
@@ -66,10 +71,10 @@ public final class QuestPlugin extends JavaPlugin {
 
         getServer().getPluginManager().registerEvents(new PlayerTeleport(this, fileQuest), this);
         getServer().getPluginManager().registerEvents(new PlayerThrow(), this);
-        getServer().getPluginManager().registerEvents(new PlayerPlace(this), this);
+        getServer().getPluginManager().registerEvents(new PlayerPlace(), this);
         getServer().getPluginManager().registerEvents(new PlayerOut(this, fileQuest), this);
         getServer().getPluginManager().registerEvents(new PlayerClick(this, fileQuest), this);
-        getServer().getPluginManager().registerEvents(new PlayerLogin(), this);
+        getServer().getPluginManager().registerEvents(new PlayerLogin(this, fileQuest), this);
         getServer().getPluginManager().registerEvents(new PlayerBreak(), this);
         getServer().getPluginManager().registerEvents(new PlayerInventoryInteract(this,fileQuest),this);
         getServer().getPluginManager().registerEvents(new PlayerClickOnComp(this,fileQuest),this);
@@ -107,8 +112,14 @@ public final class QuestPlugin extends JavaPlugin {
         getCommand("setbutton").setExecutor(new SetButton(this, file));
         getCommand("delbutton").setExecutor(new DelButton(this));
         getCommand("buttons").setExecutor(new Buttons(this));
-        getServer().getPluginManager().registerEvents(new ListenerButton(this, file, "/quest_worlds_data"), this);
+        getServer().getPluginManager().registerEvents(new ListenerButton(this, file, fileQuest), this);
         getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "|| BUTTONS   ||");
+    }
+
+    private void osClasses() {
+        getServer().getPluginManager().registerEvents(new PlayerComputerInteract(this, fileQuest), this);
+        getServer().getPluginManager().registerEvents(new PlayerClickOnComp(this, fileQuest), this);
+        getServer().getPluginManager().registerEvents(new PlayerCloseInventory(this, fileQuest), this);
     }
 
     private void loadImage() {

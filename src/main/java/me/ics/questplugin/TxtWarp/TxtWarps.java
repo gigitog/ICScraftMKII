@@ -24,8 +24,9 @@ public class TxtWarps implements CommandExecutor {
         sender.sendMessage(color("&9&oTxt Warps: "));
         // list
         ListTxtWarpData txtWarps = editor.getData();
+
         // show warps
-        for(TxtWarpData txtWarp : txtWarps.allData){
+        for (TxtWarpData txtWarp : txtWarps.allData){
             sender.sendMessage(color("&6" + txtWarp.name +
                     ":&9 " + txtWarp.x + " " + txtWarp.y + " " + txtWarp.z +
                     " &b| checkpoint: " + txtWarp.index));

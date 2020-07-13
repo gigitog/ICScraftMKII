@@ -3,6 +3,7 @@ package me.ics.questplugin.TpWarp;
 import me.ics.questplugin.FileEditor.FileJsonEditor;
 import me.ics.questplugin.CustomClasses.ClassesTp.ListTeleportsData;
 import me.ics.questplugin.CustomClasses.ClassesTp.TeleportatData;
+import me.ics.questplugin.HelpClasses.PlayerChecker;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -24,6 +25,8 @@ public class ListenerTp implements Listener {
         Location loc = event.getTo();
         Location locTp = new Location(event.getPlayer().getWorld(),0,0,0, 0, 0);
         Player player = event.getPlayer();
+
+        if (PlayerChecker.isNotInQuest(player)) return;
         // editor
         FileJsonEditor<ListTeleportsData> editor = new FileJsonEditor<>(
                 "/tp_warps_data.json", new ListTeleportsData(), plugin);
