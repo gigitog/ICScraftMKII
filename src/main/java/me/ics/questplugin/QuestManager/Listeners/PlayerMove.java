@@ -45,13 +45,12 @@ public class PlayerMove implements Listener {
 
         if (PlayerChecker.isNotInQuest(quest_player)) return;
 
-        mirror(quest_player);
-
         List<String> names = Arrays.asList("Sundau", "gigitog", "Leshachok");
-
 
         QuestWorldData questWorldData = editorQuest.getData().getQWDbyPlayer(quest_player.getName());
         if (questWorldData == null) return;
+
+        mirror(quest_player);
         //сброс счетчика после задания с поиском пути
 
         if(questWorldData.counter != 0 && questWorldData.checkpoint == 301){
@@ -238,35 +237,34 @@ public class PlayerMove implements Listener {
         places.put(name_place, false);
     }
 
-    private void mirror(Player player){
+    private void mirror(Player player) {
         Location location = player.getLocation();
         Villager villager = null;
-        if(location.getWorld().getName().startsWith("quest")){
-            if(location.getBlockX()>=602 && location.getBlockX()<=609 && location.getBlockZ()>=539 && location.getBlockZ()<=546){
-                if(location.getBlockX()>=602 && location.getBlockX()<=608 && location.getBlockZ()>=539 && location.getBlockZ()<=546){
+        if (location.getWorld().getName().startsWith("quest")) {
+            if (location.getBlockX() >= 522 && location.getBlockX() <= 529 && location.getBlockZ() >= 709 && location.getBlockZ() <= 715) {
+                if (location.getBlockX() >= 522 && location.getBlockX() <= 528 && location.getBlockZ() >= 709 && location.getBlockZ() <= 715) {
                     Location villagerLocation = location;
-                    villagerLocation.setYaw(180-location.getYaw());
-                    villagerLocation.setZ(546.5-location.getZ()+546.5);
-                    for(Entity entity : player.getNearbyEntities(9,2,15)){
-                        if(entity.getCustomName().equalsIgnoreCase(player.getName())){
-                            villager = (Villager)entity;
+                    villagerLocation.setYaw(180 - location.getYaw());
+                    villagerLocation.setZ(2*716.5 - location.getZ());
+                    for (Entity entity : player.getNearbyEntities(9, 2, 15)) {
+                        if (entity.getCustomName().equalsIgnoreCase(player.getName())) {
+                            villager = (Villager) entity;
                             villager.setCustomName(player.getName());
                             villager.setCustomNameVisible(true);
                             break;
                         }
                     }
-                    if(villager == null) {
-                        villager = (Villager)location.getWorld().spawnEntity(villagerLocation, EntityType.VILLAGER);
+                    if (villager == null) {
+                        villager = (Villager) location.getWorld().spawnEntity(villagerLocation, EntityType.VILLAGER);
                         villager.setAI(false);
                         villager.setCustomName(player.getName());
                         villager.setCustomNameVisible(true);
                     }
                     villager.teleport(villagerLocation);
-                }
-                else if(location.getBlockX()==609 && location.getBlockZ()==540){
-                    for(Entity entity : player.getNearbyEntities(9,2,15)){
-                        if(entity.getCustomName().equalsIgnoreCase(player.getName())){
-                            villager = (Villager)entity;
+                } else if (location.getBlockX() == 529 && location.getBlockZ() == 710) {
+                    for (Entity entity : player.getNearbyEntities(9, 2, 15)) {
+                        if (entity.getCustomName().equalsIgnoreCase(player.getName())) {
+                            villager = (Villager) entity;
                             villager.setCustomNameVisible(false);
                             return;
                         }

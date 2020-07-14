@@ -82,8 +82,10 @@ public class ListenerVR implements Listener {
 
     @EventHandler
     public void onButton(PlayerInteractEvent event){
-        if(!event.hasBlock()) return;
-        if(event.getAction().equals(Action.RIGHT_CLICK_BLOCK) &&
+        if (PlayerChecker.isNotInQuest(event.getPlayer())) return;
+
+        if (!event.hasBlock()) return;
+        if (event.getAction().equals(Action.RIGHT_CLICK_BLOCK) &&
                 Objects.requireNonNull(event.getClickedBlock()).
                         getType().equals(Material.BIRCH_BUTTON)) {
 

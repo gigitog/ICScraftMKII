@@ -12,8 +12,12 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.*;
 
 import java.util.Arrays;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.function.Function;
 
 public class ScoreBoardQuest {
+    private Map<Integer, String> tasks = new TreeMap<>();
 
     public static void scoreONPU(Plugin plugin, Player player, FileJsonEditor<ListQuestWorldData> editor){
         ScoreboardManager m = Bukkit.getScoreboardManager();
@@ -46,7 +50,42 @@ public class ScoreBoardQuest {
         player.setScoreboard(scoreboard);
     }
 
-    public static void scoreQuest(FileJsonEditor<ListQuestWorldData> editorQuest, Plugin plugin, Player player){
+    private void makeTasks() {
+        String s = "";
+//        tasks.put(201, s + "Таблица истинности");
+        tasks.put(202, s + "Граф");
+        tasks.put(203, s + "Алгоритм кратчайшего пути");
+
+        tasks.put(301, s + "Статистика");
+        tasks.put(302, s + "Вероятность");
+        tasks.put(303, s + "Комбинаторика");
+
+        tasks.put(401, s + "Сортировка массива");
+        tasks.put(402, s + "Типы данных");
+//        tasks.put(403, s + " этапами написания программы");
+//        tasks.put(404, s + " основами ООП");
+
+        tasks.put(501, s + "Настройка сервера");
+//        tasks.put(502, s + " общими сведениями");
+
+//        tasks.put(601, s + "о сбором компьтера");
+//        tasks.put(602, s + " настройкой робота");
+//        tasks.put(603, s + " задачами физики");
+
+        tasks.put(701, s + "Тестирование: Паркур");
+        tasks.put(702, s + "Тестирование: PVE");
+//        tasks.put(703, s + " передвижением блоков");
+    }
+
+    private Function<Integer, String> currentTask = x->{
+        if (x < 202) return "Начало квеста";
+        if (x > 710 && x < 1050) return "Конец квеста";
+        if (x > 1049) return ChatColor.DARK_RED  + "Неизвестно";
+        return tasks.get(x);
+    };
+
+    public void scoreQuest(FileJsonEditor<ListQuestWorldData> editorQuest, Plugin plugin, Player player){
+        makeTasks();
 
         ScoreboardManager manager = Bukkit.getScoreboardManager();
         Scoreboard scoreboard = manager.getNewScoreboard();
@@ -58,12 +97,9 @@ public class ScoreBoardQuest {
         Team pTask = scoreboard.registerNewTeam("Player task");
         pTask.addEntry(ChatColor.YELLOW + "" + ChatColor.WHITE);
 
-        objective.getScore("").setScore(2);
-        objective.getScore(ChatColor.GOLD + "https://ac.opu.ua").setScore(1);
 
         new BukkitRunnable(){
             @Override
-
             public void run() {
                 QuestWorldData qwd = editorQuest.getData().getQWDbyPlayer(player.getName());
 
@@ -72,7 +108,7 @@ public class ScoreBoardQuest {
                 if (qwd.ticksPlayedFinal == 0) {
                     objective.getScore("  ").setScore(8);
                     objective.getScore(ChatColor.BLUE + "Текущее задание: ").setScore(7);
-                    pTask.setPrefix(ChatColor.GOLD + "" + qwd.checkpoint);
+                    pTask.setPrefix(ChatColor.GOLD + "" + currentTask.apply(qwd.checkpoint));
 
                     objective.getScore(ChatColor.YELLOW + "" + ChatColor.WHITE).setScore(6);
                 }
@@ -81,10 +117,15 @@ public class ScoreBoardQuest {
 
                 Score questVotes = objective.getScore( ChatColor.BLUE + "Ваши оценки: ");
                 questVotes.setScore(4);
+                if (qwd.checkpoint > 1049){
+                    qVotes.setPrefix(ChatColor.DARK_RED + "Неизвестно");
+                } else {
+                    qVotes.setPrefix("" + Arrays.toString(qwd.votes));
+                    objective.getScore("").setScore(2);
+                    objective.getScore(ChatColor.GOLD + "https://ac.opu.ua").setScore(1);
+                }
 
-                qVotes.setPrefix("" + Arrays.toString(qwd.votes));
                 objective.getScore(ChatColor.RED + "" + ChatColor.WHITE).setScore(3);
-
             }
         }.runTaskTimer(plugin, 0, 10);
         player.setScoreboard(scoreboard);

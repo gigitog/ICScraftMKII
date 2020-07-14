@@ -29,7 +29,7 @@ public class QuestWorldData {
         this.ticksSavedBeforeLeaving = 0;
         this.ticksPlayedFinal = 0;
         this.counter = 0;
-        this.osStatus = Arrays.asList(false,false,false);
+        this.osStatus = Arrays.asList(false, false, false);
         this.checkpoint = 0;
         this.num_quests_complete = new ArrayList<>();
         this.spawn = new double[]{581.5, 67, 335.5};

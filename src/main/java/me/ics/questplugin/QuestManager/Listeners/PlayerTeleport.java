@@ -3,18 +3,14 @@ package me.ics.questplugin.QuestManager.Listeners;
 import me.ics.questplugin.CustomClasses.ClassesQuestWorld.ListQuestWorldData;
 import me.ics.questplugin.CustomClasses.ClassesQuestWorld.QuestWorldData;
 import me.ics.questplugin.FileEditor.FileJsonEditor;
-import me.ics.questplugin.FileEditor.RewriteDataInCycle;
 import me.ics.questplugin.FileEditor.RewriteQuestData;
 import me.ics.questplugin.HelpClasses.QuestInstruments;
 import me.ics.questplugin.QuestManager.Scoreboards.ScoreBoardQuest;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerTeleportEvent;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
 
 import java.util.Objects;
@@ -37,12 +33,14 @@ public class PlayerTeleport implements Listener {
         if(questWorldData == null) return;
 
         if(!from.getWorld().equals(to.getWorld()) && from.getWorld().getName().startsWith("quest")){
-            if(questWorldData.ticksPlayedFinal != 0){
-                ScoreBoardQuest.scoreONPU(plugin, player, editor);
-                return;
+//            if(questWorldData.ticksPlayedFinal != 0){
+//                ScoreBoardQuest.scoreONPU(plugin, player, editor);
+//                return;
+//            }
+            ScoreBoardQuest.scoreONPU(plugin, player, editor);
+            if (player.getInventory().getItem(7) != null){
+                Objects.requireNonNull(player.getInventory().getItem(7)).setAmount(0);
             }
-
-            player.getInventory().setItem(7, new ItemStack(Material.AIR));
 
             player.getInventory().setItem(4, QuestInstruments.makeQuestBook());
 
@@ -53,8 +51,10 @@ public class PlayerTeleport implements Listener {
             return;
         }
         if(!from.getWorld().equals(to.getWorld()) && to.getWorld().getName().startsWith("quest")){
-
-            player.getInventory().setItem(4, new ItemStack(Material.AIR));
+            new ScoreBoardQuest().scoreQuest(editor, plugin, player);
+            if (player.getInventory().getItem(4) != null){
+                Objects.requireNonNull(player.getInventory().getItem(4)).setAmount(0);
+            }
             player.getInventory().setItem(7, QuestInstruments.makeEndRedstone());
 
             questWorldData.ticksLivedWhenStart = player.getTicksLived();

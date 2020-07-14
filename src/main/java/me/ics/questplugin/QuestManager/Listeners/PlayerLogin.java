@@ -50,6 +50,6 @@ public class PlayerLogin implements Listener {
             player.getInventory().setItem(0, QuestInstruments.makeStatsFeather());
         }
 
-        ScoreBoardQuest.scoreQuest(editorQuest, plugin, player);
+        ScoreBoardQuest.scoreONPU(plugin, player, editorQuest);
     }
 }

@@ -56,21 +56,21 @@ public class QuestStats {
 
     private void makeTasks() {
         String s = "Задание с";
-        tasks.put(201, s + " таблицей истинности");
+//        tasks.put(201, s + " таблицей истинности");
         tasks.put(202, s + " графом");
         tasks.put(203, s + " алгоритмом кратчайшего пути");
 
         tasks.put(301, s + "о статистикой");
         tasks.put(302, s + " вероятностью");
-        tasks.put(303, s + " интегралом");
+        tasks.put(303, s + " комбинаторикой");
 
         tasks.put(401, s + " сортировкой массива");
         tasks.put(402, s + " типами данных");
-        tasks.put(403, s + " этапами написания программы");
-        tasks.put(404, s + " основами ООП");
+//        tasks.put(403, s + " этапами написания программы");
+//        tasks.put(404, s + " основами ООП");
 
-        tasks.put(501, s + " сервером");
-        tasks.put(502, s + " общими сведениями");
+        tasks.put(501, s + " настройкой сервера");
+//        tasks.put(502, s + " общими сведениями");
 
         tasks.put(601, s + "о сбором компьтера");
         tasks.put(602, s + " настройкой робота");
@@ -78,7 +78,7 @@ public class QuestStats {
 
         tasks.put(701, s + " паркуром");
         tasks.put(702, s + " убийством мобов");
-        tasks.put(703, s + " передвижением блоков");
+//        tasks.put(703, s + " передвижением блоков");
     }
 
     private List<String> makeList(int[] votes) {
@@ -105,30 +105,30 @@ public class QuestStats {
                 string = s +  recStr + "§r" + s;
                 list.add(string);
 
-                String page = "";
-                boolean headAdded;
-                for (int num : tasks.keySet()) {
-                    if (num % 2 == 1 && (headPage + 2) == num / 100) {
-                        headAdded = false;
-                        page = page.concat(disciplines[headPage] + s +
-                                tasks.get(num) + ": " + passed.apply(qwd.num_quests_complete.contains(num)) + s);
-                        if (tasks.containsKey(num + 1)) {
-                            page = page.concat(tasks.get(num + 1) + ": " +
-                                    passed.apply(qwd.num_quests_complete.contains(num + 1)) + s);
-
-                        } else {
-                            headPage++;
-                            headAdded = true;
-                        }
-
-                        if(!headAdded && !tasks.containsKey(num + 2)){
-                            headPage++;
-                        }
-
-                        list.add(page);
-                        page = "";
-                    }
-                }
+//                String page = "";
+//                boolean headAdded;
+//                for (int num : tasks.keySet()) {
+//                    if (num % 2 == 1 && (headPage + 2) == num / 100) {
+//                        headAdded = false;
+//                        page = page.concat(disciplines[headPage] + s +
+//                                tasks.get(num) + ": " + passed.apply(qwd.num_quests_complete.contains(num)) + s);
+//                        if (tasks.containsKey(num + 1)) {
+//                            page = page.concat(tasks.get(num + 1) + ": " +
+//                                    passed.apply(qwd.num_quests_complete.contains(num + 1)) + s);
+//
+//                        } else {
+//                            headPage++;
+//                            headAdded = true;
+//                        }
+//
+//                        if(!headAdded && !tasks.containsKey(num + 2)){
+//                            headPage++;
+//                        }
+//
+//                        list.add(page);
+//                        page = "";
+//                    }
+//                }
             }
         }
         return list;

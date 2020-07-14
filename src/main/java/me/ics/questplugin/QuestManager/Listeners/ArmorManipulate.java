@@ -35,22 +35,22 @@ public class ArmorManipulate implements Listener {
         Material material = event.getArmorStandItem().getType();
         if(slot.equals(EquipmentSlot.HEAD)){
             counter = helmets.indexOf(material);
-            counter(counter);
+            counter = counter(counter);
             event.getRightClicked().setHelmet(new ItemStack(helmets.get(counter)));
         }
         if(slot.equals(EquipmentSlot.CHEST)){
             counter = chestplates.indexOf(material);
-            counter(counter);
+            counter = counter(counter);
             event.getRightClicked().setChestplate(new ItemStack(chestplates.get(counter)));
         }
         if(slot.equals(EquipmentSlot.LEGS)){
             counter = leggins.indexOf(material);
-            counter(counter);
+            counter = counter(counter);
             event.getRightClicked().setLeggings(new ItemStack(leggins.get(counter)));
         }
         if(slot.equals(EquipmentSlot.FEET)){
             counter = feets.indexOf(material);
-            counter(counter);
+            counter = counter(counter);
             event.getRightClicked().setBoots(new ItemStack(feets.get(counter)));
         }
     }

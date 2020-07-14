@@ -6,6 +6,7 @@ import me.ics.questplugin.CustomClasses.ClassesQuestWorld.QuestStats;
 import me.ics.questplugin.CustomClasses.ClassesQuestWorld.QuestWorldData;
 import me.ics.questplugin.CustomClasses.Statistic.ListAllStatsData;
 import me.ics.questplugin.FileEditor.FileJsonEditor;
+import me.ics.questplugin.QuestManager.Scoreboards.ScoreBoardQuest;
 import org.bukkit.*;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -23,10 +24,12 @@ import java.util.function.Function;
 public class QuestOperator implements CommandExecutor {
     private FileJsonEditor<ListQuestWorldData> editor;
     private FileJsonEditor<ListAllStatsData> editorStats;
+    private Plugin plugin;
 
     public QuestOperator(Plugin plugin, String fileName) {
         editor = new FileJsonEditor<>(fileName, new ListQuestWorldData(), plugin);
         editorStats = new FileJsonEditor<>("/stats.txt", new ListAllStatsData(), plugin);
+        this.plugin = plugin;
     }
 
     @Override
@@ -47,8 +50,8 @@ public class QuestOperator implements CommandExecutor {
         if (worldList(args, listQuestWorlds, player)) return true;
         //    /quest playerlist
         if (playerList(args, listQuestWorlds, player)) return true;
-        //    /quest reload
-        if (reload(args, listQuestWorlds, player)) return true;
+//        //    /quest reload
+//        if (reload(args, listQuestWorlds, player)) return true;
         //    /quest remove xxx
         if (removeWorld(args, listQuestWorlds, player)) return true;
         return false;
@@ -63,9 +66,12 @@ public class QuestOperator implements CommandExecutor {
                             player.sendMessage("Вы уже в квесте!");
                             return true;
                         }
-                        Location saved = new Location(Bukkit.getWorld(questWorldData.questWorldName), questWorldData.spawn[0], questWorldData.spawn[1], questWorldData.spawn[2]);
 
-                        player.getInventory().setItem(4, new ItemStack(Material.AIR));
+                        Location saved = new Location(Bukkit.getWorld(questWorldData.questWorldName), questWorldData.spawn[0], questWorldData.spawn[1], questWorldData.spawn[2]);
+                        new ScoreBoardQuest().scoreQuest(editor, plugin, player);
+                        if (player.getInventory().getItem(4) != null){
+                            Objects.requireNonNull(player.getInventory().getItem(4)).setAmount(0);
+                        }
 
                         player.sendMessage(ChatColor.GREEN + "Телепортация на сохраненную локацию.");
                         player.teleport(saved);
@@ -92,8 +98,11 @@ public class QuestOperator implements CommandExecutor {
                         questWorldData.ticksSavedBeforeLeaving = 0;
                         Location loc_spawn = new Location(quest, questWorldData.spawn[0], questWorldData.spawn[1], questWorldData.spawn[2]);
                         assert quest != null;
-                        quest.setTime(6000);
+                        quest.setTime(23500);
+
                         player.teleport(loc_spawn);
+                        new ScoreBoardQuest().scoreQuest(editor, plugin, player);
+
                         loc_spawn.setX(0);
                         loc_spawn.setY(1);
                         loc_spawn.setZ(0);
@@ -265,28 +274,28 @@ public class QuestOperator implements CommandExecutor {
         return false;
     }
 
-    //    /quest reload
-    private boolean reload(String[] args, ListQuestWorldData listQuestWorlds, Player player) {
-        // перезагрузка
-        if (args.length == 1 && args[0].equalsIgnoreCase("reload")) {
-            List<QuestWorldData> tempDataToDelete = new ArrayList<>();
-            // удаляем лишние миры из массива
-            // Находим нулевые миры в файле, записывем во временный массив
-            for (QuestWorldData questWorldData : listQuestWorlds.allQuestWorlds) {
-                if (Bukkit.getWorld(questWorldData.questWorldName) == null) {
-                    tempDataToDelete.add(questWorldData);
-                }
-            }
-            for (QuestWorldData questWorldData : tempDataToDelete) {
-                listQuestWorlds.allQuestWorlds.remove(questWorldData);
-            }
-            editor.setData(listQuestWorlds);
-
-            player.sendMessage(ChatColor.GREEN + "Список миров перезагружен, данные удалены!");
-            return true;
-        }
-        return false;
-    }
+//    //    /quest reload
+//    private boolean reload(String[] args, ListQuestWorldData listQuestWorlds, Player player) {
+//        // перезагрузка
+//        if (args.length == 1 && args[0].equalsIgnoreCase("reload")) {
+//            List<QuestWorldData> tempDataToDelete = new ArrayList<>();
+//            // удаляем лишние миры из массива
+//            // Находим нулевые миры в файле, записывем во временный массив
+//            for (QuestWorldData questWorldData : listQuestWorlds.allQuestWorlds) {
+//                if (Bukkit.getWorld(questWorldData.questWorldName) == null) {
+//                    tempDataToDelete.add(questWorldData);
+//                }
+//            }
+//            for (QuestWorldData questWorldData : tempDataToDelete) {
+//                listQuestWorlds.allQuestWorlds.remove(questWorldData);
+//            }
+//            editor.setData(listQuestWorlds);
+//
+//            player.sendMessage(ChatColor.GREEN + "Список миров перезагружен, данные удалены!");
+//            return true;
+//        }
+//        return false;
+//    }
 
     private String color(String s){
         return ChatColor.translateAlternateColorCodes('&', s);
