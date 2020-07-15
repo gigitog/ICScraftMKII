@@ -48,7 +48,9 @@ public class QuestStats {
         meta.setLore(Arrays.asList("§dЗдесь хранится твоя статистика"));
         meta.setAuthor("§cUncle Yura");
         meta.setTitle("Статистика игрока " + playerName);
+
         for (String s : makeList(votes)) meta.addPage(s);
+
         book.setItemMeta(meta);
         book.setAmount(1);
         return book;
@@ -91,8 +93,7 @@ public class QuestStats {
 
                 int i = 0;
                 for (int percent : recommend) {
-                    recStr = recStr.concat("§9" + specialities[i] + "§r - " + percentColor.apply(percent));
-                    i++;
+                    recStr = recStr.concat("§9" + specialities[i++] + "§r - " + percentColor.apply(percent));
                 }
 
                 int headPage = 0;

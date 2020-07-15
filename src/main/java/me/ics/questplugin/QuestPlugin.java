@@ -1,5 +1,7 @@
 package me.ics.questplugin;
 
+import me.ics.questplugin.HelpClasses.FoodChange;
+import me.ics.questplugin.HelpClasses.MusicSaver;
 import me.ics.questplugin.OSclasses.PlayerClickOnComp;
 import me.ics.questplugin.ArmorHolo.SetArmorHolo;
 import me.ics.questplugin.ArraySorterMine.ListenerArray;
@@ -56,7 +58,9 @@ public final class QuestPlugin extends JavaPlugin {
         getCommand("setholo").setExecutor(new SetArmorHolo());
         getServer().getPluginManager().registerEvents(new ListenerArray(this, "/buttons_data.json", "/quest_worlds_data"), this);
         getServer().getPluginManager().registerEvents(new ListenerChestClick(editorQuest), this);
+        getServer().getPluginManager().registerEvents(new FoodChange(), this);
         getServer().getPluginManager().registerEvents(new ArmorManipulate(this, fileQuest), this);
+        getServer().getPluginManager().registerEvents(new MusicSaver(this), this);
     }
 
     private void onEnableQuestManager() {

@@ -135,6 +135,7 @@ public class PlayerMove implements Listener {
             questWorldData.ticksPlayedFinal = (quest_player.getTicksLived() + questWorldData.ticksSavedBeforeLeaving - questWorldData.ticksLivedWhenStart);
             //телепорт
             quest_player.performCommand("spawn");
+            Bukkit.unloadWorld(questWorldData.questWorldName,false);
             quest_player.getInventory().setItem(7, null);
 
             RewriteQuestData.rewrite(editorQuest, questWorldData);
