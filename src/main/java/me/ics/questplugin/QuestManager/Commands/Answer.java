@@ -17,29 +17,27 @@ import org.bukkit.plugin.Plugin;
 public class Answer implements CommandExecutor {
     private FileJsonEditor<ListQuestWorldData> editorQuest;
     private FileJsonEditor<AnswerDataMap> editorAnswer;
+    private ListQuestWorldData listQuestWorldData;
 
-    public Answer(Plugin plugin, String fileQuest, String fileAnswers) {
+    public Answer(Plugin plugin, String fileQuest, String fileAnswers, ListQuestWorldData listQuestWorldData) {
         editorQuest = new FileJsonEditor<>(fileQuest, new ListQuestWorldData(), plugin);
         editorAnswer = new FileJsonEditor<>(fileAnswers, new AnswerDataMap(), plugin);
+        this.listQuestWorldData = listQuestWorldData;
     }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player)) return false;
         Player player = (Player) sender;
-        boolean check = false;
-        int indexOfQuestWorld = 0;
-        QuestWorldData tempData = null;
 
         if (args.length != 0) {
-            ListQuestWorldData listQuestWorlds = editorQuest.getData();
-            QuestWorldData questWorldData = listQuestWorlds.getQWDbyPlayer(player.getName());
+            QuestWorldData questWorldData = listQuestWorldData.getQWDbyPlayer(player.getName());
             String playerAnswer = String.join(" ", args);
             int chp = questWorldData.checkpoint;
             String trueAnswer = editorAnswer.getData().getAnswer(chp);
             //checking
             if (playerAnswer.equalsIgnoreCase(trueAnswer)) {
-                check = true;
+
                 // avoid dublicates
                 if (questWorldData.num_quests_complete.contains(chp)) {
                     player.sendMessage(ChatColor.GREEN + "Это ответ на прошлое задание! Отвечать можно лишь на текущее.");
@@ -49,7 +47,7 @@ public class Answer implements CommandExecutor {
                 player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 50, 100);
                 player.sendMessage(ChatColor.GREEN + "Правильный ответ!");
             } else player.sendMessage(ChatColor.RED + "Неправильный ответ!");
-            RewriteQuestData.rewrite(editorQuest, questWorldData);
+            RewriteQuestData.rewrite(listQuestWorldData, questWorldData);
         }
         return true;
     }

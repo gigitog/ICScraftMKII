@@ -20,7 +20,8 @@ import java.util.List;
 import java.util.Objects;
 
 public class ListenerChestClick implements Listener {
-    private FileJsonEditor<ListQuestWorldData> editorQuest;
+    private ListQuestWorldData listQuestWorldData;
+
     private List<ItemStack> items = Arrays.asList(
             new ItemStack(Material.BOOKSHELF),
             new ItemStack(Material.SWEET_BERRIES),
@@ -41,13 +42,13 @@ public class ListenerChestClick implements Listener {
     );
     private List<Integer> itemsIndex = Arrays.asList(1, 2, 3, 1, 3, 1, 2, 1, 3, 2, 3, 1, 2, 3, 2);
 
-    public ListenerChestClick(FileJsonEditor<ListQuestWorldData> editorQuest) {
-        this.editorQuest = editorQuest;
+    public ListenerChestClick(ListQuestWorldData listQuestWorldData) {
+        this.listQuestWorldData = listQuestWorldData;
     }
 
     @EventHandler
     public void onClick(InventoryOpenEvent event){
-        QuestWorldData questWorldData = editorQuest.getData().getQWDbyPlayer(event.getPlayer().getName());
+        QuestWorldData questWorldData = listQuestWorldData.getQWDbyPlayer(event.getPlayer().getName());
         if(questWorldData!=null){
             if(questWorldData.checkpoint == 402){
                 if(event.getInventory().getType().equals(InventoryType.CHEST)) event.setCancelled(true);
@@ -81,7 +82,7 @@ public class ListenerChestClick implements Listener {
                     }
                 }
 
-                RewriteQuestData.rewrite(editorQuest,questWorldData);
+                RewriteQuestData.rewrite(listQuestWorldData,questWorldData);
             } else if (questWorldData.checkpoint == 202 && questWorldData.num_quests_complete.contains(202)){
                 event.setCancelled(true);
             }

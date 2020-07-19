@@ -15,6 +15,7 @@ import java.util.TreeMap;
 
 public class OSinventories {
     private FileJsonEditor<ListQuestWorldData> editorQuest;
+    private ListQuestWorldData listQuestWorldData;
 
     private Inventory computer = Bukkit.createInventory(null,54,"Компьютер");
     private Inventory browser = Bukkit.createInventory(null,54,"Браузер");
@@ -22,9 +23,10 @@ public class OSinventories {
 
     QuestWorldData questWorldData;
 
-    public OSinventories(Plugin plugin, String fileNameQuest, String playerName){
+    public OSinventories(Plugin plugin, String fileNameQuest, String playerName, ListQuestWorldData listQuestWorldData){
         editorQuest = new FileJsonEditor<>(fileNameQuest, new ListQuestWorldData(), plugin);
-        questWorldData = editorQuest.getData().getQWDbyPlayer(playerName);
+        questWorldData = listQuestWorldData.getQWDbyPlayer(playerName);
+        this.listQuestWorldData = listQuestWorldData;
     }
 
     public Inventory getInventory(int index){

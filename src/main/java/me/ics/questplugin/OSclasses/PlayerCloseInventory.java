@@ -12,20 +12,22 @@ import org.bukkit.plugin.Plugin;
 
 public class PlayerCloseInventory implements Listener {
     private FileJsonEditor<ListQuestWorldData> editorQuest;
+    private ListQuestWorldData listQuestWorldData;
 
-    public PlayerCloseInventory(Plugin plugin, String fileNameQuest){
+    public PlayerCloseInventory(Plugin plugin, String fileNameQuest, ListQuestWorldData listQuestWorldData){
         editorQuest = new FileJsonEditor<>(fileNameQuest, new ListQuestWorldData(), plugin);
+        this.listQuestWorldData = listQuestWorldData;
     }
 
 
     @EventHandler
     public void ComputerClose(InventoryCloseEvent event){
         String player = event.getPlayer().getName();
-        QuestWorldData questWorldData = editorQuest.getData().getQWDbyPlayer(player);
+        QuestWorldData questWorldData = listQuestWorldData.getQWDbyPlayer(player);
         if(questWorldData==null) return;
         if(questWorldData.checkpoint!=501) return;
         questWorldData.stack.removeAllElements();
         questWorldData.stack.push(0);
-        new RewriteQuestData().rewrite(editorQuest,questWorldData);
+        RewriteQuestData.rewrite(listQuestWorldData,questWorldData);
     }
 }

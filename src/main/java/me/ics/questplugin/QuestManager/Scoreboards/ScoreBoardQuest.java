@@ -2,7 +2,6 @@ package me.ics.questplugin.QuestManager.Scoreboards;
 
 import me.ics.questplugin.CustomClasses.ClassesQuestWorld.ListQuestWorldData;
 import me.ics.questplugin.CustomClasses.ClassesQuestWorld.QuestWorldData;
-import me.ics.questplugin.FileEditor.FileJsonEditor;
 import me.ics.questplugin.HelpClasses.PlayerChecker;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -19,7 +18,7 @@ import java.util.function.Function;
 public class ScoreBoardQuest {
     private Map<Integer, String> tasks = new TreeMap<>();
 
-    public static void scoreONPU(Plugin plugin, Player player, FileJsonEditor<ListQuestWorldData> editor){
+    public static void scoreONPU(Plugin plugin, Player player, ListQuestWorldData listQuestWorldData){
         ScoreboardManager m = Bukkit.getScoreboardManager();
         Scoreboard scoreboard = m.getNewScoreboard();
         Objective objective = scoreboard.registerNewObjective("onpuboard", "dummy", ChatColor.GREEN + "§lPOLYTECH");
@@ -38,7 +37,7 @@ public class ScoreBoardQuest {
             public void run() {
                 int counter = 0;
                 int counterWorlds = 0;
-                for (QuestWorldData qwd : editor.getData().allQuestWorlds){
+                for (QuestWorldData qwd : listQuestWorldData.allQuestWorlds){
                     if (qwd.ticksPlayedFinal != 0) counter++;
                     if (!qwd.isBusy) counterWorlds++;
                 }
@@ -86,13 +85,13 @@ public class ScoreBoardQuest {
     }
 
     private Function<Integer, String> currentTask = x->{
-        if (x < 202) return "Начало квеста";
+        if (x < 200) return "Начало квеста";
         if (x > 701 && x < 1050 || x > 1100) return "Конец квеста";
         if (x > 1049 && x < 1100) return ChatColor.DARK_RED  + "Неизвестно";
         return tasks.get(x);
     };
 
-    public void scoreQuest(FileJsonEditor<ListQuestWorldData> editorQuest, Plugin plugin, Player player){
+    public void scoreQuest(ListQuestWorldData listQuestWorldData, Plugin plugin, Player player){
         makeTasks();
 
         ScoreboardManager manager = Bukkit.getScoreboardManager();
@@ -109,7 +108,7 @@ public class ScoreBoardQuest {
         new BukkitRunnable(){
             @Override
             public void run() {
-                QuestWorldData qwd = editorQuest.getData().getQWDbyPlayer(player.getName());
+                QuestWorldData qwd = listQuestWorldData.getQWDbyPlayer(player.getName());
 
                 if (qwd == null) return;
                 if (PlayerChecker.isNotInQuest(player)) return;

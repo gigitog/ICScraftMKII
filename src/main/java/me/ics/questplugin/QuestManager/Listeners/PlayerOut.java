@@ -14,15 +14,16 @@ import org.bukkit.plugin.Plugin;
 
 public class PlayerOut implements Listener {
     private FileJsonEditor<ListQuestWorldData> editor;
+    private ListQuestWorldData listQuestWorldData;
 
-    public PlayerOut(Plugin plugin, String fileName) {
+    public PlayerOut(Plugin plugin, String fileName, ListQuestWorldData listQuestWorldData) {
         editor = new FileJsonEditor<>(fileName, new ListQuestWorldData(), plugin);
+        this.listQuestWorldData = listQuestWorldData;
     }
 
     @EventHandler
     public void onPlayerExit(PlayerQuitEvent e){
-        ListQuestWorldData list = editor.getData();
-        QuestWorldData questWorldData = list.getQWDbyPlayer(e.getPlayer().getName());
+        QuestWorldData questWorldData = listQuestWorldData.getQWDbyPlayer(e.getPlayer().getName());
 
         if(questWorldData == null) return;
 
@@ -30,12 +31,12 @@ public class PlayerOut implements Listener {
             questWorldData.ticksSavedBeforeLeaving += e.getPlayer().getTicksLived() - questWorldData.ticksLivedWhenStart;
             questWorldData.ticksLivedWhenStart = 0;
             e.getPlayer().getInventory().clear();
-            RewriteQuestData.rewrite(editor,questWorldData);
+            RewriteQuestData.rewrite(listQuestWorldData, questWorldData);
         }
 
         if (questWorldData.checkpoint > 1049 && questWorldData.checkpoint < 1099){
             questWorldData.checkpoint = 1111;
-            RewriteQuestData.rewrite(editor, questWorldData);
+            RewriteQuestData.rewrite(listQuestWorldData, questWorldData);
         }
 
 //        for(QuestWorldData questWorldData : list.allQuestWorlds){

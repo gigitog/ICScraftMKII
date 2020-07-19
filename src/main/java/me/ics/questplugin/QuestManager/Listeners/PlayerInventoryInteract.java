@@ -21,8 +21,10 @@ import java.util.Objects;
 public class PlayerInventoryInteract implements Listener {
     private List<String> noInteractItems = Arrays.asList("§aЗакончить квест §7(ПКМ)","§aНачать квест §7(ПКМ)","§aИнформация о квесте §7(ПКМ)","§9Вернуться в лобби §7(ПКМ)");
     private FileJsonEditor<ListQuestWorldData> editorQuest;
-    public PlayerInventoryInteract(Plugin plugin, String fileNameQuest){
+    private ListQuestWorldData listQuestWorldData;
+    public PlayerInventoryInteract(Plugin plugin, String fileNameQuest, ListQuestWorldData listQuestWorldData){
         editorQuest = new FileJsonEditor<>(fileNameQuest, new ListQuestWorldData(), plugin);
+        this.listQuestWorldData = listQuestWorldData;
     }
 
     @EventHandler
@@ -30,7 +32,7 @@ public class PlayerInventoryInteract implements Listener {
         Player player = (Player) event.getWhoClicked();
         //проверка на мир
 
-        QuestWorldData questWorldData = editorQuest.getData().getQWDbyPlayer(player.getName());
+        QuestWorldData questWorldData = listQuestWorldData.getQWDbyPlayer(player.getName());
         if(questWorldData!=null) {
             if(!player.getWorld().getName().startsWith("quest")) return;
             if(event.getClickedInventory()==null || !event.getClickedInventory().getType().equals(InventoryType.CHEST)) return;
@@ -72,7 +74,7 @@ public class PlayerInventoryInteract implements Listener {
                         lime = true;
                         event.setCancelled(true);
                         chest.setItem(event.getSlot(), new ItemStack(Material.LIME_WOOL));
-                        RewriteQuestData.rewrite(editorQuest,questWorldData);
+                        RewriteQuestData.rewrite(listQuestWorldData,questWorldData);
                     }
                 }
 
@@ -82,7 +84,7 @@ public class PlayerInventoryInteract implements Listener {
                         player.sendTitle("§aМолодец", "", 10, 40, 10);
                         questWorldData.num_quests_complete.add(202);
                     }
-                    RewriteQuestData.rewrite(editorQuest,questWorldData);
+                    RewriteQuestData.rewrite(listQuestWorldData,questWorldData);
                     return;
                 } else if (lime) {
                     return;

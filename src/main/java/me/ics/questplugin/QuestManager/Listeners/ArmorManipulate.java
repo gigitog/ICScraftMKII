@@ -16,14 +16,15 @@ import java.util.List;
 
 public class ArmorManipulate implements Listener {
     private FileJsonEditor<ListQuestWorldData> editor;
-
-    public ArmorManipulate(Plugin plugin, String fileName){
+    private ListQuestWorldData listQuestWorldData;
+    public ArmorManipulate(Plugin plugin, String fileName, ListQuestWorldData listQuestWorldData){
         editor = new FileJsonEditor<>(fileName, new ListQuestWorldData(), plugin);
+        this.listQuestWorldData = listQuestWorldData;
     }
 
     @EventHandler
     public void armorManipulate(PlayerArmorStandManipulateEvent event){
-        QuestWorldData questWorldData = editor.getData().getQWDbyPlayer(event.getPlayer().getName());
+        QuestWorldData questWorldData = listQuestWorldData.getQWDbyPlayer(event.getPlayer().getName());
         if(questWorldData==null || questWorldData.ticksPlayedFinal!=0 || questWorldData.checkpoint!=303 ) return;
         event.setCancelled(true);
         EquipmentSlot slot = event.getSlot();

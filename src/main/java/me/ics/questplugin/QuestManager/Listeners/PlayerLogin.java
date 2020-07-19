@@ -20,10 +20,12 @@ public class PlayerLogin implements Listener {
     List<String> strings = Arrays.asList("§aНачать квест §7(ПКМ)","§aИнформация о квесте §7(ПКМ)","§9Вернуться в лобби §7(ПКМ)");
     private FileJsonEditor<ListQuestWorldData> editorQuest;
     private Plugin plugin;
+    private ListQuestWorldData listQuestWorldData;
 
-    public PlayerLogin(Plugin plugin, String fileNameQuest) {
+    public PlayerLogin(Plugin plugin, String fileNameQuest, ListQuestWorldData listQuestWorldData) {
         editorQuest = new FileJsonEditor<>(fileNameQuest, new ListQuestWorldData(), plugin);
         this.plugin = plugin;
+        this.listQuestWorldData = listQuestWorldData;
     }
 
 
@@ -32,21 +34,21 @@ public class PlayerLogin implements Listener {
         Player player = event.getPlayer();
 
         if (player.getWorld().getName().equals("Survival")) return;
-        QuestWorldData qwd = editorQuest.getData().getQWDbyPlayer(player.getName());
+        QuestWorldData qwd = listQuestWorldData.getQWDbyPlayer(player.getName());
         if (qwd == null || qwd.ticksPlayedFinal == 0){
 
             player.getInventory().setItem(8, QuestInstruments.makeLobbyBed());
         } else {
-            ScoreBoardQuest.scoreONPU(plugin, player, editorQuest);
+            ScoreBoardQuest.scoreONPU(plugin, player, listQuestWorldData);
             return;
         }
         if (player.getWorld().getName().startsWith("quest")){
-            new ScoreBoardQuest().scoreQuest(editorQuest, plugin, player);
+            new ScoreBoardQuest().scoreQuest(listQuestWorldData, plugin, player);
             player.getInventory().setItem(7, QuestInstruments.makeEndRedstone());
             player.getInventory().setItem(4, new ItemStack(Material.AIR));
         } else {
             player.getInventory().setItem(4, QuestInstruments.makeQuestBook());
-            ScoreBoardQuest.scoreONPU(plugin, player, editorQuest);
+            ScoreBoardQuest.scoreONPU(plugin, player, listQuestWorldData);
         }
 
         if (player.isOp()) {

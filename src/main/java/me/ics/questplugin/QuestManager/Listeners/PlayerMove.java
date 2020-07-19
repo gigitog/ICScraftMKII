@@ -57,8 +57,7 @@ public class PlayerMove implements Listener {
 
         if(questWorldData.counter != 0 && questWorldData.checkpoint == 301){
             questWorldData.counter = 0;
-            RewriteQuestData.rewrite(editorQuest, questWorldData);
-            listQuestWorldData = editorQuest.getData();
+            RewriteQuestData.rewrite(listQuestWorldData, questWorldData);
             return;
         }
 
@@ -101,10 +100,11 @@ public class PlayerMove implements Listener {
                     //if it's player's first step in the region, make name_place in map true
                     add(name_place);
                     // нужно проиграть звук
-//                    if (questWorldData.checkpoint < txtWarp.index){
-//
-//                    }
-                    quest_player.playSound(loc, Sound.ENTITY_PLAYER_LEVELUP, 100, 100);
+                    if (questWorldData.checkpoint < txtWarp.index){
+                        quest_player.playSound(loc, Sound.ENTITY_PLAYER_LEVELUP, 100, 100);
+                    }
+
+
                     // установка чекпоинта
                     if (txtWarp.index < 1500)
                         questWorldData.checkpoint = txtWarp.index;
@@ -116,7 +116,7 @@ public class PlayerMove implements Listener {
                     }
 
                     if (txtWarp.index == 1050){
-                        ItemStack secretBook = new QuestStats(editorQuest, quest_player, editorStats, questWorldData.votes).makeBookSecret();
+                        ItemStack secretBook = new QuestStats(editorQuest, quest_player, editorStats, listQuestWorldData).makeBookSecret();
                         Location locChest = new Location(quest_player.getWorld(), 532, 66, 666);
                         if (quest_player.getWorld().getName().startsWith("quest")){
                             Chest chest = (Chest) locChest.getBlock().getState();
@@ -125,19 +125,18 @@ public class PlayerMove implements Listener {
                         }
                     }
 
-                    RewriteQuestData.rewrite(editorQuest, questWorldData);
-                    listQuestWorldData = editorQuest.getData();
+                    RewriteQuestData.rewrite(listQuestWorldData, questWorldData);
 
                     break;
                 }
-            } //else {
-//                if (placesContain(name_place)) {
-//                    //if coords are incorrect, else statement is working. So we need
-//                    //to set "name"_"place" to "false" in the HashMap
-//                    remove(name_place);
-//                    break;
-//                }
-//            }
+            } else {
+                if (placesContain(name_place)) {
+                    //if coords are incorrect, else statement is working. So we need
+                    //to set "name"_"place" to "false" in the HashMap
+                    remove(name_place);
+                    break;
+                }
+            }
         }
 
         boolean finish = false;
@@ -162,19 +161,17 @@ public class PlayerMove implements Listener {
             new WorldRecreator(Bukkit.getWorld(questWorldData.questWorldName)).worldRecreator();
 
             QuestWorldData qwd = new QuestWorldData(Bukkit.getWorld(questWorldData.questWorldName));
-            ListQuestWorldData list = editorQuest.getData();
-            list.allQuestWorlds.add(qwd);
-            editorQuest.setData(list);
+            listQuestWorldData.allQuestWorlds.add(qwd);
+            editorQuest.setData(listQuestWorldData);
 
             if (quest_player.getInventory().getItem(7) != null) {
                 Objects.requireNonNull(quest_player.getInventory().getItem(7)).setAmount(0);
             }
-            RewriteQuestData.rewrite(editorQuest, questWorldData);
 
-            listQuestWorldData = editorQuest.getData();
+            RewriteQuestData.rewrite(listQuestWorldData, questWorldData);
 
             new ArrayProcessor(editorStats, questWorldData.votes, quest_player.getName()).writeStats();
-            QuestStats questBook = new QuestStats(editorQuest, quest_player, editorStats, questWorldData.votes);
+            QuestStats questBook = new QuestStats(editorQuest, quest_player, editorStats, listQuestWorldData);
             quest_player.getInventory().setItem(4, questBook.makeBook());
 
         }

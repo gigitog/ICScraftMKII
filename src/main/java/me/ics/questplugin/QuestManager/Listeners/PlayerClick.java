@@ -15,9 +15,11 @@ import org.bukkit.plugin.Plugin;
 
 public class PlayerClick implements Listener {
     private FileJsonEditor<ListQuestWorldData> editor;
+    private  ListQuestWorldData listQuestWorldData;
 
-    public PlayerClick(Plugin plugin, String fileName) {
+    public PlayerClick(Plugin plugin, String fileName, ListQuestWorldData listQuestWorldData) {
         editor = new FileJsonEditor<>(fileName, new ListQuestWorldData(), plugin);
+        this.listQuestWorldData = listQuestWorldData;
     }
 
     @EventHandler
@@ -47,7 +49,7 @@ public class PlayerClick implements Listener {
                 player.performCommand("quest status " + player.getName());
             }
         }
-        QuestWorldData questWorldData = editor.getData().getQWDbyPlayer(player.getName());
+        QuestWorldData questWorldData = listQuestWorldData.getQWDbyPlayer(player.getName());
         if (questWorldData == null || questWorldData.ticksPlayedFinal != 0)
             return;
         if (questWorldData.checkpoint < 100) {

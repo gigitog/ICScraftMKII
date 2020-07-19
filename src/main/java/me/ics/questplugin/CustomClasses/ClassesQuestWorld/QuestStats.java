@@ -12,14 +12,14 @@ import java.util.*;
 import java.util.function.Function;
 
 public class QuestStats {
-    private FileJsonEditor<ListQuestWorldData> editor;
+    private FileJsonEditor<ListQuestWorldData> editorQuest;
     private FileJsonEditor<ListAllStatsData> editorStats;
     private String playerName;
     private Map<Integer, String> tasks = new TreeMap<>();
     private int[] votes;
     private String uuid;
     private  Player player;
-
+    private ListQuestWorldData listQuestWorldData;
 
     private String[] disciplines = new String[]{
             "Дискретная математика и Алгоритмы",
@@ -30,14 +30,15 @@ public class QuestStats {
             "Тестировка ПО"
     };
 
-    public QuestStats(FileJsonEditor<ListQuestWorldData> editor, Player player, FileJsonEditor<ListAllStatsData> editorStats, int[] votes) {
-        this.editor = editor;
+    public QuestStats(FileJsonEditor<ListQuestWorldData> editor, Player player, FileJsonEditor<ListAllStatsData> editorStats, ListQuestWorldData listQuestWorldData) {
+        this.editorQuest = editor;
         this.playerName = player.getName();
         this.editorStats = editorStats;
         uuid = player.getUniqueId().toString();
         makeTasks();
         this.player = player;
-        this.votes = votes;
+        this.votes = listQuestWorldData.getQWDbyPlayer(playerName).votes;
+        this.listQuestWorldData = listQuestWorldData;
     }
 
     public ItemStack makeBook() {
@@ -102,9 +103,9 @@ public class QuestStats {
     private List<String> makeList(int[] votes, boolean isSecret) {
         List<String> list = new ArrayList<>();
         int[] specialities = new int[]{113, 121, 122, 123, 126, 151};
-        QuestWorldData qwd = editor.getData().getQWDbyPlayer(playerName);
+        QuestWorldData qwd = listQuestWorldData.getQWDbyPlayer(playerName);
         if (qwd == null){
-            list.add("Неполадки. Обратитесь к админам (Сотрудникам)\n Проси прощения!");
+            list.add("Неполадки. Обратитесь к админам (Сотрудникам)\n Просим прощения!");
             return list;
         }
 
@@ -122,8 +123,8 @@ public class QuestStats {
 
         if (isSecret) {
             int ticks = player.getTicksLived() + qwd.ticksSavedBeforeLeaving - qwd.ticksLivedWhenStart;
-            string = "§oАнализ поведения" + s + "Имя: " + playerName +
-                    "\nID:\n" + uuid + "\nВремя прохождения\nзаданий:\n§3" + ticks / 1200 +
+            string = "§oАнализ поведения" + s + "§8Имя§r:\n" + playerName +
+                    "\n§8ID§r:\n" + uuid + "\nВремя прохождения\nзаданий:\n§3" + ticks / 1200 +
                     " (мин) " + ticks % 1200 / 20 + " (сек)§r";
             list.add(string);
             string = "Вероятные предпочтения:\n" + s + recStr + "§r" + s;
@@ -133,10 +134,10 @@ public class QuestStats {
                     "Устойчивость к \nстрессу: " + stressTest.apply(qwd) + s + "Погрешность: " + factor.apply(qwd) + s;
             list.add(string);
         } else {
-             string = "§oОбщая информация\n" + s + "Игровое имя: " +
-                    playerName + "\nВремя прохождения:\n§3" + qwd.ticksPlayedFinal / 1200 +
-                    " (мин) " + qwd.ticksPlayedFinal % 1200 / 20 + " (сек)§r" + s +
-                    "Рекомендуемые специальности смотреть далее.\n";
+             string = "§oОбщая информация" + s + "§8Игровое имя§r: " +
+                    playerName + "\n\n§8Время прохождения§r:\n§3" + qwd.ticksPlayedFinal / 1200 +
+                    " (мин) " + qwd.ticksPlayedFinal % 1200 / 20 + " (сек)§r\n" +
+                    "\nРекомендуемые специальности смотреть далее.";
             list.add(string);
             string = s +  recStr + "§r" + s;
             list.add(string);
@@ -168,8 +169,6 @@ public class QuestStats {
                 }
             }
         }
-
-
         return list;
     }
 

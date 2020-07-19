@@ -6,6 +6,7 @@ import me.ics.questplugin.CustomClasses.ClassesQuestWorld.ListQuestWorldData;
 import me.ics.questplugin.CustomClasses.ClassesQuestWorld.QuestWorldData;
 import me.ics.questplugin.FileEditor.FileJsonEditor;
 import me.ics.questplugin.FileEditor.RewriteDataInCycle;
+import me.ics.questplugin.FileEditor.RewriteQuestData;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -24,12 +25,13 @@ public class ListenerButton implements Listener {
     private FileJsonEditor<ListQuestWorldData> editorQuest;
     private Plugin plugin;
     private Map<String, Boolean> player_clicked = new HashMap<>();
+    private ListQuestWorldData listQuestWorldData;
 
-    public ListenerButton(Plugin plugin, String fileButton, String fileQuest) {
+    public ListenerButton(Plugin plugin, String fileButton, String fileQuest, ListQuestWorldData listQuestWorldData) {
         this.plugin = plugin;
         editorButton = new FileJsonEditor<>(fileButton, new ListButtonData(), plugin);
         editorQuest = new FileJsonEditor<>(fileQuest, new ListQuestWorldData(), plugin);
-
+        this.listQuestWorldData = listQuestWorldData;
     }
     @EventHandler
     public void onButton(PlayerInteractEvent event){
@@ -44,7 +46,7 @@ public class ListenerButton implements Listener {
 
             //list
             ListButtonData buttons = editorButton.getData();
-            ListQuestWorldData listQuestWorlds  = editorQuest.getData();
+
             // search
             for(ButtonData button : buttons.allData){
                 // condition that player clicked on button in file
@@ -53,19 +55,18 @@ public class ListenerButton implements Listener {
                 if(isHere){
                     boolean canTp = true;
                     // добавляем в индекс массива оценок голос игрока по поводу данной секции
-                    for (QuestWorldData questWorldData : listQuestWorlds.allQuestWorlds) {
-                        if (questWorldData.playerName.equalsIgnoreCase(player.getName())) {
-                            if(button.checkpoint > questWorldData.checkpoint){
-                                player.sendMessage(ChatColor.RED + "Туда еще рано!");
-                                return;
-                            }
-                            if(button.index != -1 && button.value != -1){
-                                questWorldData.votes[button.index] = button.value;
-                                new RewriteDataInCycle().rewrite(listQuestWorlds.allQuestWorlds.indexOf(questWorldData),
-                                        questWorldData, editorQuest, true);
-                            }
-                        }
+                    QuestWorldData qwd = listQuestWorldData.getQWDbyPlayer(player.getName());
+                    if (qwd == null) return;
+
+                    if(button.checkpoint > qwd.checkpoint){
+                        player.sendMessage(ChatColor.RED + "Туда еще рано!");
+                        return;
                     }
+                    if(button.index != -1 && button.value != -1){
+                        qwd.votes[button.index] = button.value;
+                        RewriteQuestData.rewrite(listQuestWorldData, qwd);
+                    }
+
                     canTp = isCanTp(player, loc, locTp, button, true, event);
 
                     // set Location, Yaw and Pitch then tp

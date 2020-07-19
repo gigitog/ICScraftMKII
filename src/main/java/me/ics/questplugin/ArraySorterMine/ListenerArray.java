@@ -5,7 +5,7 @@ import me.ics.questplugin.CustomClasses.ClassesButton.ListButtonData;
 import me.ics.questplugin.CustomClasses.ClassesQuestWorld.ListQuestWorldData;
 import me.ics.questplugin.CustomClasses.ClassesQuestWorld.QuestWorldData;
 import me.ics.questplugin.FileEditor.FileJsonEditor;
-import me.ics.questplugin.FileEditor.RewriteDataInCycle;
+import me.ics.questplugin.FileEditor.RewriteQuestData;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -33,11 +33,12 @@ public class ListenerArray implements Listener {
     private int frameX = 661;
     private int frameY = 89;
     private int frameZ = 380;
+    private ListQuestWorldData listQuestWorldData;
 
-
-    public ListenerArray(Plugin plugin, String fileButton, String fileQuest) {
+    public ListenerArray(Plugin plugin, String fileButton, String fileQuest, ListQuestWorldData listQuestWorldData) {
         editorButton = new FileJsonEditor<>(fileButton, new ListButtonData(), plugin);
         editorQuest = new FileJsonEditor<>(fileQuest, new ListQuestWorldData(), plugin);
+        this.listQuestWorldData = listQuestWorldData;
     }
 
     @EventHandler
@@ -47,31 +48,27 @@ public class ListenerArray implements Listener {
                 Objects.requireNonNull(event.getClickedBlock()).
                 getType().equals(Material.STONE_BUTTON)){
             Player player = event.getPlayer();
-            ListQuestWorldData listWorlds = editorQuest.getData();
             ListButtonData listButtons = editorButton.getData();
+            QuestWorldData qwd = listQuestWorldData.getQWDbyPlayer(player.getName());
+            short counter = 0;
+            if (qwd == null) return;
 
-            for(QuestWorldData qwd : listWorlds.allQuestWorlds){
-                if(qwd.playerName.equals(player.getName())){
-                    short counter = 0;
-                    if(qwd.checkpoint == 401 && !qwd.num_quests_complete.contains(401)){
-                        logicArray(listButtons, event.getClickedBlock().getLocation(), player);
-                        Location loc = new Location(player.getWorld(), 662, 91, 382);
-                        // роверка на корректность сортировки массива
-                        for (int i = 0; i < 5; i++) {
-                            Location loc2 = loc.clone();
-                            loc2.add(-3 , 2, 0);
-                            if(loc.getBlock().getType().equals(loc2.getBlock().getType())){
-                                counter++;
-                            }
-                            loc.add(0, 0, 4);
-                        }
-                        if(counter == 5){
-                            player.sendTitle(ChatColor.GREEN + "Правильно!", "",10, 30, 10);
-                            qwd.num_quests_complete.add(401);
-                            new RewriteDataInCycle().rewrite(listWorlds.allQuestWorlds.indexOf(qwd) , qwd, editorQuest, true);
-                            break;
-                        }
-                    } else return;
+            if(qwd.checkpoint == 401 && !qwd.num_quests_complete.contains(401)){
+                logicArray(listButtons, event.getClickedBlock().getLocation(), player);
+                Location loc = new Location(player.getWorld(), 662, 91, 382);
+                // роверка на корректность сортировки массива
+                for (int i = 0; i < 5; i++) {
+                    Location loc2 = loc.clone();
+                    loc2.add(-3 , 2, 0);
+                    if(loc.getBlock().getType().equals(loc2.getBlock().getType())){
+                        counter++;
+                    }
+                    loc.add(0, 0, 4);
+                }
+                if(counter == 5){
+                    player.sendTitle(ChatColor.GREEN + "Правильно!", "",10, 30, 10);
+                    qwd.num_quests_complete.add(401);
+                    RewriteQuestData.rewrite(listQuestWorldData, qwd);
                 }
             }
         }
@@ -95,9 +92,8 @@ public class ListenerArray implements Listener {
                 createColorFrame(locFrame, Material.GRAY_CONCRETE);
             }
 
-            if(!player_started.get(player.getName()))
+            if(player_started.get(player.getName()) == null || !player_started.get(player.getName()))
                 return;
-
 
             if (bName.equalsIgnoreCase("sel")){
                 selFrame(player);

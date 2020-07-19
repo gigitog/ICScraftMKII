@@ -37,7 +37,7 @@ public class PlayerTeleport implements Listener {
 //                ScoreBoardQuest.scoreONPU(plugin, player, editor);
 //                return;
 //            }
-            ScoreBoardQuest.scoreONPU(plugin, player, editor);
+            ScoreBoardQuest.scoreONPU(plugin, player, listQuestWorldData);
             player.getInventory().clear();
             if (questWorldData.checkpoint == 1050){
                 questWorldData.checkpoint = 1111;
@@ -52,7 +52,7 @@ public class PlayerTeleport implements Listener {
             return;
         }
         if(!from.getWorld().equals(to.getWorld()) && to.getWorld().getName().startsWith("quest")){
-            new ScoreBoardQuest().scoreQuest(editor, plugin, player);
+            new ScoreBoardQuest().scoreQuest(listQuestWorldData, plugin, player);
             player.getInventory().clear();
             player.getInventory().setItem(7, QuestInstruments.makeEndRedstone());
             player.getInventory().setItem(8, QuestInstruments.makeLobbyBed());

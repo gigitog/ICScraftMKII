@@ -28,6 +28,7 @@ import me.ics.questplugin.VrHelmet.SetVrHelmetButton;
 import me.ics.questplugin.VrHelmet.SetVrPos;
 import org.bukkit.*;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
 
 public final class QuestPlugin extends JavaPlugin {
     private String fileQuest = "/quest_worlds_data";
@@ -48,6 +49,13 @@ public final class QuestPlugin extends JavaPlugin {
         onEnableQuestManager();
         extraModules();
         osClasses();
+
+        new BukkitRunnable(){
+            @Override
+            public void run() {
+                editorQuest.setData(list);
+            }
+        }.runTaskTimer(this, 0, 400);
     }
 
     private void loadConfig() {
@@ -57,10 +65,10 @@ public final class QuestPlugin extends JavaPlugin {
 
     private void extraModules(){
         getCommand("setholo").setExecutor(new SetArmorHolo());
-        getServer().getPluginManager().registerEvents(new ListenerArray(this, "/buttons_data.json", "/quest_worlds_data"), this);
-        getServer().getPluginManager().registerEvents(new ListenerChestClick(editorQuest), this);
+        getServer().getPluginManager().registerEvents(new ListenerArray(this, "/buttons_data.json", "/quest_worlds_data", list), this);
+        getServer().getPluginManager().registerEvents(new ListenerChestClick(list), this);
         getServer().getPluginManager().registerEvents(new FoodChange(), this);
-        getServer().getPluginManager().registerEvents(new ArmorManipulate(this, fileQuest), this);
+        getServer().getPluginManager().registerEvents(new ArmorManipulate(this, fileQuest, list), this);
 //        getServer().getPluginManager().registerEvents(new MusicSaver(this), this);
     }
 
@@ -68,23 +76,23 @@ public final class QuestPlugin extends JavaPlugin {
 
         String fileAnswers = "/answers.json";
 
-        getCommand("setcheckpoint").setExecutor(new SetCheckpoint(this, fileQuest));
-        getCommand("answer").setExecutor(new Answer(this, fileQuest, fileAnswers));
-        getCommand("quest").setExecutor(new QuestOperator(this, fileQuest));
+        getCommand("setcheckpoint").setExecutor(new SetCheckpoint(this, fileQuest, list));
+        getCommand("answer").setExecutor(new Answer(this, fileQuest, fileAnswers, list));
+        getCommand("quest").setExecutor(new QuestOperator(this, fileQuest, list));
         getCommand("addanswer").setExecutor(new AddAnswer(this, fileAnswers));
-        getCommand("finish").setExecutor(new FinishCommand(this, fileQuest));
+        getCommand("finish").setExecutor(new FinishCommand(this, fileQuest, list));
 
-        getServer().getPluginManager().registerEvents(new PlayerTeleport(this, fileQuest), this);
+        getServer().getPluginManager().registerEvents(new PlayerTeleport(this, fileQuest, list), this);
         getServer().getPluginManager().registerEvents(new PlayerThrow(), this);
         getServer().getPluginManager().registerEvents(new PlayerPlace(), this);
-        getServer().getPluginManager().registerEvents(new PlayerOut(this, fileQuest), this);
-        getServer().getPluginManager().registerEvents(new PlayerClick(this, fileQuest), this);
-        getServer().getPluginManager().registerEvents(new PlayerLogin(this, fileQuest), this);
+        getServer().getPluginManager().registerEvents(new PlayerOut(this, fileQuest, list), this);
+        getServer().getPluginManager().registerEvents(new PlayerClick(this, fileQuest, list), this);
+        getServer().getPluginManager().registerEvents(new PlayerLogin(this, fileQuest, list), this);
         getServer().getPluginManager().registerEvents(new PlayerBreak(), this);
-        getServer().getPluginManager().registerEvents(new PlayerInventoryInteract(this,fileQuest),this);
-        getServer().getPluginManager().registerEvents(new PlayerClickOnComp(this,fileQuest),this);
+        getServer().getPluginManager().registerEvents(new PlayerInventoryInteract(this, fileQuest, list),this);
+        getServer().getPluginManager().registerEvents(new PlayerClickOnComp(this, fileQuest, list),this);
         getServer().getPluginManager().registerEvents(new PlayerMove(this,
-                fileQuest, "/txt_warps_data.json"), this);
+                fileQuest, "/txt_warps_data.json", list), this);
         getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "|| QUEST MANAGER ||");
     }
 
@@ -117,14 +125,14 @@ public final class QuestPlugin extends JavaPlugin {
         getCommand("setbutton").setExecutor(new SetButton(this, file));
         getCommand("delbutton").setExecutor(new DelButton(this));
         getCommand("buttons").setExecutor(new Buttons(this));
-        getServer().getPluginManager().registerEvents(new ListenerButton(this, file, fileQuest), this);
+        getServer().getPluginManager().registerEvents(new ListenerButton(this, file, fileQuest, list), this);
         getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "|| BUTTONS   ||");
     }
 
     private void osClasses() {
-        getServer().getPluginManager().registerEvents(new PlayerComputerInteract(this, fileQuest), this);
-        getServer().getPluginManager().registerEvents(new PlayerClickOnComp(this, fileQuest), this);
-        getServer().getPluginManager().registerEvents(new PlayerCloseInventory(this, fileQuest), this);
+        getServer().getPluginManager().registerEvents(new PlayerComputerInteract(this, fileQuest, list), this);
+        getServer().getPluginManager().registerEvents(new PlayerClickOnComp(this, fileQuest, list), this);
+        getServer().getPluginManager().registerEvents(new PlayerCloseInventory(this, fileQuest, list), this);
     }
 
     private void loadImage() {

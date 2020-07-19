@@ -23,15 +23,18 @@ public class PlayerComputerInteract implements Listener {
     private FileJsonEditor<ListQuestWorldData> editorQuest;
     private String fileQuest = "/quest_worlds_data";
     private Plugin plugin;
-    public PlayerComputerInteract(Plugin plugin, String fileNameQuest){
+    private ListQuestWorldData listQuestWorldData;
+
+    public PlayerComputerInteract(Plugin plugin, String fileNameQuest, ListQuestWorldData listQuestWorldData){
         editorQuest = new FileJsonEditor<>(fileNameQuest, new ListQuestWorldData(), plugin);
         this.plugin = plugin;
+        this.listQuestWorldData = listQuestWorldData;
     }
 
     @EventHandler
     public void itemsClick(InventoryClickEvent event){
         HumanEntity player = event.getWhoClicked();
-        QuestWorldData questWorldData = editorQuest.getData().getQWDbyPlayer(event.getWhoClicked().getName());
+        QuestWorldData questWorldData = listQuestWorldData.getQWDbyPlayer(event.getWhoClicked().getName());
         if(questWorldData==null) return;
         if(questWorldData.checkpoint!=501) return;
         ItemStack itemStack = event.getCurrentItem();
@@ -47,7 +50,7 @@ public class PlayerComputerInteract implements Listener {
                         stack.add(1,2);stack.pop();
                     }
                 }else stack.push(1);
-                player.openInventory(new OSinventories(plugin,fileQuest,player.getName()).getInventory(stack.peek()));
+                player.openInventory(new OSinventories(plugin, fileQuest, player.getName(), listQuestWorldData).getInventory(stack.peek()));
             }
             if(itemStack.getItemMeta().getDisplayName().equalsIgnoreCase("терминал")){
                 if(stack.contains(2)){
@@ -55,14 +58,14 @@ public class PlayerComputerInteract implements Listener {
                         stack.add(1,1);stack.pop();
                     }
                 }else stack.push(2);
-                player.openInventory(new OSinventories(plugin,fileQuest,player.getName()).getInventory(stack.peek()));
+                player.openInventory(new OSinventories(plugin, fileQuest, player.getName(), listQuestWorldData).getInventory(stack.peek()));
             }
             if(itemStack.getItemMeta().getDisplayName().equalsIgnoreCase("закрыть")){
                 if(stack.size()==1){
                     player.closeInventory();
                 }else {
                     stack.pop();
-                    inventory = new OSinventories(plugin,fileQuest,player.getName()).getInventory(stack.peek());
+                    inventory = new OSinventories(plugin,fileQuest,player.getName(), listQuestWorldData).getInventory(stack.peek());
                     player.openInventory(inventory);
                 }
             }
@@ -135,7 +138,7 @@ public class PlayerComputerInteract implements Listener {
                 }
             }
             questWorldData.stack=stack;
-            RewriteQuestData.rewrite(editorQuest,questWorldData);
+            RewriteQuestData.rewrite(listQuestWorldData, questWorldData);
         }catch (NullPointerException e){
 
         }

@@ -12,22 +12,24 @@ import org.bukkit.entity.Player;
 
 public class FinishCommand implements CommandExecutor {
     private FileJsonEditor<ListQuestWorldData> editorQuest;
+    private ListQuestWorldData listQuestWorldData;
 
-    public FinishCommand(QuestPlugin questPlugin, String fileQuest) {
+    public FinishCommand(QuestPlugin questPlugin, String fileQuest, ListQuestWorldData listQuestWorldData) {
         editorQuest = new FileJsonEditor<>(fileQuest, new ListQuestWorldData(),questPlugin);
+        this.listQuestWorldData = listQuestWorldData;
     }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String s, String[] strings) {
         if (!(sender instanceof Player)) return false;
         Player player = (Player) sender;
-        QuestWorldData questWorldData = editorQuest.getData().getQWDbyPlayer(player.getName());
+        QuestWorldData questWorldData = listQuestWorldData.getQWDbyPlayer(player.getName());
         if(questWorldData==null){
             player.sendMessage("Вы не в квесте, сеньор...");
             return true;
         }
         questWorldData.checkpoint = 1111;
-        RewriteQuestData.rewrite(editorQuest,questWorldData);
+        RewriteQuestData.rewrite(listQuestWorldData,questWorldData);
         return true;
     }
 }

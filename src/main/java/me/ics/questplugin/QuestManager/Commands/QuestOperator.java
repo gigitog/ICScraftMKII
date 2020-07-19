@@ -22,11 +22,13 @@ public class QuestOperator implements CommandExecutor {
     private FileJsonEditor<ListQuestWorldData> editor;
     private FileJsonEditor<ListAllStatsData> editorStats;
     private Plugin plugin;
+    private  ListQuestWorldData listQuestWorldData;
 
-    public QuestOperator(Plugin plugin, String fileName) {
+    public QuestOperator(Plugin plugin, String fileName, ListQuestWorldData listQuestWorldData) {
         editor = new FileJsonEditor<>(fileName, new ListQuestWorldData(), plugin);
         editorStats = new FileJsonEditor<>("/stats.txt", new ListAllStatsData(), plugin);
         this.plugin = plugin;
+        this.listQuestWorldData = listQuestWorldData;
     }
 
     @Override
@@ -38,7 +40,7 @@ public class QuestOperator implements CommandExecutor {
         }
 
         Player player = (Player) sender;
-        QuestWorldData questWorldData = editor.getData().getQWDbyPlayer(player.getName());
+        QuestWorldData questWorldData = listQuestWorldData.getQWDbyPlayer(player.getName());
 
         //    /quest
         if (rawQuestCommand(args, player, questWorldData))
@@ -58,7 +60,6 @@ public class QuestOperator implements CommandExecutor {
     }
 
     private void sendInfoToConsole() {
-        ListQuestWorldData listQuestWorldData = editor.getData();
         int counter = 0;
         List<String> playerList = new ArrayList<>();
         for (QuestWorldData questWorldData : listQuestWorldData.allQuestWorlds) {
@@ -73,7 +74,7 @@ public class QuestOperator implements CommandExecutor {
     //    /quest
     private boolean rawQuestCommand(String[] args, Player player, QuestWorldData questWorldData) {
         if (args.length == 0) {
-            ListQuestWorldData listQuestWorldData = editor.getData();
+
             if(questWorldData!=null) {
                 if (questWorldData.ticksPlayedFinal == 0) {
                     if (player.getWorld().getName().equalsIgnoreCase(questWorldData.questWorldName)) {
@@ -81,7 +82,7 @@ public class QuestOperator implements CommandExecutor {
                         return true;
                     }
                     Location saved = new Location(Bukkit.getWorld(questWorldData.questWorldName), questWorldData.spawn[0], questWorldData.spawn[1], questWorldData.spawn[2]);
-                    new ScoreBoardQuest().scoreQuest(editor, plugin, player);
+                    new ScoreBoardQuest().scoreQuest(listQuestWorldData, plugin, player);
                     player.getInventory().clear();
 
                     player.sendMessage(ChatColor.GREEN + "Телепортация на сохраненную локацию.");
@@ -109,7 +110,7 @@ public class QuestOperator implements CommandExecutor {
                     quest.setTime(23180);
 
                     player.teleport(loc_spawn);
-                    new ScoreBoardQuest().scoreQuest(editor, plugin, player);
+                    new ScoreBoardQuest().scoreQuest(listQuestWorldData, plugin, player);
 
                     loc_spawn.setX(0);
                     loc_spawn.setY(1);
@@ -132,7 +133,7 @@ public class QuestOperator implements CommandExecutor {
     private boolean status(String[] args, Player player){
         if (args.length == 2 && args[0].equalsIgnoreCase("status")) {
             String name = args[1];
-            QuestWorldData questWorldData = editor.getData().getQWDbyPlayer(name);
+            QuestWorldData questWorldData = listQuestWorldData.getQWDbyPlayer(name);
             if(questWorldData==null){
                 player.sendMessage(ChatColor.RED + "Игрок не находится/находился в квесте!");
                 return true;
@@ -184,7 +185,6 @@ public class QuestOperator implements CommandExecutor {
                             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "mv clone worldquest " + name);
                             Thread.sleep(250);
                             QuestWorldData questWorldData = new QuestWorldData(Objects.requireNonNull(Bukkit.getWorld(name)));
-                            ListQuestWorldData listQuestWorldData = editor.getData();
                             listQuestWorldData.allQuestWorlds.add(questWorldData);
                             // запись в файл
                             editor.setData(listQuestWorldData);
@@ -214,20 +214,19 @@ public class QuestOperator implements CommandExecutor {
     //    /quest worldlist
     private boolean worldList(String[] args, Player player){
         // вывод всех миров
-        ListQuestWorldData listQuestWorlds = editor.getData();
         if (args.length == 1 && args[0].equalsIgnoreCase("worldlist")) {
-            if (listQuestWorlds.allQuestWorlds.size() == 0) {
+            if (listQuestWorldData.allQuestWorlds.size() == 0) {
                 player.sendMessage(ChatColor.DARK_PURPLE + "Список миров для квеста пуст!");
                 return true;
             }
 
             int counter = 0;
-            for(QuestWorldData questWorldData : listQuestWorlds.allQuestWorlds){
+            for(QuestWorldData questWorldData : listQuestWorldData.allQuestWorlds){
                 if(!questWorldData.isBusy) counter++;
             }
-            player.sendMessage(ChatColor.GREEN + "Пройдено - " + (listQuestWorlds.allQuestWorlds.size()-counter) +". Свободно - "+ counter +".");
+            player.sendMessage(ChatColor.GREEN + "Пройдено - " + (listQuestWorldData.allQuestWorlds.size()-counter) +". Свободно - "+ counter +".");
 
-            for (QuestWorldData questWorldData : listQuestWorlds.allQuestWorlds)
+            for (QuestWorldData questWorldData : listQuestWorldData.allQuestWorlds)
                 player.sendMessage(color(passed.apply(questWorldData)));
             return true;
         }
@@ -237,7 +236,6 @@ public class QuestOperator implements CommandExecutor {
     //    /quest playerlist
     private boolean playerList(String[] args, Player player) {
         if(args.length==1 && args[0].equalsIgnoreCase("playerlist")){
-            ListQuestWorldData listQuestWorldData = editor.getData();
             if (listQuestWorldData.allQuestWorlds.size() == 0) {
                 player.sendMessage(ChatColor.RED + "Никто не проходил квест!");
                 return true;
@@ -246,8 +244,8 @@ public class QuestOperator implements CommandExecutor {
             for(QuestWorldData questWorldData : listQuestWorldData.allQuestWorlds){
                 if(questWorldData.isBusy){
                     if(questWorldData.ticksPlayedFinal==0){
-                        player.sendMessage("Игрок "+ChatColor.GREEN +  questWorldData.playerName+ChatColor.RESET + " играет в мире " +questWorldData.questWorldName);
-                    } else player.sendMessage("Игрок "+ChatColor.GREEN +  questWorldData.playerName+ChatColor.RESET + " прошел квест в мире " +questWorldData.questWorldName);
+                        player.sendMessage("Игрок " + ChatColor.GREEN +  questWorldData.playerName + ChatColor.RESET + " играет в мире " +questWorldData.questWorldName);
+                    } else player.sendMessage("Игрок " + ChatColor.GREEN +  questWorldData.playerName + ChatColor.RESET + " прошел квест в мире " +questWorldData.questWorldName);
                 }
             }
             return true;
@@ -259,20 +257,19 @@ public class QuestOperator implements CommandExecutor {
     private boolean removeWorld(String[] args,Player player){
         // удаление мира
         if (args.length == 2 && args[0].equalsIgnoreCase("remove")) {
-            ListQuestWorldData listQuestWorlds = editor.getData();
             String worldOrPlayerName = args[1];
-            for (QuestWorldData questWorldData : listQuestWorlds.allQuestWorlds) {
+            for (QuestWorldData questWorldData : listQuestWorldData.allQuestWorlds) {
                 if (questWorldData.questWorldName.equals(worldOrPlayerName) && !questWorldData.isBusy) {
                     //удаление и перезапись
-                    listQuestWorlds.allQuestWorlds.remove(questWorldData);
-                    editor.setData(listQuestWorlds);
+                    listQuestWorldData.allQuestWorlds.remove(questWorldData);
+                    editor.setData(listQuestWorldData);
                     player.sendMessage(ChatColor.GREEN + "Пустая запись в мире " +
                             worldOrPlayerName + " успешно удалена!");
                     return true;
                 }
                 if(questWorldData.playerName.equals(worldOrPlayerName)){
-                    listQuestWorlds.allQuestWorlds.remove(questWorldData);
-                    editor.setData(listQuestWorlds);
+                    listQuestWorldData.allQuestWorlds.remove(questWorldData);
+                    editor.setData(listQuestWorldData);
                     player.sendMessage(ChatColor.GREEN + "Запись о прохождения квеста игроком " +
                             worldOrPlayerName + " успешно удалена!");
                     return true;

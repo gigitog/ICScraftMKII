@@ -16,9 +16,10 @@ import java.util.Objects;
 public class PlayerClickOnComp implements Listener {
     private FileJsonEditor<ListQuestWorldData> editorQuest;
     private Plugin plugin;
-
-    public PlayerClickOnComp(Plugin plugin, String fileNameQuest){
+    private ListQuestWorldData listQuestWorldData;
+    public PlayerClickOnComp(Plugin plugin, String fileNameQuest, ListQuestWorldData listQuestWorldData){
         editorQuest = new FileJsonEditor<>(fileNameQuest, new ListQuestWorldData(), plugin);
+        this.listQuestWorldData = listQuestWorldData;
         this.plugin = plugin;
     }
 
@@ -26,9 +27,9 @@ public class PlayerClickOnComp implements Listener {
     public void PlayerClick(PlayerInteractEvent event){
         if(!(event.getAction().equals(Action.RIGHT_CLICK_BLOCK) && Objects.requireNonNull(event.getClickedBlock()).getType().equals(Material.PLAYER_HEAD))) return;
         Player player = event.getPlayer();
-        QuestWorldData questWorldData = editorQuest.getData().getQWDbyPlayer(player.getName());
+        QuestWorldData questWorldData = listQuestWorldData.getQWDbyPlayer(player.getName());
         if(questWorldData == null) return;
         if(questWorldData.checkpoint != 501) return;
-        player.openInventory(new OSinventories(plugin,"/quest_worlds_data", player.getName()).getInventory(0));
+        player.openInventory(new OSinventories(plugin,"/quest_worlds_data", player.getName(), listQuestWorldData).getInventory(0));
     }
 }
