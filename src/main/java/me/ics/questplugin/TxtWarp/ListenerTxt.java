@@ -3,7 +3,6 @@ package me.ics.questplugin.TxtWarp;
 import me.ics.questplugin.FileEditor.FileJsonEditor;
 import me.ics.questplugin.CustomClasses.ClassesTxt.ListTxtWarpData;
 import me.ics.questplugin.CustomClasses.ClassesTxt.TxtWarpData;
-import me.ics.questplugin.HelpClasses.PlayerChecker;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -17,12 +16,12 @@ import java.util.*;
 
 public class ListenerTxt implements Listener {
     private Map<String, Boolean> places = new HashMap<>();
-    private FileJsonEditor<ListTxtWarpData> editor;
     private Plugin plugin;
-
+    private ListTxtWarpData tempData;
     public ListenerTxt(Plugin plugin, String fileTxt) {
         this.plugin = plugin;
-        editor = new FileJsonEditor<>(fileTxt, new ListTxtWarpData(), plugin);
+        FileJsonEditor<ListTxtWarpData> editor = new FileJsonEditor<>(fileTxt, new ListTxtWarpData(), plugin);
+        tempData = editor.getData();
     }
 
     private boolean placesContain(String name_place) {
@@ -46,9 +45,6 @@ public class ListenerTxt implements Listener {
         Player player = event.getPlayer();
         Location loc = event.getTo();
 
-//        if (PlayerChecker.isNotInQuest(player)) return;
-
-        ListTxtWarpData tempData = editor.getData();
         for (TxtWarpData txtWarp : tempData.allData) {
             assert loc != null;
             boolean x = Math.abs(loc.getBlockX() - txtWarp.x) <= txtWarp.radius;
@@ -61,6 +57,14 @@ public class ListenerTxt implements Listener {
                 if (!placesContain(name_place)) {
                     //if it's player's first step in the region, make name_place in map true
                     add(name_place);
+
+                    if (txtWarp.name.equalsIgnoreCase("finalyura1")){
+                        player.sendTitle(ChatColor.GOLD + "ВЫБОР КОНЦОВКИ", color("&cНеизвестная&r | &9Обычная    &r"), 40, 100, 80);
+                    }
+                    if (txtWarp.name.equalsIgnoreCase("finalyura33")){
+                        player.getInventory().clear();
+                    }
+
                     //send text that is in file
                     List<String> s = Arrays.asList(txtWarp.text.split(" "));
                     String to_send;
@@ -94,14 +98,10 @@ public class ListenerTxt implements Listener {
                     } else {
                         player.sendMessage(color(txtWarp.text));
                     }
+                    break;
                 }
-            }//else {
-//                if (placesContain(name_place)) {
-//                    //if coords are incorrect, else statement is working. So we need
-//                    //to set "name"_"place" to "false" in the HashMap
-//                    remove(name_place);
-//                }
-//            }
+                return;
+            }
         }
     }
 

@@ -11,12 +11,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class PlayerPlace implements Listener {
-
     List<String> list = Arrays.asList("§aЗакончить квест §7(ПКМ)","§9Вернуться в лобби §7(ПКМ)");
-
-    public PlayerPlace() {
-
-    }
 
     @EventHandler
     public void PlayerPlace(BlockPlaceEvent event){

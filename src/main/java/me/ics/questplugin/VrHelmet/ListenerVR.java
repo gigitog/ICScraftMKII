@@ -90,6 +90,7 @@ public class ListenerVR implements Listener {
                         getType().equals(Material.BIRCH_BUTTON)) {
 
             Player player = event.getPlayer();
+
             Score helmetGivenScore = objective.getScore(event.getPlayer().getName());
             Location loc = event.getClickedBlock().getLocation();
             FileJsonEditor<TeleportatData> editor = new FileJsonEditor<>(

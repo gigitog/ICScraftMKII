@@ -10,7 +10,9 @@ import me.ics.questplugin.CustomClasses.Statistic.ListAllStatsData;
 import me.ics.questplugin.FileEditor.FileJsonEditor;
 import me.ics.questplugin.FileEditor.RewriteQuestData;
 import me.ics.questplugin.HelpClasses.PlayerChecker;
+import me.ics.questplugin.HelpClasses.WorldRecreator;
 import org.bukkit.*;
+import org.bukkit.block.Chest;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -18,6 +20,7 @@ import org.bukkit.entity.Villager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
 import java.util.*;
@@ -27,11 +30,15 @@ public class PlayerMove implements Listener {
     private FileJsonEditor<ListTxtWarpData> editorTxt;
     private FileJsonEditor<ListAllStatsData> editorStats;
     private Map<String, Boolean> places = new HashMap<>();
+    private ListTxtWarpData listTxtWarpData;
+    private ListQuestWorldData listQuestWorldData;
 
-    public PlayerMove(Plugin plugin, String fileNameQuest, String fileNameTxt) {
+    public PlayerMove(Plugin plugin, String fileNameQuest, String fileNameTxt, ListQuestWorldData listQuestWorldData) {
         editorQuest = new FileJsonEditor<>(fileNameQuest, new ListQuestWorldData(), plugin);
         editorTxt = new FileJsonEditor<>(fileNameTxt, new ListTxtWarpData(), plugin);
         editorStats = new FileJsonEditor<>("/stats.txt", new ListAllStatsData(), plugin);
+        listTxtWarpData = editorTxt.getData();
+        this.listQuestWorldData = listQuestWorldData;
     }
 
     @EventHandler
@@ -39,26 +46,21 @@ public class PlayerMove implements Listener {
         Player quest_player = event.getPlayer();
 
         Location loc = quest_player.getLocation();
-        ListTxtWarpData listTxtWarpData = editorTxt.getData();
-
-//        if (checkRoadCross(quest_player, loc)) return;
 
         if (PlayerChecker.isNotInQuest(quest_player)) return;
 
-        List<String> names = Arrays.asList("Sundau", "gigitog", "Leshachok");
-
-        QuestWorldData questWorldData = editorQuest.getData().getQWDbyPlayer(quest_player.getName());
+        QuestWorldData questWorldData = listQuestWorldData.getQWDbyPlayer(quest_player.getName());
         if (questWorldData == null) return;
-
+//        YuraScheck(questWorldData);
         mirror(quest_player);
         //сброс счетчика после задания с поиском пути
 
         if(questWorldData.counter != 0 && questWorldData.checkpoint == 301){
             questWorldData.counter = 0;
             RewriteQuestData.rewrite(editorQuest, questWorldData);
+            listQuestWorldData = editorQuest.getData();
             return;
         }
-
 
 //        if(!names.contains(quest_player.getName())) {
 //            if(loc.getBlockZ() < 40 || loc.getBlockZ() > 590){
@@ -77,7 +79,7 @@ public class PlayerMove implements Listener {
 
         //find checkpointsQ
 
-        if (questWorldData.checkpoint == 202) {
+        if (questWorldData.checkpoint == 201) {
             Location loc2 = loc.add(0, -1, 0);
             if (loc.getBlock().getType().equals(Material.RED_WOOL)) {
                 loc.getBlock().setType(Material.LIME_WOOL);
@@ -91,7 +93,7 @@ public class PlayerMove implements Listener {
             boolean x = Math.abs(loc.getBlockX() - txtWarp.x) <= txtWarp.radius;
             boolean y = Math.abs(loc.getBlockY() - txtWarp.y) <= 1;
             boolean z = Math.abs(loc.getBlockZ() - txtWarp.z) <= txtWarp.radius;
-            boolean is = questWorldData.checkpoint < txtWarp.index;
+            boolean is = questWorldData.checkpoint <= txtWarp.index;
 
             String name_place = quest_player.getName().concat("_".concat(txtWarp.name));
             if (x && y && z && is) {
@@ -99,6 +101,9 @@ public class PlayerMove implements Listener {
                     //if it's player's first step in the region, make name_place in map true
                     add(name_place);
                     // нужно проиграть звук
+//                    if (questWorldData.checkpoint < txtWarp.index){
+//
+//                    }
                     quest_player.playSound(loc, Sound.ENTITY_PLAYER_LEVELUP, 100, 100);
                     // установка чекпоинта
                     if (txtWarp.index < 1500)
@@ -106,27 +111,41 @@ public class PlayerMove implements Listener {
                     //graph checker
                     graphChecker(quest_player, listTxtWarpData, questWorldData, txtWarp);
 
-                    if (txtWarp.name.equals("finalparkour") && !questWorldData.num_quests_complete.contains(701) ){
+                    if (txtWarp.x == 992 && !questWorldData.num_quests_complete.contains(701) ){
                         questWorldData.num_quests_complete.add(701);
                     }
 
-                    if (txtWarp.name.equals("finalpve")  && !questWorldData.num_quests_complete.contains(702)){
-                        questWorldData.num_quests_complete.add(702);
+                    if (txtWarp.index == 1050){
+                        ItemStack secretBook = new QuestStats(editorQuest, quest_player, editorStats, questWorldData.votes).makeBookSecret();
+                        Location locChest = new Location(quest_player.getWorld(), 532, 66, 666);
+                        if (quest_player.getWorld().getName().startsWith("quest")){
+                            Chest chest = (Chest) locChest.getBlock().getState();
+                            if (chest.getInventory().getItem(0) != null) return;
+                            chest.getBlockInventory().addItem(secretBook);
+                        }
                     }
 
-                    // перезапись в файле
+                    RewriteQuestData.rewrite(editorQuest, questWorldData);
+                    listQuestWorldData = editorQuest.getData();
 
+                    break;
                 }
-            } else {
-                if (placesContain(name_place)) {
-                    //if coords are incorrect, else statement is working. So we need
-                    //to set "name"_"place" to "false" in the HashMap
-                    remove(name_place);
-                }
-            }
+            } //else {
+//                if (placesContain(name_place)) {
+//                    //if coords are incorrect, else statement is working. So we need
+//                    //to set "name"_"place" to "false" in the HashMap
+//                    remove(name_place);
+//                    break;
+//                }
+//            }
         }
+
         boolean finish = false;
         //finish quest
+        finish = isFinish(quest_player, questWorldData, finish);
+    }
+
+    private boolean isFinish(Player quest_player, QuestWorldData questWorldData, boolean finish) {
         if (questWorldData.checkpoint == 1111 && !questWorldData.num_quests_complete.contains(1111)) {
             finish = true;
             // чтобы не входило больше
@@ -135,46 +154,38 @@ public class PlayerMove implements Listener {
             questWorldData.ticksPlayedFinal = (quest_player.getTicksLived() + questWorldData.ticksSavedBeforeLeaving - questWorldData.ticksLivedWhenStart);
             //телепорт
             quest_player.performCommand("spawn");
-            Bukkit.unloadWorld(questWorldData.questWorldName,false);
-            quest_player.getInventory().setItem(7, null);
+////            Bukkit.unloadWorld(questWorldData.questWorldName, false);
+//            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "mv delete " + questWorldData.questWorldName);
+//            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "mvconfirm");
+//            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "quest create 1");
 
+            new WorldRecreator(Bukkit.getWorld(questWorldData.questWorldName)).worldRecreator();
+
+            QuestWorldData qwd = new QuestWorldData(Bukkit.getWorld(questWorldData.questWorldName));
+            ListQuestWorldData list = editorQuest.getData();
+            list.allQuestWorlds.add(qwd);
+            editorQuest.setData(list);
+
+            if (quest_player.getInventory().getItem(7) != null) {
+                Objects.requireNonNull(quest_player.getInventory().getItem(7)).setAmount(0);
+            }
             RewriteQuestData.rewrite(editorQuest, questWorldData);
 
+            listQuestWorldData = editorQuest.getData();
+
             new ArrayProcessor(editorStats, questWorldData.votes, quest_player.getName()).writeStats();
-            QuestStats questBook = new QuestStats(editorQuest, quest_player.getName(), editorStats, questWorldData.votes);
+            QuestStats questBook = new QuestStats(editorQuest, quest_player, editorStats, questWorldData.votes);
             quest_player.getInventory().setItem(4, questBook.makeBook());
-            String command = "give " + quest_player.getName() + " written_book 1 {pages:[\"[\\\"\\\",{\\\"text\\\":\\\"Link\\\",\\\"clickEvent\\\":{\\\"action\\\":\\\"open_url\\\",\\\"value\\\":\\\"http://ac.opu.ua/\\\"},\\\"hoverEvent\\\":{\\\"action\\\":\\\"show_text\\\",\\\"value\\\":[\\\"\\\",{\\\"text\\\":\\\"Site\\\",\\\"underlined\\\":true,\\\"color\\\":\\\"gray\\\"}]}},{\\\"text\\\":\\\"\\\\n\\\"}]\"], title:\"Custom Book\", author:Player}";
 
-            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
         }
-        // перезапись
-        if(!finish) RewriteQuestData.rewrite(editorQuest, questWorldData);
-    }
-
-    private boolean checkRoadCross(Player quest_player, Location loc) {
-        if (loc.getBlockY() == 66) {
-            // переход дороги. Если наступает на дорогу, то он нарушитель
-            if (loc.getBlockX() <= 283 && loc.getBlockX() >= 278) {
-                loc.setX(277);
-                quest_player.teleport(loc);
-                quest_player.sendMessage(ChatColor.RED + "Нарушитель!");
-                return true;
-            }
-            if (loc.getBlockX() <= 296 && loc.getBlockX() >= 291) {
-                loc.setX(297);
-                quest_player.teleport(loc);
-                quest_player.sendMessage(ChatColor.RED + "Нарушитель!");
-                return true;
-            }
-        }
-        return false;
+        return finish;
     }
 
     private void graphChecker(Player quest_player, ListTxtWarpData listTxtWarpData, QuestWorldData questWorldData, TxtWarpData txtWarp) {
-        if (questWorldData.checkpoint == 202 && txtWarp.index > 2020
-                && !questWorldData.num_quests_complete.contains(202)) {
+        if (questWorldData.checkpoint == 201 && txtWarp.index > 2010
+                && !questWorldData.num_quests_complete.contains(201)) {
 
-            TxtWarpData txtWarpLevel = Objects.requireNonNull(listTxtWarpData.getWarpByCheck(202));
+            TxtWarpData txtWarpLevel = Objects.requireNonNull(listTxtWarpData.getWarpByCheck(201));
             boolean wasDeleted = false;
             //check if player was here
             if (questWorldData.num_quests_complete.contains(txtWarp.index)) {
@@ -195,9 +206,9 @@ public class PlayerMove implements Listener {
                 quest_player.teleport(locTp);
                 //remove old checkpoints
                 for (int i = 1; i < 9; i++) {
-                    if (questWorldData.num_quests_complete.contains(2020 + i)) {
+                    if (questWorldData.num_quests_complete.contains(2010 + i)) {
                         questWorldData.num_quests_complete.remove(
-                                questWorldData.num_quests_complete.indexOf(2020 + i));
+                                questWorldData.num_quests_complete.indexOf(2010 + i));
                         wasDeleted = true;
                     }
                 }
@@ -207,16 +218,16 @@ public class PlayerMove implements Listener {
             //check if player completed the graph
             int count = 0;
             for (int i = 1; i < 9; i++)
-                if (questWorldData.num_quests_complete.contains(2020 + i))
+                if (questWorldData.num_quests_complete.contains(2010 + i))
                     count++;
             if (count == 8) {
-                questWorldData.num_quests_complete.add(202);
+                questWorldData.num_quests_complete.add(201);
                 quest_player.playSound(quest_player.getLocation(), Sound.ENTITY_FIREWORK_ROCKET_BLAST, 30, 30);
                 quest_player.sendMessage(ChatColor.GREEN + "Ты справился!");
                 for (int i = 1; i < 9; i++) {
-                    if (questWorldData.num_quests_complete.contains(2020 + i)) {
+                    if (questWorldData.num_quests_complete.contains(2010 + i)) {
                         questWorldData.num_quests_complete.remove(
-                                questWorldData.num_quests_complete.indexOf(2020 + i)
+                                questWorldData.num_quests_complete.indexOf(2010 + i)
                         );
                     }
                 }
@@ -274,4 +285,13 @@ public class PlayerMove implements Listener {
             }
         }
     }
+
+//    private void YuraScheck(QuestWorldData questWorldData){
+//        Location location = new Location(Bukkit.getWorld("world"),414 ,65,336);
+//        if(questWorldData.counter == 666 && Objects.requireNonNull(Bukkit.getPlayer(questWorldData.playerName)).getLocation().equals(location)){
+//            questWorldData.counter=0;
+//            Objects.requireNonNull(Bukkit.getPlayer(questWorldData.playerName)).sendMessage("["+ChatColor.GREEN+"Дядя Юра"+ChatColor.RESET+"] Прошел квест! Красавчик!" );
+//            RewriteQuestData.rewrite(editorQuest,questWorldData);
+//        }
+//    }
 }

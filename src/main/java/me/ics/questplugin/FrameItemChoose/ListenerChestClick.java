@@ -49,7 +49,7 @@ public class ListenerChestClick implements Listener {
     public void onClick(InventoryOpenEvent event){
         QuestWorldData questWorldData = editorQuest.getData().getQWDbyPlayer(event.getPlayer().getName());
         if(questWorldData!=null){
-            if(questWorldData.checkpoint == 402 && !questWorldData.num_quests_complete.contains(402)){
+            if(questWorldData.checkpoint == 402){
                 if(event.getInventory().getType().equals(InventoryType.CHEST)) event.setCancelled(true);
                 else return;
                 ItemFrame frame = null;
@@ -80,7 +80,10 @@ public class ListenerChestClick implements Listener {
                         tempData.counter = questWorldData.counter+1;
                     }
                 }
+
                 RewriteQuestData.rewrite(editorQuest,questWorldData);
+            } else if (questWorldData.checkpoint == 202 && questWorldData.num_quests_complete.contains(202)){
+                event.setCancelled(true);
             }
         }
     }

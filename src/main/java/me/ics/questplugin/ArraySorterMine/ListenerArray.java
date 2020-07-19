@@ -66,7 +66,7 @@ public class ListenerArray implements Listener {
                             loc.add(0, 0, 4);
                         }
                         if(counter == 5){
-                            player.sendMessage(ChatColor.GREEN + "Правильно!");
+                            player.sendTitle(ChatColor.GREEN + "Правильно!", "",10, 30, 10);
                             qwd.num_quests_complete.add(401);
                             new RewriteDataInCycle().rewrite(listWorlds.allQuestWorlds.indexOf(qwd) , qwd, editorQuest, true);
                             break;

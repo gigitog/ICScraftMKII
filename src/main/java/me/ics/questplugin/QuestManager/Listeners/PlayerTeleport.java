@@ -13,15 +13,15 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.plugin.Plugin;
 
-import java.util.Objects;
-
 public class PlayerTeleport implements Listener {
     private FileJsonEditor<ListQuestWorldData> editor;
+    private ListQuestWorldData listQuestWorldData;
     private Plugin plugin;
 
-    public PlayerTeleport(Plugin plugin, String fileName) {
+    public PlayerTeleport(Plugin plugin, String fileName, ListQuestWorldData listQuestWorldData) {
         editor = new FileJsonEditor<>(fileName, new ListQuestWorldData(), plugin);
         this.plugin = plugin;
+        this.listQuestWorldData = listQuestWorldData;
     }
 
     @EventHandler
@@ -29,7 +29,7 @@ public class PlayerTeleport implements Listener {
         Location from = event.getFrom();
         Location to = event.getTo();
         Player player = event.getPlayer();
-        QuestWorldData questWorldData = editor.getData().getQWDbyPlayer(player.getName());
+        QuestWorldData questWorldData = listQuestWorldData.getQWDbyPlayer(player.getName());
         if(questWorldData == null) return;
 
         if(!from.getWorld().equals(to.getWorld()) && from.getWorld().getName().startsWith("quest")){
@@ -38,27 +38,27 @@ public class PlayerTeleport implements Listener {
 //                return;
 //            }
             ScoreBoardQuest.scoreONPU(plugin, player, editor);
-            if (player.getInventory().getItem(7) != null){
-                Objects.requireNonNull(player.getInventory().getItem(7)).setAmount(0);
+            player.getInventory().clear();
+            if (questWorldData.checkpoint == 1050){
+                questWorldData.checkpoint = 1111;
             }
-
             player.getInventory().setItem(4, QuestInstruments.makeQuestBook());
+            player.getInventory().setItem(8, QuestInstruments.makeLobbyBed());
 
             questWorldData.ticksSavedBeforeLeaving += player.getTicksLived()-questWorldData.ticksLivedWhenStart;
             questWorldData.ticksLivedWhenStart = 0;
             questWorldData.spawn = new double[]{from.getX(),from.getY(),from.getZ()};
-            RewriteQuestData.rewrite(editor,questWorldData);
+            RewriteQuestData.rewrite(listQuestWorldData, questWorldData);
             return;
         }
         if(!from.getWorld().equals(to.getWorld()) && to.getWorld().getName().startsWith("quest")){
             new ScoreBoardQuest().scoreQuest(editor, plugin, player);
-            if (player.getInventory().getItem(4) != null){
-                Objects.requireNonNull(player.getInventory().getItem(4)).setAmount(0);
-            }
+            player.getInventory().clear();
             player.getInventory().setItem(7, QuestInstruments.makeEndRedstone());
+            player.getInventory().setItem(8, QuestInstruments.makeLobbyBed());
 
             questWorldData.ticksLivedWhenStart = player.getTicksLived();
-            RewriteQuestData.rewrite(editor,questWorldData);
+            RewriteQuestData.rewrite(listQuestWorldData, questWorldData);
         }
     }
 }

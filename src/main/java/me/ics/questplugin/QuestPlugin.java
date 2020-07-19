@@ -1,7 +1,6 @@
 package me.ics.questplugin;
 
 import me.ics.questplugin.HelpClasses.FoodChange;
-import me.ics.questplugin.HelpClasses.MusicSaver;
 import me.ics.questplugin.OSclasses.PlayerClickOnComp;
 import me.ics.questplugin.ArmorHolo.SetArmorHolo;
 import me.ics.questplugin.ArraySorterMine.ListenerArray;
@@ -34,9 +33,11 @@ public final class QuestPlugin extends JavaPlugin {
     private String fileQuest = "/quest_worlds_data";
     private FileJsonEditor<ListQuestWorldData> editorQuest =
             new FileJsonEditor<>("/quest_worlds_data", new ListQuestWorldData(), this);
+    ListQuestWorldData list;
 
     @Override
     public void onEnable() {
+        list = editorQuest.getData();
         // Plugin startup logic
         loadImage();
         loadConfig();
@@ -60,7 +61,7 @@ public final class QuestPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new ListenerChestClick(editorQuest), this);
         getServer().getPluginManager().registerEvents(new FoodChange(), this);
         getServer().getPluginManager().registerEvents(new ArmorManipulate(this, fileQuest), this);
-        getServer().getPluginManager().registerEvents(new MusicSaver(this), this);
+//        getServer().getPluginManager().registerEvents(new MusicSaver(this), this);
     }
 
     private void onEnableQuestManager() {

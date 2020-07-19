@@ -4,6 +4,8 @@ import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.util.Arrays;
+
 public class QuestInstruments {
 
     public QuestInstruments(){
@@ -38,6 +40,7 @@ public class QuestInstruments {
         ItemStack redstone = new ItemStack(Material.REDSTONE);
         ItemMeta meta = redstone.getItemMeta();
         meta.setDisplayName("§aЗакончить квест §7(ПКМ)");
+        meta.setLore(Arrays.asList("Аварийное прекращение квеста с ", "получением результата."));
         redstone.setItemMeta(meta);
         return redstone;
     }

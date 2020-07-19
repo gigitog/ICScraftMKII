@@ -34,7 +34,7 @@ public class PlayerInventoryInteract implements Listener {
         if(questWorldData!=null) {
             if(!player.getWorld().getName().startsWith("quest")) return;
             if(event.getClickedInventory()==null || !event.getClickedInventory().getType().equals(InventoryType.CHEST)) return;
-            if (questWorldData.checkpoint == 203 && !questWorldData.num_quests_complete.contains(203)){
+            if (questWorldData.checkpoint == 202 && !questWorldData.num_quests_complete.contains(202)){
 
                 if (questWorldData.counter >= 19) {
                     player.sendTitle("§cПровал!", "§cМожно было за 18 ходов", 10, 40, 10);
@@ -80,7 +80,7 @@ public class PlayerInventoryInteract implements Listener {
                     player.closeInventory();
                     if (questWorldData.counter == 18) {
                         player.sendTitle("§aМолодец", "", 10, 40, 10);
-                        questWorldData.num_quests_complete.add(203);
+                        questWorldData.num_quests_complete.add(202);
                     }
                     RewriteQuestData.rewrite(editorQuest,questWorldData);
                     return;
@@ -88,7 +88,7 @@ public class PlayerInventoryInteract implements Listener {
                     return;
                 }
                 player.sendMessage("а сюда нельзя");
-            } else if (event.getClickedInventory().getType().equals(InventoryType.CHEST) && questWorldData.checkpoint / 100 == 2 && (questWorldData.num_quests_complete.contains(203) || questWorldData.counter >= 0)) {
+            } else if (event.getClickedInventory().getType().equals(InventoryType.CHEST) && questWorldData.checkpoint / 100 == 2 && (questWorldData.num_quests_complete.contains(202) || questWorldData.counter >= 0)) {
                 player.closeInventory();
                 return;
             }

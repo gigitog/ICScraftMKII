@@ -23,13 +23,21 @@ public class PlayerOut implements Listener {
     public void onPlayerExit(PlayerQuitEvent e){
         ListQuestWorldData list = editor.getData();
         QuestWorldData questWorldData = list.getQWDbyPlayer(e.getPlayer().getName());
-        if(questWorldData!=null){
-            if(questWorldData.questWorldName.equalsIgnoreCase(e.getPlayer().getWorld().getName())){
-                questWorldData.ticksSavedBeforeLeaving += e.getPlayer().getTicksLived() - questWorldData.ticksLivedWhenStart;
-                questWorldData.ticksLivedWhenStart = 0;
-                RewriteQuestData.rewrite(editor,questWorldData);
-            }
+
+        if(questWorldData == null) return;
+
+        if(questWorldData.questWorldName.equalsIgnoreCase(e.getPlayer().getWorld().getName())){
+            questWorldData.ticksSavedBeforeLeaving += e.getPlayer().getTicksLived() - questWorldData.ticksLivedWhenStart;
+            questWorldData.ticksLivedWhenStart = 0;
+            e.getPlayer().getInventory().clear();
+            RewriteQuestData.rewrite(editor,questWorldData);
         }
+
+        if (questWorldData.checkpoint > 1049 && questWorldData.checkpoint < 1099){
+            questWorldData.checkpoint = 1111;
+            RewriteQuestData.rewrite(editor, questWorldData);
+        }
+
 //        for(QuestWorldData questWorldData : list.allQuestWorlds){
 //            if(questWorldData.isBusy && questWorldData.playerName.equalsIgnoreCase(e.getPlayer().getName())
 //                    && e.getPlayer().getWorld().getName().equals(questWorldData.questWorldName)){

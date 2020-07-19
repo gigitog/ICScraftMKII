@@ -60,5 +60,4 @@ public class ArmorManipulate implements Listener {
         else counter++;
         return counter;
     }
-
 }

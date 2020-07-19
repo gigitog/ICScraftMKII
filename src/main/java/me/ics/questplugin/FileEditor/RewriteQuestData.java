@@ -5,14 +5,12 @@ import me.ics.questplugin.CustomClasses.ClassesQuestWorld.QuestWorldData;
 
 public class RewriteQuestData {
 
-    public static void rewrite(FileJsonEditor<ListQuestWorldData> editor, QuestWorldData dataToWrite){
+    public static void rewrite(ListQuestWorldData list, QuestWorldData dataToWrite){
         if (dataToWrite != null){
-            ListQuestWorldData data = editor.getData();
+            int index = list.allQuestWorlds.indexOf(list.getQWDbyPlayer(dataToWrite.playerName));
 
-            int index = data.allQuestWorlds.indexOf(data.getQWDbyPlayer(dataToWrite.playerName));
-
-            data.allQuestWorlds.set(index, dataToWrite);
-            editor.setData(data);
+            list.allQuestWorlds.set(index, dataToWrite);
+//            editor.setData(data);
         }
     }
 

@@ -38,11 +38,11 @@ public class Answer implements CommandExecutor {
             int chp = questWorldData.checkpoint;
             String trueAnswer = editorAnswer.getData().getAnswer(chp);
             //checking
-            if (playerAnswer.equals(trueAnswer)) {
+            if (playerAnswer.equalsIgnoreCase(trueAnswer)) {
                 check = true;
                 // avoid dublicates
                 if (questWorldData.num_quests_complete.contains(chp)) {
-                    player.sendMessage(ChatColor.GREEN + "Ответ уже был!");
+                    player.sendMessage(ChatColor.GREEN + "Это ответ на прошлое задание! Отвечать можно лишь на текущее.");
                     return true;
                 }
                 questWorldData.num_quests_complete.add(chp);

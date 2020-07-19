@@ -13,22 +13,23 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 public class ListenerTp implements Listener {
     private Plugin plugin;
+    private FileJsonEditor<ListTeleportsData> editor;
+    private  ListTeleportsData tpWarps;
 
     public ListenerTp(Plugin plugin) {
         this.plugin = plugin;
+        editor = new FileJsonEditor<>(
+                "/tp_warps_data.json", new ListTeleportsData(), plugin);
+        tpWarps = editor.getData();
     }
 
     @EventHandler
     public void onTpWarp(PlayerMoveEvent event){
         Location loc = event.getTo();
-        Location locTp = new Location(event.getPlayer().getWorld(),0,0,0, 0, 0);
-        Player player = event.getPlayer();
 
+        Player player = event.getPlayer();
         // editor
-        FileJsonEditor<ListTeleportsData> editor = new FileJsonEditor<>(
-                "/tp_warps_data.json", new ListTeleportsData(), plugin);
         //list
-        ListTeleportsData tpWarps = editor.getData();
         // search
         for(TeleportatData tpWarp : tpWarps.allData){
             assert loc != null;
@@ -36,6 +37,7 @@ public class ListenerTp implements Listener {
             boolean isHere = loc.getBlockX() == tpWarp.x &&
                     loc.getBlockY() == tpWarp.y && loc.getBlockZ() == tpWarp.z;
             if(isHere){
+                Location locTp = new Location(event.getPlayer().getWorld(),0,0,0, 0, 0);
                 double x = loc.getX() - loc.getBlockX();
                 double y = loc.getY() - loc.getBlockY();
                 double z = loc.getZ() - loc.getBlockZ();
@@ -51,8 +53,17 @@ public class ListenerTp implements Listener {
                             player.teleport(locMCtp);
                         }
                     }.runTaskLater(plugin, 200);
+                    new BukkitRunnable(){
+                        @Override
+                        public void run() {
+                            Location locMCtp = new Location(player.getWorld(), 582.5, 67.1, 304.5);
+                            locMCtp.setYaw(-90);
+                            player.teleport(locMCtp);
+                        }
+                    }.runTaskLater(plugin, 700);
                 }
                 player.teleport(locTp);
+                return;
             }
         }
     }

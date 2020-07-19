@@ -50,12 +50,11 @@ public class PlayerClick implements Listener {
         QuestWorldData questWorldData = editor.getData().getQWDbyPlayer(player.getName());
         if (questWorldData == null || questWorldData.ticksPlayedFinal != 0)
             return;
-        if (questWorldData.checkpoint == 0) {
+        if (questWorldData.checkpoint < 100) {
             if (event.getAction().equals(Action.RIGHT_CLICK_BLOCK) && event.hasBlock() && event.getClickedBlock().getType().equals(Material.PLAYER_HEAD)) {
-
                 if (player.getFacing().getDirection().getX() > 0) {
                     player.sendTitle(ChatColor.GREEN + "Квест начат!", "", 30, 60, 10);
-                    player.teleport(new Location(player.getWorld(), 677, 69, 468));
+                    player.teleport(new Location(player.getWorld(), 679, 69.25, 469));
                     player.getInventory().setItem(7, QuestInstruments.makeEndRedstone());
                 } else
                     player.sendTitle(ChatColor.RED + "Со стороны экрана", "", 10, 50, 10);

@@ -34,22 +34,23 @@ public class PlayerLogin implements Listener {
         if (player.getWorld().getName().equals("Survival")) return;
         QuestWorldData qwd = editorQuest.getData().getQWDbyPlayer(player.getName());
         if (qwd == null || qwd.ticksPlayedFinal == 0){
-            if (player.getWorld().getName().startsWith("quest")){
-                player.getInventory().setItem(7, QuestInstruments.makeEndRedstone());
-                player.getInventory().setItem(4, new ItemStack(Material.AIR));
-            } else {
-                player.getInventory().setItem(4, QuestInstruments.makeQuestBook());
-            }
+
             player.getInventory().setItem(8, QuestInstruments.makeLobbyBed());
         } else {
             ScoreBoardQuest.scoreONPU(plugin, player, editorQuest);
             return;
         }
+        if (player.getWorld().getName().startsWith("quest")){
+            new ScoreBoardQuest().scoreQuest(editorQuest, plugin, player);
+            player.getInventory().setItem(7, QuestInstruments.makeEndRedstone());
+            player.getInventory().setItem(4, new ItemStack(Material.AIR));
+        } else {
+            player.getInventory().setItem(4, QuestInstruments.makeQuestBook());
+            ScoreBoardQuest.scoreONPU(plugin, player, editorQuest);
+        }
 
         if (player.isOp()) {
             player.getInventory().setItem(0, QuestInstruments.makeStatsFeather());
         }
-
-        ScoreBoardQuest.scoreONPU(plugin, player, editorQuest);
     }
 }
