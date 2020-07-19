@@ -1,5 +1,6 @@
 package me.ics.questplugin.CustomClasses.Statistic;
 
+import me.ics.questplugin.CustomClasses.ClassesQuestWorld.QuestWorldData;
 import me.ics.questplugin.FileEditor.FileJsonEditor;
 
 import java.util.ArrayList;
@@ -9,11 +10,13 @@ public class ArrayProcessor {
     private FileJsonEditor<ListAllStatsData> editor;
     private int[] array;
     private String playerName;
+    private QuestWorldData qwd;
 
-    public ArrayProcessor(FileJsonEditor<ListAllStatsData> editor, int[] array, String playerName) {
+    public ArrayProcessor(FileJsonEditor<ListAllStatsData> editor, QuestWorldData qwd, String playerName) {
         this.editor = editor;
-        this.array = array;
+        this.array = qwd.votes;
         this.playerName = playerName;
+        this.qwd = qwd;
     }
 
     private int[][] table = {
@@ -27,7 +30,7 @@ public class ArrayProcessor {
 
     public void writeStats(){
         ListAllStatsData stats = editor.getData();
-        AllStatsData newPlayerStats = new AllStatsData(stats.allData.size(), playerName, array, percentage(), resultPoints());
+        AllStatsData newPlayerStats = new AllStatsData(stats.allData.size(), playerName, array, numQuestComplete(), resultPoints());
 
         stats.allData.add(newPlayerStats);
         editor.setData(stats);
@@ -46,6 +49,10 @@ public class ArrayProcessor {
         }
 
         return result;
+    }
+
+    public List<Integer> numQuestComplete(){
+        return qwd.num_quests_complete;
     }
 
     public List<Integer> percentage(){

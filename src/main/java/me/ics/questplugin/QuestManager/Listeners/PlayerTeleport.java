@@ -52,6 +52,10 @@ public class PlayerTeleport implements Listener {
             return;
         }
         if(!from.getWorld().equals(to.getWorld()) && to.getWorld().getName().startsWith("quest")){
+            if (questWorldData.ticksPlayedFinal != 0) {
+                event.setCancelled(true);
+            }
+
             new ScoreBoardQuest().scoreQuest(listQuestWorldData, plugin, player);
             player.getInventory().clear();
             player.getInventory().setItem(7, QuestInstruments.makeEndRedstone());

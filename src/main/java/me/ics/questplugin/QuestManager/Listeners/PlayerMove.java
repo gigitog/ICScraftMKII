@@ -170,7 +170,7 @@ public class PlayerMove implements Listener {
 
             RewriteQuestData.rewrite(listQuestWorldData, questWorldData);
 
-            new ArrayProcessor(editorStats, questWorldData.votes, quest_player.getName()).writeStats();
+            new ArrayProcessor(editorStats, questWorldData, quest_player.getName()).writeStats();
             QuestStats questBook = new QuestStats(editorQuest, quest_player, editorStats, listQuestWorldData);
             quest_player.getInventory().setItem(4, questBook.makeBook());
 

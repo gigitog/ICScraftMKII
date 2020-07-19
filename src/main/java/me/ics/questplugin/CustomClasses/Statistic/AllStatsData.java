@@ -7,14 +7,14 @@ public class AllStatsData {
     private int index;
     private String playerName;
     private int[] votes;
-    private List<Integer> percentageArray;
+    private List<Integer> tasksComplete;
     private int[] resultPoints;
 
-    public AllStatsData(int index, String playerName, int[] votes, List<Integer> percentageArray, int[] resultPoints) {
+    public AllStatsData(int index, String playerName, int[] votes, List<Integer> tasksComplete, int[] resultPoints) {
         this.index = index;
         this.playerName = playerName;
         this.votes = votes;
-        this.percentageArray = percentageArray;
+        this.tasksComplete = tasksComplete;
         this.resultPoints = resultPoints;
     }
 }

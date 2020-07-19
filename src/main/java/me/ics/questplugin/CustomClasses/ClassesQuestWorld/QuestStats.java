@@ -109,7 +109,7 @@ public class QuestStats {
             return list;
         }
 
-        List<Integer> recommend = new ArrayProcessor(editorStats, votes, playerName).percentage();
+        List<Integer> recommend = new ArrayProcessor(editorStats, qwd, playerName).percentage();
         String recStr = "";
 
         int i = 0;
